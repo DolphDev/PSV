@@ -11,6 +11,12 @@ def parser(csvfile, cls):
         yield cls({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": row[x]}
         for x in row.keys()})
 
+def parser_addrow(columns, cls):
+    r = cls({})
+    r.data.update(({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": ""} for x in columns}))
+    return r
+
+
 def xlsxparser_gen(wb2, maxrow, max_column, columnnames, cls):
     """Generator for xlsx parsing"""
     count = 0
@@ -22,15 +28,16 @@ def xlsxparser_gen(wb2, maxrow, max_column, columnnames, cls):
         yield cls(d)
         count = 0
 
-
-def xlsxparser(excelfile, cls, max_column="E", max_row=27):
-    """The Excel Spreadsheet contains many Junk rows/columnnames
-    This processes it to be compatible with the program"""
-    wb = load_workbook(excelfile)
-    wb2 = wb.get_sheet_by_name(wb.get_sheet_names()[0])
-    columnnames = []
-    for x in (wb2.iter_rows("A1:{}1".format(max_column))):
-        for y in x:
-            columnnames.append(y.value) 
-    gen = xlsxparser_gen(wb2, max_row, max_column, columnnames, cls)
-    return gen
+def excelparser(max_column, max_row):
+    def xlsxparser(excelfile, cls, max_column=max_column, max_row=max_row):
+        """The Excel Spreadsheet contains many Junk rows/columnnames
+        This processes it to be compatible with the program"""
+        wb = load_workbook(excelfile)
+        wb2 = wb.get_sheet_by_name(wb.get_sheet_names()[0])
+        columnnames = []
+        for x in (wb2.iter_rows("A1:{}1".format(max_column))):
+            for y in x:
+                columnnames.append(y.value) 
+        gen = xlsxparser_gen(wb2, max_row, max_column, columnnames, cls)
+        return gen
+    return excelparser
