@@ -55,3 +55,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#Used during the program
+run.py 
+test.py 
