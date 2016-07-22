@@ -17,7 +17,7 @@ class FatStax(object):
         return r
 
 
-    def output(self, loc=None, columns=None):
+    def output(self, loc=None, columns=None, quote_all=None):
         if not columns:
             raise Exception("master_columns must be supplied to output file")
-        outputfile(loc, self.rows, columns)
+        outputfile(loc, self.rows, columns, quote_all=quote_all )

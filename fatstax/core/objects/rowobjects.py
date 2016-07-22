@@ -1,11 +1,13 @@
 from .utils import multireplace
 
+class InnerRow(object):
+    "Represents the data of a objects"
 
 class BaseRow(object):
     """This Base Class represents a row in a spreadsheet"""
 
     def __init__(self, data):
-        super(BaseRow, self).__setattr__("data", data)
+        self.data = data
 
     def __getitem__(self, v):
         "Get column by the orginal column name"
@@ -21,9 +23,12 @@ class BaseRow(object):
         """Allows dynamic access to rows
         This allows algorathic access to rows
         in a pythonic style"""
-        if attr in self.data:
-            return self.data[attr]["value"]
-        
+        try:
+            if attr in self.__dict__["data"]:
+                return self.data[attr]["value"]
+        except KeyError:
+            raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+            type(self), attr))
         raise AttributeError('\'{}\' has no attribute \'{}\''.format(
             type(self), attr))
 
@@ -32,10 +37,13 @@ class BaseRow(object):
         is called if row does not have specially 
         defined set behavior"""
         try:
-            if attr in self.data:
+            if attr in self.__dict__["data"]:
                 self.data[attr]["value"] = v
-        except AttributeError:
+        except (KeyError, AttributeError):
             super(BaseRow, self).__setattr__(attr, v)
+
+    def setattr(self, attr, v):
+        super(BaseRow, self).__setattr__(attr, v)
 
     @property
     def longcolumn(self):
