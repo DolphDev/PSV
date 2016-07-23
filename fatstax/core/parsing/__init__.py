@@ -4,15 +4,15 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.utils import get_column_letter
 from .utils import multireplace
 
-def parser(csvfile, cls):
+def parser(csvfile, cls, *args, **kwargs):
     """This generates row objects for csv, and sets them up 
     for dynamic access"""
     for row in csvfile:
         yield cls({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": row[x]}
-        for x in row.keys()})
+        for x in row.keys()}, *args, **kwargs)
 
-def parser_addrow(columns, cls):
-    r = cls({})
+def parser_addrow(columns, cls, *args, **kwargs):
+    r = cls({}, *args, **kwargs)
     r.data.update(({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": ""} for x in columns}))
     return r
 

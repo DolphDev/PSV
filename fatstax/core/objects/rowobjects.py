@@ -34,8 +34,8 @@ class BaseRow(dict):
         is called if row does not have specially 
         defined set behavior"""
         try:
-            if hasattr(self, attr):
-                self[attr]["value"] == v
+            if attr in super(BaseRow, self).keys():
+                (self[attr]["value"]) = v
             else:
                 super(BaseRow, self).__setattr__(attr, v)
 

@@ -7,9 +7,9 @@ class FatStax(object):
     """This class centralizes the parsing, output, and objects
     functionality of this script"""
 
-    def __init__(self, mastercsv, cls=BaseRow, parsing=parser):
+    def __init__(self, mastercsv, cls=BaseRow, parsing=parser, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
-        self.rows = list(parser(mastercsv, cls))
+        self.rows = list(parser(mastercsv, cls, *args, **kwargs))
 
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
