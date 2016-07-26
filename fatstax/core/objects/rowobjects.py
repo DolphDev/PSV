@@ -35,7 +35,7 @@ class BaseRow(dict):
         defined set behavior"""
         try:
             if attr in super(BaseRow, self).keys():
-                (self[attr]["value"]) = v
+                self[attr]["value"] = v
             else:
                 super(BaseRow, self).__setattr__(attr, v)
 

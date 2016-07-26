@@ -9,15 +9,17 @@ class FatStax(object):
 
     def __init__(self, mastercsv, cls=BaseRow, parsing=parser, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
-        self.rows = list(parser(mastercsv, cls, *args, **kwargs))
-
+        if mastercsv:
+            self.rows = list(parser(mastercsv, cls, *args, **kwargs))
+        else:
+            self.rows = list()
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
         self.rows.append(r)
         return r
 
 
-    def output(self, loc=None, columns=None, quote_all=None):
+    def output(self, loc=None, columns=None, quote_all=None, encoding="LATIN-1"):
         if not columns:
             raise Exception("master_columns must be supplied to output file")
-        outputfile(loc, self.rows, columns, quote_all=quote_all )
+        outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )

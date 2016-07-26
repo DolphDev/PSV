@@ -13,7 +13,7 @@ def parser(csvfile, cls, *args, **kwargs):
 
 def parser_addrow(columns, cls, *args, **kwargs):
     r = cls({}, *args, **kwargs)
-    r.data.update(({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": ""} for x in columns}))
+    r.update(({multireplace(x.lower(), " ", "(", ")"): {"org_name": x, "value": ""} for x in columns}))
     return r
 
 
