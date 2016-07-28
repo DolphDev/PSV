@@ -13,11 +13,11 @@ class FatStax(object):
             self.rows = list(parser(mastercsv, cls, *args, **kwargs))
         else:
             self.rows = list()
+
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
         self.rows.append(r)
         return r
-
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="LATIN-1"):
         if not columns:

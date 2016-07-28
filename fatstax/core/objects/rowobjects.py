@@ -16,7 +16,7 @@ class BaseRow(dict):
         return self.longcolumn[v]
 
     def setcolumn(self, a, v):
-        s = multireplace(a.lower(), " ", "(", ")")
+        s = multireplace(a.lower(), " ", "(", ")", "/", "\\")
         if s in self.keys():
             self.__setattr__(s, v)
         else:
