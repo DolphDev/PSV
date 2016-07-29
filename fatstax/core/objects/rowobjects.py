@@ -43,6 +43,9 @@ class BaseRow(dict):
             super(BaseRow, self).__setattr__(attr, v)
 
 
+    def addcolumn(self, columnname, columndata=""):
+        self[multireplace(columnname.lower(), " ", "(", ")", "/", "\\")] = {"org_name":columnname, "value":columndata}
+        
     @property
     def longcolumn(self):
         """Generates a Dict that uses orginal names of 
