@@ -13,6 +13,7 @@ You will be prompted for you github username/password or ssh key password.
 To open the file, it is best to use python's `with` statement
     
     import fatstax
+    import csv
     
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         rows = csv.DictReader(csvfile, delimiter=",")
