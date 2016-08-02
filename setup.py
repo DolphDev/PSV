@@ -13,7 +13,7 @@ Copyright (c) 2016 FatStax.
 """
 
 
-version = '0.0.1.1'
+version = '0.0.1.5'
 
 from setuptools import setup
 setup(name='fatstax',
