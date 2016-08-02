@@ -34,12 +34,14 @@ When you are ready to output a dataset, you can use the `FatStax` object's `outp
 
     api.output("dataset-output/Example-Output.csv", columns=columns, encoding="utf-8", quote_all=True)
 
-Note the columns argument, this wrapper needs an ordered list of the columns to be outputed to the file. The easiest way to get the documents of the current file your editing is the `with` keyword.
+Note the columns argument, this wrapper needs an ordered list of the columns to be outputed to the file. The easiest way to get current file's columns is the `with` keyword.
 
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar='|'))
 
-You also can specifiy your own list, if you want to intentionally add/remove columns.
+You also can specifiy your own list, if you want to intentionally add/remove columns. 
+
+Note: if you use `addcolumn` make sure you add it to the list if you intend for it to be added to the output.
 
 
 
@@ -50,12 +52,12 @@ BaseRow is a barebones row object, if you would want to use something more advan
     class SpecialRow(fatstax.BaseRow):
 
         #__init__ is used internally, if you want to simply setup attributes use constructs. 
-        #Please note constuct can only accept *args and **kwargs. 
+        #Please note construct can only accept *args and **kwargs. 
         def construct(self, *args, **kwargs):
             self.exampleattribute = False
 
         #By using the @property python feature, you can add computed attributes.
-        #These allow operations to be done with refrenced
+        #These allow operations to be done with multiple columns at once
         @property
         def mastersku(self):
             return self.sku + " " + self.name
