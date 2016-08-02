@@ -2,7 +2,7 @@
 
 In your terminal type:
     
-    `pip3 install git+https://github.com/RedFunnel/FatStax-CSV.git`
+    pip3 install git+https://github.com/RedFunnel/FatStax-CSV.git
 
 If your usings a windows machine `pip3` may be simply `pip` depending on your setup.
 
@@ -11,7 +11,9 @@ You will be prompted for you github username/password or ssh key password.
 ##Usage:
 
 To open the file, it is best to use python's `with` statement
-
+    
+    import fatstax
+    
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         rows = csv.DictReader(csvfile, delimiter=",")
         api = fatstax.FatStax(rows)
@@ -66,8 +68,9 @@ To use this class, simply specify it when importing your data.
         api = fatstax.FatStax(master, cls=SpecialRow)
 
 
-Now with interacting with the rows, you will have access to these properties and methods
+Now when interacting with the rows, you will have access to these properties and methods
 
-for row in api.rows:
-    print(row.mastersku)
-    print(row.exampleattribute)
+    for row in api.rows:
+        print(row.mastersku)
+        print(row.exampleattribute)
+
