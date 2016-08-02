@@ -23,11 +23,11 @@ This will put all of yours rows in memory.
 The `FatStax` object stores the rows in the `rows` attribute. These rows are represented by the `BaseRow` object.
 
 You can loop over this attribute and interact with the rows. `BaseRow` allows you to simply type a condensed version of the column name to access it.
-
-for row in api.rows:
-    print(row.sku) #Supports getting column by column name
-    row.sku = row.sku + row.companyname #Can change column data
-    row.addcolumn("Brand", row.companyname) #You can add columns using the addcolumn method
+    
+    for row in api.rows:
+        print(row.sku) #Supports getting column by column name
+        row.sku = row.sku + row.companyname #Can change column data
+        row.addcolumn("Brand", row.companyname) #You can add columns using the addcolumn method
 
 
 When you are ready to output a dataset, you can use the `FatStax` object's `output` method. 
