@@ -39,7 +39,7 @@ Note the columns argument, this wrapper needs an ordered list of the columns to 
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar='|'))
 
-You also can specifiy your own list, if you want to intentionally add/remove columns. 
+You also can specifiy your own list if you want to intentionally add/remove columns. 
 
 Note: if you use `addcolumn` make sure you add it to the list if you intend for it to be added to the output.
 
@@ -63,14 +63,14 @@ BaseRow is a barebones row object, if you would want to use something more advan
             return self.sku + " " + self.name
 
 
-To use this class, simply specify it when importing your data.
+Specify this class it importing the data.
 
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         row = csv.DictReader(csvfile, delimiter=",")
         api = fatstax.FatStax(master, cls=SpecialRow)
 
 
-Now when interacting with the rows, you will have access to these properties and methods
+Now when interacting with the rows you will have access to these properties and methods
 
     for row in api.rows:
         print(row.mastersku)
