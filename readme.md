@@ -63,7 +63,7 @@ BaseRow is a barebones row object, if you would want to use something more advan
             return self.sku + " " + self.name
 
 
-Specify this class it importing the data.
+Specify this class when importing the data.
 
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         row = csv.DictReader(csvfile, delimiter=",")
