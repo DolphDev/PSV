@@ -19,7 +19,7 @@ class CloudStaxExportRow(fatstax.BaseRow):
 
 
     def category_dir(self, max_category):
-        """
+        """Returns a list of the catagories in order"""
         return list(self._subdir(max_category))
-        """
-        pass
+
+        
