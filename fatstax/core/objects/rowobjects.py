@@ -7,9 +7,20 @@ class BaseRow(dict):
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
         self.construct(*args, **kwargs)
+        self.__output__ = True
 
     def construct(self, *args, **kwargs):
         pass
+
+    @property
+    def outputrow(self):
+        return self.__output__
+
+    @outputrow.setter
+    def outputrow(self, v):
+        if not isinstance(v, bool):
+            raise TypeError("output must be {}, not {}".format(bool, type(v)))
+        self.__output__ = v
 
     def getcolumn(self, v):
         "Get column by the orginal column name"
