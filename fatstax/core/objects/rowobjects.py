@@ -53,6 +53,18 @@ class BaseRow(dict):
         except (KeyError, AttributeError):
             super(BaseRow, self).__setattr__(attr, v)
 
+    def __delattr__(self, attr):
+        """Allows deletion of rows and attributes (Makes a row empty) by using
+        del statement"""
+        try:
+            if attr in super(BaseRow, self).keys():
+                self[attr]["value"] = ""
+            else:
+                super(BaseRow, self).__delattr__(attr)
+
+        except (KeyError, AttributeError):
+            super(BaseRow, self).__delattr__(attr)
+
 
     def addcolumn(self, columnname, columndata=""):
         self[multireplace(columnname.lower(), " ", "(", ")", "/", "\\")] = {"org_name":columnname, "value":columndata}
