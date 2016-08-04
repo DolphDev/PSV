@@ -24,7 +24,11 @@ class BaseRow(dict):
 
     def getcolumn(self, v):
         "Get column by the orginal column name"
-        return self.longcolumn[v]
+        s = multireplace(v.lower(), " ", "(", ")", "/", "\\")
+        if s in self.keys():
+            return getattr(self, s)
+        else:
+            raise KeyError("{}".format(v))
 
     def setcolumn(self, a, v):
         s = multireplace(a.lower(), " ", "(", ")", "/", "\\")
@@ -33,12 +37,24 @@ class BaseRow(dict):
         else:
             raise Exception("Key not valid")
 
+    def __pos__(self):
+        self.outputrow = True
+        return self
+
+    def __neg__(self):
+        self.outputrow = False
+        return self
+
+    def __invert__(self):
+        self.outputrow = not (self.outputrow)
+
 
     def __getattribute__(self, attr):
-        if attr in super(BaseRow, self).keys():
-            return (self[attr]["value"])
-        else:
+        if not (attr in super(BaseRow, self).keys()):
             return super(dict, self).__getattribute__(attr)
+        else:
+            return (self[attr]["value"])
+
 
     def __setattr__(self, attr, v):
         """Allows setting new data to row
@@ -78,4 +94,3 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
         return newdict
 
-    
