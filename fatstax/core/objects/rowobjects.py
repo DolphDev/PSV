@@ -78,3 +78,4 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
         return newdict
 
+    
