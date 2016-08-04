@@ -26,9 +26,14 @@ The `FatStax` object stores the rows in the `rows` attribute. These rows are rep
 You can loop over this attribute and interact with the rows. `BaseRow` allows you to simply type a condensed version of the column name to access it.
     
     for row in api.rows:
-        print(row.sku) #Supports getting column by column name
-        row.sku = row.sku + row.companyname #Can change column data
+        print(row.sku) #fatstax supports getting column by column name
+        print(row.getcolumn("SKU")) #To get the column by the original column name use .getcolumn()
+        row.sku = row.sku + row.companyname #Can change column data 
         row.addcolumn("Brand", row.companyname) #You can add columns using the addcolumn method
+        del row.brand #(You can delete rows by using the del keyword)
+        if row.sku=[:3] == "abc":
+            row.outputrow = False #To not output this row when calling .output() set row.outputrow to False.
+            
 
 
 When you are ready to output a dataset, you can use the `FatStax` object's `output` method. 
