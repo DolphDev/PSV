@@ -1,7 +1,7 @@
 from .core.output import outputfile
 from .core.objects import BaseRow
 from .core.parsing import parser, excelparser, parser_addrow
-from .utils import argstotuple, multiple_index
+from .utils import multiple_index
 
 class FatStax(object):
     """This class centralizes the parsing, output, and objects
@@ -22,6 +22,8 @@ class FatStax(object):
         return r
 
     def __getitem__(self, v):
+        if isinstance(v, slice):
+            return self.rows[v] 
         if isinstance(v, int):
             return self.rows[v]
         elif isinstance(v, str):
@@ -29,6 +31,7 @@ class FatStax(object):
         elif isinstance(v, tuple):
             return (multiple_index(x,v) for x in self.rows)
         else:
+            print(v)
             super(self, FatStax).__getitem__(v)
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="LATIN-1"):
