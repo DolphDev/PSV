@@ -21,6 +21,17 @@ To open the file, it is best to use python's `with` statement
 
 This will put all of yours rows in memory.
 
+FatStax object supports advanced indexing:
+
+    api[0] #First row
+    api[::-1] #Rows in reverse order
+    api[:5] # First five rows, all other list slicing is supported
+    api["SKU"] #List of all the SKUs
+    api[("SKU", "Name")] # tuple of specified fields
+
+
+
+
 The `FatStax` object stores the rows in the `rows` attribute. These rows are represented by the `BaseRow` object.
 
 You can loop over this attribute and interact with the rows. `BaseRow` allows you to simply type a condensed version of the column name to access it.
@@ -32,7 +43,9 @@ You can loop over this attribute and interact with the rows. `BaseRow` allows yo
         row.addcolumn("Brand", row.companyname) #You can add columns using the addcolumn method
         del row.brand #(You can delete rows by using the del keyword)
         if row.sku=[:3] == "abc":
-            row.outputrow = False #To not output this row when calling .output() set row.outputrow to False.
+            -row #This tells the row to not output. Use +row to set a row to output (this is the default).
+            # ~row is also supported. This applies the `not` keyword to the row output boolean. 
+            
             
 
 
