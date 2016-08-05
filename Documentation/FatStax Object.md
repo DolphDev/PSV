@@ -54,6 +54,16 @@ Api also supports mass setting of rows to output (or not output).
     >>> api.lenoutput() #This method returns the lengh of all rows that will be outputed
     4
 
+when outputed, the CSV document will look something like this.
+
+| Name       | Price | Available | Company               |
+|------------|-------|-----------|-----------------------|
+| Product 1  | 10    | 1         | FatStax               |
+| Product 4  | 20    | 0         | FatStax               |
+| Product 5  | 25    | 1         | FatStax               |
+| Product 7  | 10    | 0         | FatStax               |
+
+
 This code sets all rows to not output (`flipoutput` simply changes the rows output setting to the opposite of its current value). The `Api` object will detect the lambda and use it. If the function returns True (or a Truthy value) it will set the row to output.
 
 For the opposite effect you can do this
@@ -64,6 +74,14 @@ For the opposite effect you can do this
     6
     >>> api.lenoutput() 
     3
+
+When outputted
+
+| Name       | Price | Available | Company               |
+|------------|-------|-----------|-----------------------|
+| Product 2  | 15    | 0         | Red Funnel Consulting |
+| Product 3  | 1     | 1         | Google                |
+| Product 6  | 30    | 1         | Google                |
 
 
 ##Other Methods
