@@ -47,7 +47,7 @@ class BaseRow(dict):
 
     def __invert__(self):
         self.outputrow = not (self.outputrow)
-
+        return self
 
     def __getattribute__(self, attr):
         if not (attr in super(BaseRow, self).keys()):

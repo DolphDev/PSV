@@ -2,6 +2,7 @@ from .core.output import outputfile
 from .core.objects import BaseRow
 from .core.parsing import parser, excelparser, parser_addrow
 from .utils import multiple_index
+from types import FunctionType
 
 class FatStax(object):
     """This class centralizes the parsing, output, and objects
@@ -21,6 +22,17 @@ class FatStax(object):
         self.rows.append(r)
         return r
 
+    def flipoutput(self):
+        for x in self.rows:
+            ~x
+        return self
+
+    def __len__(self):
+        return len(self.rows)
+
+    def lenoutput(self):
+        return len(tuple(filter(lambda x: x.outputrow, self.rows)))
+
     def __getitem__(self, v):
         if isinstance(v, slice):
             return self.rows[v] 
@@ -30,9 +42,25 @@ class FatStax(object):
             return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
             return (multiple_index(x,v) for x in self.rows)
+        elif isinstance(v, FunctionType):
+            for x in self.rows:
+                if bool(v(x)):
+                    +x
+            return self
         else:
-            print(v)
-            super(self, FatStax).__getitem__(v)
+            raise TypeError("Row indices must be int, slices, str, tuple, or functions. Not {}".format(type(v)))
+
+    def __delitem__(self, v):
+        if isinstance(v, FunctionType):
+            for x in self.rows:
+                if bool(v(x)):
+                    -x
+        else:
+            del self.rows[v]
+
+    @property
+    def outputedrows(self):
+        return filter(lambda x:x.outputrow, self.rows)
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="LATIN-1"):
         if not columns:

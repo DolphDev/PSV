@@ -4,6 +4,9 @@ def multiple_index(row, v):
     
     tracker = []
     for x in v:
+        if x == "ROW_OBJ":
+            tracker.append(row)
+            continue
         tracker.append(row.getcolumn(x))
     return tuple(tracker)
 
