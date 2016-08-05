@@ -64,7 +64,7 @@ class Api(object):
     def outputedrows(self):
         return filter(lambda x:x.outputrow, self.rows)
 
-    def output(self, loc=None, columns=None, quote_all=None, encoding="LATIN-1"):
+    def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         if not columns:
             raise Exception("A ordered list of columns must be supplied to output the file")
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
