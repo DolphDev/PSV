@@ -10,14 +10,16 @@ You will be prompted for you github username/password or ssh key password.
 
 ##Usage:
 
-To open the file, it is best to use python's `with` statement
+To open the file, it is best to use python's `with` statement. You also can use the libraries inbuilt file loader
     
     import fatstax
     import csv
     
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         rows = csv.DictReader(csvfile, delimiter=",")
-        api = fatstax.FatStax(rows)
+        api = fatstax.Api(rows)
+
+    api = fatstax.load(fatstax.load("dataset/example-dataset.csv", newline="", encoding="utf-8"))
 
 This will put all of yours rows in memory.
 
@@ -28,7 +30,6 @@ FatStax object supports advanced indexing:
     api[:5] # First five rows, all other list slicing is supported
     api["SKU"] #List of all the SKUs
     api[("SKU", "Name")] # tuple of specified fields
-
 
 
 
@@ -49,7 +50,7 @@ You can loop over this attribute and interact with the rows. `BaseRow` allows yo
             
 
 
-When you are ready to output a dataset, you can use the `FatStax` object's `output` method. 
+When you are ready to output a dataset, you can use the `Api` object's `output` method. 
 
     api.output("dataset-output/Example-Output.csv", columns=columns, encoding="utf-8", quote_all=True)
 
