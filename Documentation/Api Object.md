@@ -27,10 +27,12 @@ This library includes in the `load` function, which takes care of importing the 
 ##Interacting with the entire csv spreadsheet.
   
 To get the entire list companies (use `set` to get rid of repeats and iterate over the generator)
+    
     >>> set(api["Company"])
     {'Red Funnel Consulting', 'FatStax', 'Google'}
 
 You can grab mulitple fields
+
     >>> list(api["Name", "Company"])
     [('Product 1', 'FatStax'), ('Product 2', 'Red Funnel Consulting'), ('Product 3', 'Google'), ('Product 4', 'FatStax'), ('Product 5', 'FatStax'), ('Product 6', 'Google'), ('Product 7', 'FatStax')]
 
@@ -42,6 +44,7 @@ To grab the row object with this, use the string `"ROW_OBJ"`
 
 
 `Api` also supports regular interger indexing
+
     >>> api[0]
     {'available': {'org_name': 'Available', 'value': '1'}, 'company': {'org_name': 'Company', 'value': 'FatStax'}, 'name': {'org_name': 'Name', 'value': 'Product 1'}, 'price': {'org_name': 'Price', 'value': '10'}}
 
