@@ -32,10 +32,12 @@ class Api(object):
     def no_output(self):
         for x in self.rows:
             -x
+        return self
 
     def all_output(self):
         for x in self.rows:
             +x
+        return self
 
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
