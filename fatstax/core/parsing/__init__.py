@@ -2,19 +2,20 @@
 
 from openpyxl import load_workbook, Workbook
 from openpyxl.utils import get_column_letter
-from .utils import multireplace
+from .utils import cleanup_name
+
 
 
 def parser(csvfile, cls, *args, **kwargs):
     """This generates row objects for csv, and sets them up 
     for dynamic access"""
     for row in csvfile:
-        yield cls({multireplace(x.lower(), " ", "(", ")", "/", "\\"): {"org_name": x, "value": row[x]}
+        yield cls({cleanup_name(x): {"org_name": x, "value": row[x]}
         for x in row.keys()}, *args, **kwargs)
 
 def parser_addrow(columns, cls, *args, **kwargs):
     r = cls({}, *args, **kwargs)
-    r.update(({multireplace(x.lower(), " ", "(", ")", "/", "\\"): {"org_name": x, "value": ""} for x in columns}))
+    r.update(({cleanup_name(x): {"org_name": x, "value": ""} for x in columns}))
     return r
 
 
@@ -24,7 +25,7 @@ def xlsxparser_gen(wb2, maxrow, max_column, columnnames, cls):
     for x in wb2.iter_rows("A2:{}{}".format(max_column, maxrow)):
         d = {}
         for y in columnnames:
-            d.update({multireplace(y, " ", "(", ")", "/", "\\").lower(): {"org_name": y, "value": x[count].value}})
+            d.update({cleanup_name(y): {"org_name": y, "value": x[count].value}})
             count += 1
         yield cls(d)
         count = 0

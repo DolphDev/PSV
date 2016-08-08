@@ -1,4 +1,4 @@
-from .utils import multireplace
+from .utils import cleanup_name
 
 
 class BaseRow(dict):
@@ -24,14 +24,14 @@ class BaseRow(dict):
 
     def getcolumn(self, v):
         "Get column by the orginal column name"
-        s = multireplace(v.lower(), " ", "(", ")", "/", "\\")
+        s = cleanup_name(v)
         if s in self.keys():
             return getattr(self, s)
         else:
             raise KeyError("{}".format(v))
 
     def setcolumn(self, a, v):
-        s = multireplace(a.lower(), " ", "(", ")", "/", "\\")
+        s = mucleanup_name(a)
         if s in self.keys():
             self.__setattr__(s, v)
         else:
@@ -83,7 +83,7 @@ class BaseRow(dict):
 
 
     def addcolumn(self, columnname, columndata=""):
-        self[multireplace(columnname.lower(), " ", "(", ")", "/", "\\")] = {"org_name":columnname, "value":columndata}
+        self[cleanup_name(columnname)] = {"org_name":columnname, "value":columndata}
         
     @property
     def longcolumn(self):

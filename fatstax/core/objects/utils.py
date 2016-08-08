@@ -1,6 +1,7 @@
+from string import ascii_lowercase
 
-def multireplace(s, *args, rw=""):
-    for x in args:
-        s = s.replace(x, rw)
-    return s
+ascii_lowercase = (ascii_lowercase+"_")
+
+def cleanup_name(s):
+    return "".join(filter(lambda x: x in ascii_lowercase, s.lower()))
 

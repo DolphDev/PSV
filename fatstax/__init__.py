@@ -29,11 +29,19 @@ class Api(object):
             ~x
         return self
 
-    def __len__(self):
-        return len(self.rows)
+    def no_output(self):
+        for x in self.rows:
+            -x
+
+    def all_output(self):
+        for x in self.rows:
+            +x
 
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
+
+    def __len__(self):
+        return len(self.rows)
 
     def __getitem__(self, v):
         if isinstance(v, slice):
@@ -77,8 +85,8 @@ def load(f, cls=BaseRow, delimiter=",", quotechar='"', mode='r', buffering=-1, e
         api = Api(columns, cls=cls)
     return api
 
-def columns_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
     with open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
-    return columns
+    return tuple(columns)
