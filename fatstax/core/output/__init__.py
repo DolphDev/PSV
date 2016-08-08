@@ -1,7 +1,7 @@
 import csv
 
-def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="LATIN-1"):
-    if not isinstance(columnnames, list):
+def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="utf-8"):
+    if not (isinstance(columnnames, list) or isinstance(columnnames, tuple)):
         raise ValueError("Provided Columns must be a list was {}".format(type(co)))
     with open(fileloc, 'w', encoding=encoding, newline='') as csvfile:
         fieldnames = columnnames

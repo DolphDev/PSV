@@ -55,6 +55,21 @@ class BaseRow(dict):
         else:
             return (self[attr]["value"])
 
+    def __getattr__(self, attr):
+        s = cleanup_name(attr)
+        if s in super(BaseRow, self).keys():
+            raise AttributeError((
+                "{}{}"
+                .format(
+                '\'{}\' has no attribute \'{}\''.format(
+                    type(self), attr),
+                ". However, '{s}' is an existing condensed ".format(s=s) + 
+                "column name. Only the condensed version is supported."
+                .format(s=s)
+                )))
+        else:
+            raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+        type(self), attr))
 
     def __setattr__(self, attr, v):
         """Allows setting new data to row

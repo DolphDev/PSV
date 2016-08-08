@@ -10,8 +10,9 @@ class Api(object):
     """This class centralizes the parsing, output, and objects
     functionality of this script"""
 
-    def __init__(self, csvdict=None, cls=BaseRow, parsing=parser, *args, **kwargs):
+    def __init__(self, csvdict=None, cls=BaseRow, parsing=parser, outputfile=None, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
+        self.__outputname__ = outputfile
         if csvdict is None:
             csvdict = {}
         if csvdict:
@@ -75,19 +76,20 @@ class Api(object):
         return filter(lambda x:x.outputrow, self.rows)
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
+        loc = loc if loc else self.__outputname__
         if not columns:
             raise Exception("A ordered list of columns must be supplied to output the file")
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
 
 
-def load(f, cls=BaseRow, delimiter=",", quotechar='"', mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1, encoding="utf-8", errors=None, newline=None, closefd=True, opener=None):
     with open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = Api(columns, cls=cls)
+        api = Api(columns, outputfiled=outputfile, cls=cls)
     return api
 
-def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8", errors=None, newline=None, closefd=True, opener=None):
     with open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
