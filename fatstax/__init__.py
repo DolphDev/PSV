@@ -85,9 +85,12 @@ class Api(object):
 def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1, encoding="utf-8", errors=None, newline=None, closefd=True, opener=None):
     with open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
-        columns = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = Api(columns, outputfiled=outputfile, cls=cls)
+        data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
+        api = Api(data, outputfiled=outputfile, cls=cls)
     return api
+
+def new(cls=BaseRow, outputfile=None):
+    return Api(outputfiled=outputfile, cls=cls)
 
 def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8", errors=None, newline=None, closefd=True, opener=None):
     with open(f, mode=mode, buffering=buffering,

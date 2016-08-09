@@ -31,7 +31,7 @@ class BaseRow(dict):
             raise KeyError("{}".format(v))
 
     def setcolumn(self, a, v):
-        s = mucleanup_name(a)
+        s = cleanup_name(a)
         if s in self.keys():
             self.__setattr__(s, v)
         else:
@@ -108,4 +108,3 @@ class BaseRow(dict):
         for k in self.keys():
             newdict.update({self[k]["org_name"]: self[k]["value"]})
         return newdict
-
