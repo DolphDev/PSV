@@ -46,9 +46,7 @@ To grab the row object with this, use the string `"ROW_OBJ"`
 `Api` also supports regular interger indexing
 
     >>> api[0]
-    {'available': {'org_name': 'Available', 'value': '1'}, 'company': {'org_name': 'Company', 'value': 'FatStax'}, 'name': {'org_name': 'Name', 'value': 'Product 1'}, 'price': {'org_name': 'Price', 'value': '10'}}
-
-Note: The output is simply the current `repr` of row object (Which are currently uses `dict`'s `repr`). Row objects have some major differences with regular dictionaries and are not interchangeable.
+    (('Product 1', 'FatStax', <'BaseRow':4'>), ('Product 2', 'Red Funnel Consulting', <'BaseRow':4'>), ('Product 3', 'Google', <'BaseRow':4'>), ('Product 4', 'FatStax', <'BaseRow':4'>), ('Product 5', 'FatStax', <'BaseRow':4'>), ('Product 6', 'Google', <'BaseRow':4'>), ('Product 7', 'FatStax', <'BaseRow':4'>))
 
 Api also supports mass setting of rows to output (or not output).
 
