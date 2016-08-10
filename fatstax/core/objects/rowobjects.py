@@ -37,6 +37,12 @@ class BaseRow(dict):
         else:
             raise Exception("Key not valid")
 
+    def __repr__(self):
+        return "<'{}':{}'>".format(
+            self.__class__.__name__,
+            len(self.keys())
+            )
+
     def __pos__(self):
         self.outputrow = True
         return self
