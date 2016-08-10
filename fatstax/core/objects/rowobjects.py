@@ -1,5 +1,5 @@
 from .utils import cleanup_name
-
+from .formulas import Formula
 
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
@@ -7,14 +7,25 @@ class BaseRow(dict):
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
         self.construct(*args, **kwargs)
+        self.__formulas__ = list()
+
         self.__output__ = True
 
     def construct(self, *args, **kwargs):
         pass
 
     @property
+    def __hasformulas__(self):
+        return bool(self.__formulas__)
+
+    def formula(self, columnname, func):
+        self.setcolumn(columnname, Formula(func))
+        self.__formulas__.append(columnname)
+
+    @property
     def outputrow(self):
         return self.__output__
+
 
     @outputrow.setter
     def outputrow(self, v):
