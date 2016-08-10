@@ -25,6 +25,33 @@ class Api(object):
         self.rows.append(r)
         return r
 
+    def single_find(self, func):
+        try:
+            g = self._find_all(func)
+            result = next(g)
+            next(g)
+            raise Exception("Function returned more than 1 result")
+        except StopIteration:
+            return result
+
+
+
+    def find(self, func):
+        try:
+            g = self._find_all(func)
+            return next(g)
+
+        except StopIteration:
+            return None
+
+    def _find_all(self, func):
+        for x in self.rows:
+            if func(x):
+                yield x
+
+    def find_all(self, func):
+        return tuple(self._find_all(func))
+
     def flipoutput(self):
         for x in self.rows:
             ~x
