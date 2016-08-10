@@ -26,7 +26,7 @@ If you want to get a column by its original name, use `getcolumn` Method. `getco
 for row in api.rows:
     #Both short and original column names supproted
     print(row.getcolumn("Name"))
-    print(row.getcolumn("name")_
+    print(row.getcolumn("name"))
 
     #If you want to delete the column
     row.delcolumn("Name")
