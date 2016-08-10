@@ -35,7 +35,14 @@ class BaseRow(dict):
         if s in self.keys():
             self.__setattr__(s, v)
         else:
-            raise Exception("Key not valid")
+            raise Exception("{}".format(a))
+
+    def delcolumn(self, v):
+        s = cleanup_name(a)
+        if s in self.keys():
+            self.__delattr__(s, v)
+        else:
+            raise Exception("{}".format(a))
 
     def __repr__(self):
         return "<'{}':{}'>".format(
