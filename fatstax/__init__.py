@@ -10,13 +10,13 @@ class Api(object):
     """This class centralizes the parsing, output, and objects
     functionality of this script"""
 
-    def __init__(self, csvdict=None, cls=BaseRow, parsing=parser, outputfile=None, *args, **kwargs):
+    def __init__(self, csvdict=None, cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
         self.__outputname__ = outputfile
         if csvdict is None:
             csvdict = {}
         if csvdict:
-            self.rows = list(parser(csvdict, cls, *args, **kwargs))
+            self.rows = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
             self.rows = list()
 

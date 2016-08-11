@@ -19,3 +19,10 @@ def multiple_index(row, v):
         tracker.append(row.getcolumn(x))
     return tuple(tracker)
 
+def translate_type(string):
+    try:
+        if string.isdigit():
+            return int(string)
+        return float(string)
+    except ValueError:
+        return string
