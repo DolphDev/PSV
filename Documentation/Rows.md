@@ -38,7 +38,20 @@ If you want to get a column by its original name, use `getcolumn` Method. `getco
         #Since Delete only sets columns to a empty string, this is supported
         row.setcolumn("Name", GetCompanyBySku(row.sku))
 
+##Formulas
 
+This module supports computed row columns called "formulas". Why formulas allow behavior similar to excel like formulas (Granted, they are somewhat limited in this degree), formulas are more for leverage outside python code with your rows. Formulas are represented by functions that accept 1 argument and kwargs. Formulas will not be ran until output. 
+
+
+
+    #Example Function
+    def ex_formula(row, *kw):
+        return row.sku + row.name
+
+The `row` argument, if not specified will be supplied with the row this formula is on. This can be specified differently in the `.formula` method. This is simply a default for common usecases. If you wish to send more than 1 row to the function (or any other kind of data) kwargs is supported. 
+
+for row in api.rows:
+    row.formula('name', lam) 
 
 ##Setting the output flag
 

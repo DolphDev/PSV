@@ -106,11 +106,12 @@ class Api(object):
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
 
 
-def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1, encoding="utf-8", errors=None, newline=None, closefd=True, opener=None):
+def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
+         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetranfer=True):
     with open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = Api(data, outputfiled=outputfile, cls=cls)
+        api = Api(data, outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
 
 def new(cls=BaseRow, outputfile=None):
