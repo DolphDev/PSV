@@ -1,4 +1,5 @@
 import csv
+from types import FunctionType
 
 def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="utf-8"):
     if not (isinstance(columnnames, list) or isinstance(columnnames, tuple)):
@@ -10,7 +11,10 @@ def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="utf-8"):
         for x in rows:
             if x.__hasformulas__:
                 for formulaname in x.__formulas__:
-                    x.setcolumn(formulaname, x.getcolumn(formulaname).call(x))
+                    try:
+                        x.setcolumn(formulaname, x.getcolumn(formulaname).call(x))
+                    except (TypeError, AttributeError):
+                        continue
             if x.outputrow:
                 writer.writerow(x.longcolumn)
 

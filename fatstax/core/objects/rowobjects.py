@@ -7,8 +7,7 @@ class BaseRow(dict):
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
         self.construct(*args, **kwargs)
-        self.__formulas__ = list()
-
+        self.__formulas__ = set()
         self.__output__ = True
 
     def construct(self, *args, **kwargs):
@@ -18,9 +17,16 @@ class BaseRow(dict):
     def __hasformulas__(self):
         return bool(self.__formulas__)
 
-    def formula(self, columnname, func):
-        self.setcolumn(columnname, Formula(func))
-        self.__formulas__.append(columnname)
+    def formula(self, columnname, func, rowref=None, **kwargs):
+        if rowref is None:
+            rowref = self
+        self.setcolumn(columnname, Formula(func, rowref, **kwargs))
+        self.__formulas__.add(cleanup_name(columnname))
+
+    def getformula(self, columnname, rowref=None):
+        if rowref is None:
+            rowref = self
+        return self.getcolumn(columnname).call(rowref)
 
     @property
     def outputrow(self):
