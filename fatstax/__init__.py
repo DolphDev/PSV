@@ -1,7 +1,7 @@
 from .core.output import outputfile
 from .core.objects import BaseRow
 from .core.parsing import parser, excelparser, parser_addrow
-from .utils import multiple_index
+from .core.utils import multiple_index
 from types import FunctionType
 
 import csv
@@ -34,13 +34,10 @@ class Api(object):
         except StopIteration:
             return result
 
-
-
     def find(self, func):
         try:
             g = self._find_all(func)
             return next(g)
-
         except StopIteration:
             return None
 

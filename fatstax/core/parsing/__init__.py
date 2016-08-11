@@ -2,7 +2,7 @@
 
 from openpyxl import load_workbook, Workbook
 from openpyxl.utils import get_column_letter
-from .utils import cleanup_name
+from ..utils import cleanup_name
 
 
 

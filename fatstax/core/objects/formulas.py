@@ -5,6 +5,9 @@ class Formula(object):
         self.__rowreference__ = rowreference 
         self.__kwargs__ = kwargs
 
+    def __call__(self, rowobj):
+        return self.call(rowobj)
+
     def call(self, rowobj):
         if self.__rowreference__ != rowobj:
             rowobj = self.__rowreference__

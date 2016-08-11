@@ -1,4 +1,4 @@
-from .utils import cleanup_name
+from ..utils import cleanup_name
 from .formulas import Formula
 
 class BaseRow(dict):
