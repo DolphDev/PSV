@@ -38,7 +38,7 @@ You can grab mulitple fields
 
 To grab the row object with this, use the string `"ROW_OBJ"`
 
-    >>> list(api["Name", "Company", "ROW_OBJ"])
+    >>> tuple(api["Name", "Company", "ROW_OBJ"])
     [('Product 1', 'FatStax', {'available': {'org_name': 'Available', 'value': '1'}, 'name': {'org_name': 'Name', 'value': 'Product 1'}, 'company': {'org_name': 'Company', 'value': 'FatStax'}, 'price': {'org_name': 'Price', 'value': '10'}}), ('Product 2', 'Red Funnel Consulting', {'available': {'org_name': 'Available', 'value': '0'}, 'name': {'org_name': 'Name', 'value': 'Product 2'}, 'company': {'org_name': 'Company', 'value': 'Red Funnel Consulting'}, 'price': {'org_name': 'Price', 'value': '15'}}), ('Product 3', 'Google', {'available': {'org_name': 'Available', 'value': '1'}, 'name': {'org_name': 'Name', 'value': 'Product 3'}........
 
 
