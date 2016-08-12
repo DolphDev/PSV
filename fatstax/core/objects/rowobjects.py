@@ -23,10 +23,12 @@ class BaseRow(dict):
         self.setcolumn(columnname, Formula(func, rowref, **kwargs))
         self.__formulas__.add(cleanup_name(columnname))
 
-    def getformula(self, columnname, rowref=None):
-        if rowref is None:
-            rowref = self
-        return self.getcolumn(columnname).call(rowref)
+    def getformula(self, columnname):
+
+        try:
+            return self.getcolumn(columnname).call()
+        except ValueError:
+            raise ValueError("{} is not a formula".format("columnname"))
 
     @property
     def outputrow(self):
@@ -135,5 +137,9 @@ class BaseRow(dict):
         the column, used for output"""
         newdict = {}
         for k in self.keys():
+            if isinstance(self[k]["value"], Formula):
+                newdict.update({self[k]["org_name"]: self[k]["value"]})
+                continue
             newdict.update({self[k]["org_name"]: self[k]["value"]})
+
         return newdict

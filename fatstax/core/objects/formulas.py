@@ -5,12 +5,13 @@ class Formula(object):
         self.__rowreference__ = rowreference 
         self.__kwargs__ = kwargs
 
-    def __call__(self, rowobj=None):
-        return self.call(rowobj)
+    def __call__(self):
+        return self.call()
 
-    def call(self, rowobj):
-        if self.__rowreference__ != rowobj or rowobj is None:
-            rowobj = self.__rowreference__
+    def __str__(self):
+        return str(self.call())
+
+    def call(self):
         if self.__kwargs__:
             return self.__formula__(self.__rowreference__, **self.__kwargs__)
         else:

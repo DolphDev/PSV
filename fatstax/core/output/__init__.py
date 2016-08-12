@@ -9,12 +9,6 @@ def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="utf-8"):
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL if quote_all else 0)
         writer.writeheader()
         for x in rows:
-            if x.__hasformulas__:
-                for formulaname in x.__formulas__:
-                    try:
-                        x.setcolumn(formulaname, x.getcolumn(formulaname).call(x))
-                    except (TypeError, AttributeError):
-                        continue
             if x.outputrow:
                 writer.writerow(x.longcolumn)
 
