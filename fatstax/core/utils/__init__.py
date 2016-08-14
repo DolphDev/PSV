@@ -19,6 +19,11 @@ def multiple_index(row, v):
         tracker.append(row.getcolumn(x))
     return tuple(tracker)
 
+def _index_function_gen(api, func):
+    for x in api.rows:
+        if func(x):
+            yield x
+
 def translate_type(string):
     try:
         if string.isdigit():

@@ -1,5 +1,7 @@
 class Formula(object):
 
+    __slots__ = ["__formula__", "__rowreference__", "__kwargs__"]
+
     def __init__(self, formula, rowreference, **kwargs):
         self.__formula__ = formula
         self.__rowreference__ = rowreference 

@@ -7,7 +7,6 @@ class BaseRow(dict):
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
         self.construct(*args, **kwargs)
-        self.__formulas__ = set()
         self.__output__ = True
 
     def construct(self, *args, **kwargs):
@@ -21,10 +20,8 @@ class BaseRow(dict):
         if rowref is None:
             rowref = self
         self.setcolumn(columnname, Formula(func, rowref, **kwargs))
-        self.__formulas__.add(cleanup_name(columnname))
 
     def getformula(self, columnname):
-
         try:
             return self.getcolumn(columnname).call()
         except ValueError:
@@ -33,7 +30,6 @@ class BaseRow(dict):
     @property
     def outputrow(self):
         return self.__output__
-
 
     @outputrow.setter
     def outputrow(self, v):

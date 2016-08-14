@@ -22,7 +22,7 @@ Formulas by default will have access to there current row, so in this example:
 
     row.formula("name", lambda r: r.fullname.split()[0], OtherRow)
 
-Now `r` will point to `OtherRow`.  If you want multiple rows (or simply any additional arguments) use **kwargs. 
+Now `r` will point to `OtherRow`.  If you want multiple rows (or any additional arguments) use `**kwargs`. 
 
     row.formula("name", lambda r, **kw: r.fullname.split()[0] + kw["sr"].name, sr=SecondRow)
 
@@ -35,10 +35,17 @@ At this point the formula is starting to get a little big, so it might be time t
     row.formula("name", frml, sr=SecondRow)
 
 
-Formulas are allowed to access other formulas. If they want the result of that formula, it need to use a special to reurn result the computation result instead of the `Formula` object.
+Formulas are allowed to access other formulas. If they want the result of that formula, it need to use a special method to reurn result the computation result instead of the `Formula` object.
     
     row.formula("ExchangeRate", lambda r: GetExchangeRate())
     row.formula("name", lambda r: r.getformula("ExchangeRate")*r.price)
 
-Make sure to advoid infinite recursion by creating a circular refrence.
+Make sure to advoid infinite recursion by creating a circular refrence in your formulas.
+
+##
+
+
+##Output
+
+Row formulas are only computed when outputting or when refernced by an external row. 
 

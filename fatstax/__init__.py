@@ -1,7 +1,7 @@
 from .core.output import outputfile
-from .core.objects import BaseRow
+from .core.objects import BaseRow, Selection
 from .core.parsing import parser, excelparser, parser_addrow
-from .core.utils import multiple_index
+from .core.utils import multiple_index, _index_function_gen
 from types import FunctionType
 
 import csv
@@ -67,33 +67,31 @@ class Api(object):
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
 
+    def enable(self, v):
+        for x in self.rows:
+            if bool(v(x)):
+                +x
+    def disable(self, v):
+        for x in self.rows:
+            if bool(v(x)):
+                -x
+
     def __len__(self):
         return len(self.rows)
 
     def __getitem__(self, v):
         if isinstance(v, slice):
-            return self.rows[v] 
+            return Selection(self.rows[v])
         if isinstance(v, int):
-            return self.rows[v]
+            return (self.rows[v])
         elif isinstance(v, str):
             return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
             return (multiple_index(x,v) for x in self.rows)
         elif isinstance(v, FunctionType):
-            for x in self.rows:
-                if bool(v(x)):
-                    +x
-            return self
+            return Selection(_index_function_gen(self, v))
         else:
             raise TypeError("Row indices must be int, slices, str, tuple, or functions. Not {}".format(type(v)))
-
-    def __delitem__(self, v):
-        if isinstance(v, FunctionType):
-            for x in self.rows:
-                if bool(v(x)):
-                    -x
-        else:
-            del self.rows[v]
 
     @property
     def outputedrows(self):
