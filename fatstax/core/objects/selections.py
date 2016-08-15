@@ -1,10 +1,9 @@
 from ..utils import cleanup_name
-
-
+from types import FunctionType
 
 class Selection(object):
 
-    __slots__ = ["rows"]
+    __slots__ = ["__rows__"]
 
 
     def __init__(self, selection):
@@ -95,9 +94,9 @@ class Selection(object):
 
     def __getitem__(self, v):
         if isinstance(v, slice):
-            return self.rows[v] 
-        if isinstance(v, int):
             return Selection(self.rows[v])
+        if isinstance(v, int):
+            return (self.rows[v])
         elif isinstance(v, str):
             return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
