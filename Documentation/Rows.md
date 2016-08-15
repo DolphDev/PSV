@@ -42,8 +42,7 @@ If you want to get a column by its original name, use `getcolumn` Method. `getco
 
 This module supports computed row columns called "formulas". Why formulas allow behavior similar to excel formulas (they are somewhat limited in this degree), formulas are more for leverage outside python code with your rows. 
 
-Formulas are represented by functions that accept 1 argument and kwargs. Formulas will not be ran until output or if referenced by other formulas.
-
+Formulas are represented by functions that accept 1 argument and `**kwargs`. Formulas will not be ran until output or if referenced by other formulas.
 
 
     #Example Function
@@ -54,7 +53,7 @@ Formulas are represented by functions that accept 1 argument and kwargs. Formula
     lambda row, **kw: row.sku + row.name
 
 
-The `row` argument, if not specified will be supplied with the row this formula is on. This can be specified differently in the `.formula` method. This is simply a default for common usecases. If you wish to send more than 1 row to the function (or any other kind of data) kwargs is supported. 
+The `row` argument will be supplied with the row this formula is on. This can be specified differently in the `.formula` method. This is simply a default for common usecases. If you wish to send more than 1 row to the function (or any other kind of data) use `**kwargs`. 
 
 for row in api.rows:
     row.formula('name', ex_formula, id=1)
@@ -65,7 +64,7 @@ See the full documentation to see other features..
 
 All rows will be outputed by default. (Though the API object has methods to change this).
 
-There are 3 operations to change the outout flag. 
+There are 3 operations to change the output flag. 
 
 There are 3 operations to change the outout flag as Fatstax-CSV co-opts unary positive, negation, and inversion operations.
 
@@ -97,7 +96,7 @@ You also can set the property `outputrow` to a boolean to set the output flag.
     
 This method adds a column to the row. `columnname` should be the long version (For example "Name"); `columndata` is the what the column data will be. Its defaults to an empty string.
 
-###`.longcolumn`
+###`.longcolumn(columns=None)`
 
-This computed attribute (property) returns a dictionary with the original column names as the keys and the text in the columns as the values. This is mainly used in output, but may have some other usecases.
+This method returns a dictionary with the original column names as the keys and the text in the columns as the values. This is mainly used in output, but may have some other usecases. If columns is None, all columns are returned.
 

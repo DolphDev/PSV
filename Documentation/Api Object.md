@@ -91,9 +91,26 @@ When outputted
     
 This method adds a row to the csv table. `columns` should be the output (or an `dict` that follows the pattern) of `csv.DictWriter`.
 
-###`.outputedrows()`
+###`.enable(func)`
+    
+Sets output flag to `True` if `f(row)` returns `True`.
 
-Returns a generator of listed rows 
+###`.disable(func)`
+    
+Sets output flag to `False` if `f(row)` returns `True`.
+
+###`.flip(func)`
+    
+Sets output flag to the opposite of its current value if `f(row)` returns `True`. 
+
+###`.outputtedrows`
+
+Returns a Selection of rows that have been set to output
+
+###`.nonoutputtedrows`
+
+Returns a Selection of rows that have been set to not output
+
 
 ##Outputing
 

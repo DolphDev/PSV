@@ -66,14 +66,19 @@ class Api(object):
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
 
-    def enable(self, v):
+    def enable(self, f):
         for x in self.rows:
-            if bool(v(x)):
+            if bool(f(x)):
                 +x
-    def disable(self, v):
+    def disable(self, f):
         for x in self.rows:
-            if bool(v(x)):
+            if bool(f(x)):
                 -x
+
+    def flip(self, f):
+        for x in self.rows:
+            if bool(f(x)):
+                ~x
 
     def __len__(self):
         return len(self.rows)
@@ -93,8 +98,13 @@ class Api(object):
             raise TypeError(msg.getitemmsg.format(type(v)))
 
     @property
-    def outputedrows(self):
+    def outputtedrows(self):
         return Selection(filter(lambda x:x.outputrow, self.rows))
+
+    @property
+    def nonoutputtedrows(self):
+        return Selection(filter(lambda x: not x.outputrow, self.rows))
+
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         loc = loc if loc else self.__outputname__
