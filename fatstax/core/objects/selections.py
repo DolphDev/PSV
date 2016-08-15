@@ -1,4 +1,6 @@
 from ..utils import cleanup_name
+from ..exceptions.messages import ApiObjectMsg as msg
+
 from types import FunctionType
 
 class Selection(object):
@@ -8,6 +10,7 @@ class Selection(object):
 
     def __init__(self, selection):
         self.__rows__ = (selection)
+
         if not self.rows:
             Exception("Selection Error")
 
@@ -28,7 +31,7 @@ class Selection(object):
             g = self._find_all(func)
             result = next(g)
             next(g)
-            raise Exception("Function returned more than 1 result")
+            raise Exception(msg.singlefindmsg)
         except StopIteration:
             return result
 
@@ -104,4 +107,4 @@ class Selection(object):
         elif isinstance(v, FunctionType):
             return Selection(_index_function_gen(self, v))
         else:
-            raise TypeError("Row indices must be int, slices, str, tuple, or functions. Not {}".format(type(v)))
+            raise TypeError(msg.getitemmsg.format(type(v)))

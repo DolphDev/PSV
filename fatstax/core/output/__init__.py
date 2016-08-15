@@ -10,5 +10,5 @@ def outputfile(fileloc, rows, columnnames, quote_all=True, encoding="utf-8"):
         writer.writeheader()
         for x in rows:
             if x.outputrow:
-                writer.writerow(x.longcolumn)
+                writer.writerow(x.longcolumn(columnnames))
 

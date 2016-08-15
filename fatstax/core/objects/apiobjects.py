@@ -2,6 +2,7 @@ from ..output import outputfile
 from ..objects import BaseRow, Selection
 from ..parsing import parser, excelparser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
+from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
 class Api(object):
@@ -28,7 +29,7 @@ class Api(object):
             g = self._find_all(func)
             result = next(g)
             next(g)
-            raise Exception("Function returned more than 1 result")
+            raise Exception(msg.singlefindmsg)
         except StopIteration:
             return result
 
@@ -89,7 +90,7 @@ class Api(object):
         elif isinstance(v, FunctionType):
             return Selection(_index_function_gen(self, v))
         else:
-            raise TypeError("Row indices must be int, slices, str, tuple, or functions. Not {}".format(type(v)))
+            raise TypeError(msg.getitemmsg.format(type(v)))
 
     @property
     def outputedrows(self):
@@ -98,5 +99,5 @@ class Api(object):
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         loc = loc if loc else self.__outputname__
         if not columns:
-            raise Exception("A ordered list of columns must be supplied to output the file")
+            raise Exception(msg.outputmsg)
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )

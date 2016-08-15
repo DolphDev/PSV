@@ -1,5 +1,6 @@
-from ..utils import cleanup_name
-from .formulas import Formula
+#from ..utils import cleanup_name
+#from ..exceptions.messages import RowObjectMsg as msg
+#from .formulas import Formula
 
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
@@ -12,20 +13,18 @@ class BaseRow(dict):
     def construct(self, *args, **kwargs):
         pass
 
-    @property
-    def __hasformulas__(self):
-        return bool(self.__formulas__)
-
     def formula(self, columnname, func, rowref=None, **kwargs):
         if rowref is None:
             rowref = self
         self.setcolumn(columnname, Formula(func, rowref, **kwargs))
 
     def getformula(self, columnname):
+        """Get Formula"""
         try:
             return self.getcolumn(columnname).call()
         except ValueError:
-            raise ValueError("{} is not a formula".format("columnname"))
+            raise ValueError(
+                msg.getformulamsg.format(columnname))
 
     @property
     def outputrow(self):
@@ -34,7 +33,7 @@ class BaseRow(dict):
     @outputrow.setter
     def outputrow(self, v):
         if not isinstance(v, bool):
-            raise TypeError("output must be {}, not {}".format(bool, type(v)))
+            raise TypeError(msg.outputrowmsg.format(bool, type(v)))
         self.__output__ = v
 
     def getcolumn(self, v):
@@ -125,14 +124,17 @@ class BaseRow(dict):
 
 
     def addcolumn(self, columnname, columndata=""):
+        """Adds a column"""
         self[cleanup_name(columnname)] = {"org_name":columnname, "value":columndata}
         
-    @property
-    def longcolumn(self):
+    def longcolumn(self, columns=None):
         """Generates a Dict that uses orginal names of 
         the column, used for output"""
         newdict = {}
         for k in self.keys():
+            if columns:
+                if not k in columns:
+                    continue
             if isinstance(self[k]["value"], Formula):
                 newdict.update({self[k]["org_name"]: self[k]["value"]})
                 continue
