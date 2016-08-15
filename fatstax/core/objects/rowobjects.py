@@ -1,6 +1,6 @@
-#from ..utils import cleanup_name
-#from ..exceptions.messages import RowObjectMsg as msg
-#from .formulas import Formula
+from ..utils import cleanup_name
+from ..exceptions.messages import RowObjectMsg as msg
+from .formulas import Formula
 
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
