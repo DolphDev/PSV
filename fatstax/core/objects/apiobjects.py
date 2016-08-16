@@ -1,5 +1,5 @@
 from ..output import outputfile
-from ..objects import BaseRow, Selection
+from ..objects import BaseRow, Selection, DeletedRow
 from ..parsing import parser, excelparser, parser_addrow
 from ..utils import multiple_index, _index_function_gen, column_string
 from ..exceptions.messages import ApiObjectMsg as msg
@@ -28,7 +28,15 @@ class Api(object):
         if csvdict:
             self.rows = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
-            self.rows = list()
+            self.__rows__ = list()
+
+    @property
+    def rows(self):
+        return self.__rows__
+
+    @rows.deleter
+    def rows(self, v):
+        del self[v]
 
     def getcell(self, letter, number=None):
         if self.__canrefrencecolumn__:
@@ -127,6 +135,9 @@ class Api(object):
             return Selection(_index_function_gen(self, v))
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
+
+    def __delitem__(self, v):
+        self.__rows__[v] = DeletedRow()
 
     @property
     def outputtedrows(self):
