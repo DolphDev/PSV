@@ -5,6 +5,8 @@ from .formulas import Formula
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
 
+    __slots__ = ["__output__"]
+    
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
         self.construct(*args, **kwargs)
@@ -144,3 +146,11 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
 
         return newdict
+
+class DeletedRow(object):
+
+    __slots__ = []
+
+    @property
+    def outputedrow(self):
+        return False
