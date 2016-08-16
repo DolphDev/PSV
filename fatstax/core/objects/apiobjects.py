@@ -80,6 +80,9 @@ class Api(object):
             if bool(f(x)):
                 ~x
 
+    def select(self, f):
+        return self[f]
+
     def __len__(self):
         return len(self.rows)
 

@@ -1,4 +1,4 @@
-from ..utils import cleanup_name
+from ..utils import cleanup_name, multiple_index, _index_function_gen
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -76,6 +76,17 @@ class Selection(object):
         for x in self.rows:
             if bool(v(x)):
                 -x
+
+    def flip(self, f):
+        for x in self.rows:
+            if bool(f(x)):
+                ~x
+
+    def select(self, f):
+        return self[f]
+
+    def __len__(self):
+        return len(self.rows)
                 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
