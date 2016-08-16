@@ -1,5 +1,5 @@
 from types import FunctionType
-from string import ascii_lowercase, digits
+from string import ascii_lowercase, digits, ascii_uppercase
 
 ascii_lowercase = (ascii_lowercase+"_"+digits)
 
@@ -31,3 +31,14 @@ def translate_type(string):
         return float(string)
     except ValueError:
         return string
+
+def column_string(n):
+    div=n
+    string=""
+    temp=0
+    while div>0:
+        module=(div-1)%26
+        string=chr(65+module)+string
+        div=int((div-module)/26)
+    return string
+

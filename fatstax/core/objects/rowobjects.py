@@ -1,9 +1,12 @@
 from ..utils import cleanup_name
 from ..exceptions.messages import RowObjectMsg as msg
+from ..exceptions import DeletedRow as DeletedRow_Err
 from .formulas import Formula
 
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
+
+    __slots__ = ["__output__"]
 
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__init__(data)
@@ -12,6 +15,10 @@ class BaseRow(dict):
 
     def construct(self, *args, **kwargs):
         pass
+
+    @property
+    def is_deleted(self):
+        return False
 
     def formula(self, columnname, func, rowref=None, **kwargs):
         if rowref is None:
@@ -144,3 +151,38 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
 
         return newdict
+
+class DeletedRow(object):
+
+    __slots__ = []
+
+    @property
+    def outputrow(self):
+        return False
+
+    @property
+    def is_deleted(self):
+        return True
+
+    def __getitem__(self, v):
+        raise DeletedRow_Err("Row is deleted")
+
+    def __getattr__(self, attr):
+        raise DeletedRow_Err("Row is deleted")
+
+    def __getattribute__(self, attr):
+        if attr in ["outputrow", "is_deleted"]:
+            return super(DeletedRow, self).__getattribute__(attr)
+        raise DeletedRow_Err("Row is deleted")
+
+
+    def __pos__(self):
+        raise DeletedRow_Err("Row is deleted")
+
+
+    def __neg__(self):
+        raise DeletedRow_Err("Row is deleted")
+
+
+    def __invert__(self):
+        raise DeletedRow_Err("Row is deleted")

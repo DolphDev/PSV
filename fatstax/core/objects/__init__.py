@@ -1,4 +1,4 @@
-from .rowobjects import BaseRow
+from .rowobjects import BaseRow, DeletedRow
 from .selections import Selection
 
 

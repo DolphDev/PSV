@@ -1,7 +1,7 @@
 from ..output import outputfile
-from ..objects import BaseRow, Selection
+from ..objects import BaseRow, Selection, DeletedRow
 from ..parsing import parser, excelparser, parser_addrow
-from ..utils import multiple_index, _index_function_gen
+from ..utils import multiple_index, _index_function_gen, column_string
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
@@ -9,15 +9,60 @@ class Api(object):
     """This class centralizes the parsing, output, and objects
     functionality of this script"""
 
-    def __init__(self, csvdict=None, cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
+    def __init__(self, csvdict=None, columns=None,cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
         self.__outputname__ = outputfile
+        if columns == None:
+            self.__canrefrencecolumn__ = False
+            self.__columns__ = None
+            self.__columnsmap__ = None
+        else:
+            self.__canrefrencecolumn__ = True
+            self.__columns__ = columns
+            self.__columnsmap__ = {column_string(i+1): 
+                c for i,c in enumerate(self.__columns__)}
+
+
         if csvdict is None:
             csvdict = {}
         if csvdict:
             self.rows = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
-            self.rows = list()
+            self.__rows__ = list()
+
+    @property
+    def rows(self):
+        return self.__rows__
+
+    @rows.deleter
+    def rows(self, v):
+        del self[v]
+
+    def getcell(self, letter, number=None):
+        if self.__canrefrencecolumn__:
+            if number is not None:
+                try:
+                    return self.rows[number].getcolumn(self.__columnsmap__[letter])
+                except KeyError:
+                    raise KeyError("{} is not mapped to any column".format(letter))
+                except IndexError as err:
+                    raise err
+            else:
+                try:
+                    return self[self.__columnsmap__[letter]]
+                except KeyError:
+                    raise KeyError("{} is not mapped to any column".format(letter))
+        else:
+            raise Exception("Column mapping not supported. Columns must be provided during intialization")
+
+    def setcell(self, letter, number, val):
+        try:
+            return self.rows[number].setcolumn(self.__columnsmap__[letter], val)
+        except KeyError:
+            raise KeyError("{} is not mapped to any column".format(letter))
+        except IndexError as err:
+            raise err       
+
 
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
@@ -100,6 +145,9 @@ class Api(object):
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
 
+    def __delitem__(self, v):
+        self.__rows__[v] = DeletedRow()
+
     @property
     def outputtedrows(self):
         return Selection(filter(lambda x:x.outputrow, self.rows))
@@ -112,5 +160,5 @@ class Api(object):
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         loc = loc if loc else self.__outputname__
         if not columns:
-            raise Exception(msg.outputmsg)
+            columns = self.__columns__
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
