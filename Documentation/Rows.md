@@ -66,7 +66,7 @@ All rows will be outputed by default. (Though the API object has methods to chan
 
 There are 3 operations to change the output flag. 
 
-There are 3 operations to change the outout flag as Fatstax-CSV co-opts unary positive, negation, and inversion operations.
+There are 3 operations to change the output flag as Fatstax-CSV co-opts unary positive, negation, and inversion operations.
 
 So to enable a row to output
 
@@ -81,7 +81,7 @@ To set a row to not output:
 To flip a row to the opposite of current output flag 
 
     for row in api.rows:
-        -row
+        ~row
 
 You also can set the property `outputrow` to a boolean to set the output flag.
 
