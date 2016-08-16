@@ -125,19 +125,22 @@ class BaseRow(dict):
 
     def addcolumn(self, columnname, columndata=""):
         """Adds a column"""
-        self[cleanup_name(columnname)] = {"org_name":columnname, "value":columndata}
+        short_cn = cleanup_name(columnname)
+        if self.get(cn):
+            self[cn] = {"org_name":columnname, "value":columndata}
+        else:
+            raise Exception("Column already exists.")
         
     def longcolumn(self, columns=None):
         """Generates a Dict that uses orginal names of 
         the column, used for output"""
         newdict = {}
+        if columns:
+            shortcolumns_check = [cleanup_name(x) for x in columns]
         for k in self.keys():
             if columns:
-                if not k in columns:
+                if not (k in shortcolumns_check):
                     continue
-            if isinstance(self[k]["value"], Formula):
-                newdict.update({self[k]["org_name"]: self[k]["value"]})
-                continue
             newdict.update({self[k]["org_name"]: self[k]["value"]})
 
         return newdict
