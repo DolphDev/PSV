@@ -55,6 +55,15 @@ class Api(object):
         else:
             raise Exception("Column mapping not supported. Columns must be provided during intialization")
 
+    def setcell(self, letter, number, val):
+        try:
+            return self.rows[number].setcolumn(self.__columnsmap__[letter], val)
+        except KeyError:
+            raise KeyError("{} is not mapped to any column".format(letter))
+        except IndexError as err:
+            raise err       
+
+
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
         self.rows.append(r)

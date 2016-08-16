@@ -171,7 +171,7 @@ class DeletedRow(object):
         raise DeletedRow_Err("Row is deleted")
 
     def __getattribute__(self, attr):
-        if attr in ["outputedrow", "is_deleted"]:
+        if attr in ["outputrow", "is_deleted"]:
             return super(DeletedRow, self).__getattribute__(attr)
         raise DeletedRow_Err("Row is deleted")
 
