@@ -111,6 +111,9 @@ Returns a Selection of rows that have been set to output
 
 Returns a Selection of rows that have been set to not output
 
+###`.getcell(letter, number)`
+
+This implements simple accessing of rows by an excel like cell accssing. Since rows stored very differently than a table, this only supports simply accessing. 
 
 ##Outputing
 

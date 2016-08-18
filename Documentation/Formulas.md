@@ -14,7 +14,7 @@ Row objects are where all interaction with formulas are done.
 
 ######Inherited Row objects should not overwrite `formula` method.
 
-Formulas by default will have access to there current row, so in this example:
+Formulas by default will have access to the current row, so in this example:
 
     row.formula("name", lambda r: r.fullname.split()[0])
 
@@ -26,7 +26,7 @@ Now `r` will point to `OtherRow`.  If you want multiple rows (or any additional 
 
     row.formula("name", lambda r, **kw: r.fullname.split()[0] + kw["sr"].name, sr=SecondRow)
 
-Kwargs can also can be used to reference columns value before it was a formula.
+Kwargs can also can be used to reference columns value before it was a formula (This avoids infinit recursion errors)
 
     row.formula("name", lambda r, **kw: kw["price"] * 2, price=row.price)
 
@@ -48,10 +48,10 @@ Make sure to advoid infinite recursion by creating a circular refrence in your f
 
 ##Other Details and Gotchas
 
-Using `str()` on a formula will return a string of its result. This is used for output. This can give the impression when using `print` that a column isn't a formula. Use `repr` to check for formulas.
+Using `str()` on a formula will return a `str` of the result. This is used mainly used for output. This can give the wrong impression when using `print` that a column isn't a formula. Use `repr` to check for formulas.
 
 
 ##Output
 
-Row formulas are only computed when outputting or when refernced by an external row. 
+Row formulas are only computed when outputting, when refernced by an external row, or printed. 
 

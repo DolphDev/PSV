@@ -1,6 +1,6 @@
 # Rows
 
-Rows are represented in the module via a heavly specialized `dict`. They do not necessary have same exact properties an regular dictionary.
+Rows are represented in the module via a heavly specialized `dict`. They do not necessary have same exact properties as an regular dictionary.
 
 
 ##Accessing/Setting/Deleting columns
@@ -40,7 +40,7 @@ If you want to get a column by its original name, use `getcolumn` Method. `getco
 
 ##Formulas
 
-This module supports computed row columns called "formulas". Why formulas allow behavior similar to excel formulas (they are somewhat limited in this degree), formulas are more for leverage outside python code with your rows. 
+This module supports computed cells called "formulas". While formulas allow behavior similar to excel formulas (they are somewhat limited in this degree), formulas are more for leverage python code with your rows. 
 
 Formulas are represented by functions that accept 1 argument and `**kwargs`. Formulas will not be ran until output or if referenced by other formulas.
 
@@ -63,8 +63,6 @@ See the full documentation to see other features..
 ##Setting the output flag
 
 All rows will be outputed by default. (Though the API object has methods to change this).
-
-There are 3 operations to change the output flag. 
 
 There are 3 operations to change the output flag as Fatstax-CSV co-opts unary positive, negation, and inversion operations.
 

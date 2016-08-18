@@ -12,7 +12,7 @@ class Api(object):
     def __init__(self, csvdict=None, columns=None,cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
         self.__outputname__ = outputfile
-        if columns == None:
+        if columns is None:
             self.__canrefrencecolumn__ = False
             self.__columns__ = None
             self.__columnsmap__ = None
@@ -26,7 +26,7 @@ class Api(object):
         if csvdict is None:
             csvdict = {}
         if csvdict:
-            self.rows = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
+            self.__rows__ = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
             self.__rows__ = list()
 
@@ -39,6 +39,7 @@ class Api(object):
         del self[v]
 
     def getcell(self, letter, number=None):
+        """Accepts an excel like letter number cell systems"""
         if self.__canrefrencecolumn__:
             if number is not None:
                 try:
@@ -55,7 +56,7 @@ class Api(object):
         else:
             raise Exception("Column mapping not supported. Columns must be provided during intialization")
 
-    def setcell(self, letter, number, val):
+    def setcell(self, letter, number, value):
         try:
             return self.rows[number].setcolumn(self.__columnsmap__[letter], val)
         except KeyError:
@@ -63,10 +64,17 @@ class Api(object):
         except IndexError as err:
             raise err       
 
+    def delcell(self, letter, number):
+        try:
+            return self.rows[number].delcolumn(self.__columnsmap__[letter])
+        except KeyError:
+            raise KeyError("{} is not mapped to any column".format(letter))
+        except IndexError as err:
+            raise err       
 
     def addrow(self, columns, cls=BaseRow):
         r = parser_addrow(columns, cls)
-        self.rows.append(r)
+        self.__rows__.append(r)
         return r
 
     def single_find(self, func):

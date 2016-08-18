@@ -63,7 +63,7 @@ class BaseRow(dict):
         if s in self.keys():
             self.__delattr__(s, v)
         else:
-            raise Exception("{}".format(a))
+            raise KeyError("{}".format(a))
 
     def __repr__(self):
         return "<'{}':{}'>".format(
