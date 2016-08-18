@@ -87,24 +87,6 @@ class Selection(object):
 
     def __len__(self):
         return len(self.rows)
-                
-    def __getattr__(self, attr):
-        s = cleanup_name(attr)
-        if attr in self.columns:
-            return self[attr]
-        if s in self.columns:
-            raise AttributeError((
-                "{}{}"
-                .format(
-                '\'{}\' has no attribute \'{}\''.format(
-                    type(self), attr),
-                ". However, '{s}' is an existing condensed ".format(s=s) + 
-                "column name. Only the condensed version is supported."
-                .format(s=s)
-                )))
-        else:
-            raise AttributeError('\'{}\' has no attribute \'{}\''.format(
-        type(self), attr))
 
     def __getitem__(self, v):
         if isinstance(v, slice):
