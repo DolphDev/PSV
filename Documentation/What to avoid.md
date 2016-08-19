@@ -1,4 +1,4 @@
-#What to advoid and Gotachas.
+#What to avoid and Gotachas.
 
 
 ##Implementation Details.
