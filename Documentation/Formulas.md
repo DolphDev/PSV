@@ -44,7 +44,7 @@ Formulas are allowed to access other formulas. If they want the result of that f
     row.formula("ExchangeRate", lambda r: GetExchangeRate())
     row.formula("name", lambda r: r.getformula("ExchangeRate")*r.price)
 
-Make sure to advoid infinite recursion by creating a circular refrence in your formulas. As shown above, there is ways to refrence a value by using kwargs.
+Make sure to avoid infinite recursion by creating a circular refrence in your formulas. As shown above, there is ways to refrence a value by using kwargs.
 
 ##Other Details and Gotchas
 
