@@ -145,9 +145,9 @@ class Api(object):
         if isinstance(v, int):
             return (self.rows[v])
         elif isinstance(v, str):
-            return (x.getcolumn(v) for x in self.rows)
+            return (x.getcolumn(v) for x in filter(lambda x:not x.is_deleted, self.rows))
         elif isinstance(v, tuple):
-            return (multiple_index(x,v) for x in self.rows)
+            return (multiple_index(x,v) for x in filter(lambda x:not x.is_deleted, self.rows))
         elif isinstance(v, FunctionType):
             return Selection(_index_function_gen(self, v))
         else:
