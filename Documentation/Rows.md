@@ -88,6 +88,21 @@ You also can set the property `outputrow` to a boolean to set the output flag.
         row.outputrow = False #Equivalent to -row
         row.outputrow = not row.outputrow #Equivalent to ~row
 
+##Deleted Rows
+
+Deleted Rows are replaced by a `DeletedRow` object. 
+
+These rows replace rows that have been deleted by the `del` keyword. They have no practical use, and are simply a lightweight way to keep track of deleted rows.
+
+Deleting rows is generally not recommended. If you do use `del`, you should know that checking the rows `is_deleted` property is pratically required.
+
+Deleted rows are only ignored when indexing by string/tuple and selections. If using any other method like accessing the rows through indexing (ie. `api[1]`) or iterating over the rows, DeletedRows will be present. If using the `getcell` family of methods, it will return a `DeletedRow` exception.
+
+Also note that deleted rows are not hunted down in memory onced deleted. If you created a selection (Or did anything that would cause python to not actually delete the row in memory) with a not-yet but soon to be deleted row, it will still be present in your program. The `DeletedRow` object simply takes the place of the previous row in the list, which may or may not be the only place the row is refrenced. 
+
+If you wish to make sure some rows do not output, it is much easier and preferable to use the outputflag mentioned elsewhere in this documentation.
+
+
 ##Other Methods and Features
 
 ###`.addcolumn(columnname, columndata="")`:
