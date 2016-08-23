@@ -30,6 +30,12 @@ class Api(object):
         else:
             self.__rows__ = list()
 
+    def rebuildcellmap(self, columns):
+        self.__canrefrencecolumn__ = True
+        self.__columns__ = columns
+        self.__columnsmap__ = {column_string(i+1): 
+                c for i,c in enumerate(self.__columns__)}
+
     @property
     def rows(self):
         return self.__rows__
@@ -72,8 +78,8 @@ class Api(object):
         except IndexError as err:
             raise err       
 
-    def addrow(self, columns, cls=BaseRow):
-        r = parser_addrow(columns, cls)
+    def addrow(self, columns=None, cls=BaseRow):
+        r = parser_addrow(columns if columns else self.__columns__, cls)
         self.__rows__.append(r)
         return r
 

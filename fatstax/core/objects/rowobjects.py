@@ -133,8 +133,8 @@ class BaseRow(dict):
     def addcolumn(self, columnname, columndata=""):
         """Adds a column"""
         short_cn = cleanup_name(columnname)
-        if self.get(cn):
-            self[cn] = {"org_name":columnname, "value":columndata}
+        if not self.get(short_cn):
+            self[short_cn] = {"org_name":columnname, "value":columndata}
         else:
             raise Exception("Column already exists.")
         
