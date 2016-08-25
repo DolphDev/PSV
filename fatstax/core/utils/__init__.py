@@ -44,3 +44,17 @@ def column_string(n):
         div=int((div-module)/26)
     return string
 
+def generate_func(name, kwargs):
+    def select_func(row):
+        try:
+            if kwargs:
+                for k,v in kwargs.items():
+                    assert row.getcolumn(k) == v
+                return True
+            elif name:
+                return bool(row.getcolumn(name))
+            else: 
+                return True
+        except AssertionError:
+            return False
+    return select_func

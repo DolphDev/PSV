@@ -28,3 +28,5 @@ def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', bufferi
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
     return tuple(columns)
+
+

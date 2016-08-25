@@ -1,4 +1,5 @@
-from ..utils import cleanup_name, multiple_index, _index_function_gen
+from ..utils import cleanup_name, multiple_index
+from ..utils import  _index_function_gen, generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -82,8 +83,15 @@ class Selection(object):
             if bool(f(x)):
                 ~x
 
-    def select(self, f):
-        return self[f]
+    def select(self, f=None, **kwargs):
+        if isinstance(f, FunctionType):
+            return self[f]
+        elif isinstance(f, str) or kwargs:
+            return self[generate_func(f, kwargs)]
+        else:
+            raise TypeError(
+                "Argument F must be str or FunctionType not {}".format(
+                    type(f)))  
 
     def __len__(self):
         return len(self.rows)
@@ -101,3 +109,11 @@ class Selection(object):
             return Selection(_index_function_gen(self, v))
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
+
+    @property
+    def outputtedrows(self):
+        return Selection(filter(lambda x:x.outputrow, self.rows))
+
+    @property
+    def nonoutputtedrows(self):
+        return Selection(filter(lambda x: not x.outputrow, self.rows))

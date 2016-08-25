@@ -1,13 +1,18 @@
 from ..output import outputfile
 from ..objects import BaseRow, Selection, DeletedRow
 from ..parsing import parser, excelparser, parser_addrow
-from ..utils import multiple_index, _index_function_gen, column_string
+from ..utils import multiple_index, _index_function_gen
+from ..utils import column_string, generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
-class Api(object):
+class Api(Selection):
     """This class centralizes the parsing, output, and objects
     functionality of this script"""
+
+    __slots__ = ["__outputname__", "__canrefrencecolumn__", 
+                 "__columns__", "__columnsmap__", 
+                 "__rows__"]
 
     def __init__(self, csvdict=None, columns=None,cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
@@ -43,6 +48,15 @@ class Api(object):
     @rows.deleter
     def rows(self, v):
         del self[v]
+
+    @property
+    def columns(self):
+        return self.__columns__
+
+    @columns.setter
+
+    def columns(self, v):
+        self.rebuildcolumnsmap(v)
 
     def getcell(self, letter, number=None):
         """Accepts an excel like letter-number to directly reference a 'cell'"""
@@ -83,93 +97,8 @@ class Api(object):
         self.__rows__.append(r)
         return r
 
-    def single_find(self, func):
-        try:
-            g = self._find_all(func)
-            result = next(g)
-            next(g)
-            raise Exception(msg.singlefindmsg)
-        except StopIteration:
-            return result
-
-    def find(self, func):
-        try:
-            g = self._find_all(func)
-            return next(g)
-        except StopIteration:
-            return None
-
-    def _find_all(self, func):
-        for x in self.rows:
-            if func(x):
-                yield x
-
-    def find_all(self, func):
-        return tuple(self._find_all(func))
-
-    def flipoutput(self):
-        for x in self.rows:
-            ~x
-        return self
-
-    def no_output(self):
-        for x in self.rows:
-            -x
-        return self
-
-    def all_output(self):
-        for x in self.rows:
-            +x
-        return self
-
-    def lenoutput(self):
-        return len(tuple(filter(lambda x: x.outputrow, self.rows)))
-
-    def enable(self, f):
-        for x in self.rows:
-            if bool(f(x)):
-                +x
-    def disable(self, f):
-        for x in self.rows:
-            if bool(f(x)):
-                -x
-
-    def flip(self, f):
-        for x in self.rows:
-            if bool(f(x)):
-                ~x
-
-    def select(self, f):
-        return self[f]
-
-    def __len__(self):
-        return len(self.rows)
-
-    def __getitem__(self, v):
-        if isinstance(v, slice):
-            return Selection(self.rows[v])
-        if isinstance(v, int):
-            return (self.rows[v])
-        elif isinstance(v, str):
-            return (x.getcolumn(v) for x in filter(lambda x:not x.is_deleted, self.rows))
-        elif isinstance(v, tuple):
-            return (multiple_index(x,v) for x in filter(lambda x:not x.is_deleted, self.rows))
-        elif isinstance(v, FunctionType):
-            return Selection(_index_function_gen(self, v))
-        else:
-            raise TypeError(msg.getitemmsg.format(type(v)))
-
     def __delitem__(self, v):
         self.__rows__[v] = DeletedRow()
-
-    @property
-    def outputtedrows(self):
-        return Selection(filter(lambda x:x.outputrow, self.rows))
-
-    @property
-    def nonoutputtedrows(self):
-        return Selection(filter(lambda x: not x.outputrow, self.rows))
-
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         loc = loc if loc else self.__outputname__
