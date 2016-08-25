@@ -30,7 +30,7 @@ class Api(object):
         else:
             self.__rows__ = list()
 
-    def rebuildcellmap(self, columns):
+    def rebuildcolumnsmap(self, columns):
         self.__canrefrencecolumn__ = True
         self.__columns__ = columns
         self.__columnsmap__ = {column_string(i+1): 
@@ -45,7 +45,7 @@ class Api(object):
         del self[v]
 
     def getcell(self, letter, number=None):
-        """Accepts an excel like letter number cell systems"""
+        """Accepts an excel like letter-number to directly reference a 'cell'"""
         if self.__canrefrencecolumn__:
             if number is not None:
                 try:
