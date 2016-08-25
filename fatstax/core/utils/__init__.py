@@ -31,6 +31,8 @@ def translate_type(string):
         return float(string)
     except ValueError:
         return string
+    except AttributeError:
+        return string
 
 def column_string(n):
     div=n
