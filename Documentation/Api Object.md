@@ -19,10 +19,10 @@ For these examples, this table is used.
 
 This library includes in the `load` function, which takes care of importing the csv document.
     
-    import fatstax
+    import psv
 
-    api = fatstax.load("filename", encoding="utf-8")
-    columns = fatstax.column_names("filename", "utf-8")
+    api = psv.load("filename", encoding="utf-8")
+    columns = psv.column_names("filename", encoding="utf-8")
 
 ##Interacting with the entire csv spreadsheet.
   
@@ -36,10 +36,11 @@ You can grab mulitple fields
     >>> list(api["Name", "Company"])
     [('Product 1', 'FatStax'), ('Product 2', 'Red Funnel Consulting'), ('Product 3', 'Google'), ('Product 4', 'FatStax'), ('Product 5', 'FatStax'), ('Product 6', 'Google'), ('Product 7', 'FatStax')]
 
-To grab the row object with this, use the string `"ROW_OBJ"`
+To grab entire row with this, use the string `"ROW_OBJ"`
 
     >>> tuple(api["Name", "Company", "ROW_OBJ"])
-    [('Product 1', 'FatStax', {'available': {'org_name': 'Available', 'value': '1'}, 'name': {'org_name': 'Name', 'value': 'Product 1'}, 'company': {'org_name': 'Company', 'value': 'FatStax'}, 'price': {'org_name': 'Price', 'value': '10'}}), ('Product 2', 'Red Funnel Consulting', {'available': {'org_name': 'Available', 'value': '0'}, 'name': {'org_name': 'Name', 'value': 'Product 2'}, 'company': {'org_name': 'Company', 'value': 'Red Funnel Consulting'}, 'price': {'org_name': 'Price', 'value': '15'}}), ('Product 3', 'Google', {'available': {'org_name': 'Available', 'value': '1'}, 'name': {'org_name': 'Name', 'value': 'Product 3'}........
+    (('Product 1', 'FatStax', <'BaseRow':4'>), ('Product 2', 'Red Funnel Consulting', <'BaseRow':4'>), ('Product 3', 'Google', <'BaseRow':4'>), ('Product 4', 'FatStax', <'BaseRow':4'>), ('Product 5', 'FatStax', <'BaseRow':4'>), ('Product 6', 'Google', <'BaseRow':4'>), ('Product 7', 'FatStax', <'BaseRow':4'>))
+
 
 
 
@@ -50,8 +51,8 @@ To grab the row object with this, use the string `"ROW_OBJ"`
 
 Api also supports mass setting of rows to output (or not output).
 
-    >>> api.flipoutput()
-    >>> api[lambda x : x.company == "FatStax"]
+    >>> api.no_output()
+    >>> api.enable(lambda x : x.company == "FatStax")
     >>> api.lenoutput() #This method returns the lengh of all rows that will be outputed
     4
 
@@ -65,12 +66,12 @@ when outputed, the CSV document will look something like this.
 | Product 7  | 10    | 0         | FatStax               |
 
 
-This code sets all rows to not output (`flipoutput` simply changes the rows output setting to the opposite of its current value). The `Api` object will detect the lambda and use it. If the function returns True (or a Truthy value) it will set the row to output.
+This code sets all rows to not output (`no_output` method sets the output flag to False for all rows it has access to.). The `enable` will accept the lambda and use it. If the function returns True (or a Truthy value) it will set the row to output.
 
 For the opposite effect you can do this
 
-    >>> del api[0] #This deletes the first row, no special behavior.
-    >>> del api[lambda x : x.company == "FatStax"]
+    >>> del api[0] #This deletes the first row, row will be replaced with a DeletedRow object.
+    >>> api.disable(lambda x : x.company == "FatStax")
     >>> len(api)
     6
     >>> api.lenoutput() 
@@ -93,15 +94,15 @@ This method adds a row to the csv table. `columns` should be the output (or an `
 
 ###`.enable(func)`
     
-Sets output flag to `True` if `f(row)` returns `True`.
+Sets output flag to `True` if `func(row)` returns `True`.
 
 ###`.disable(func)`
     
-Sets output flag to `False` if `f(row)` returns `True`.
+Sets output flag to `False` if `func(row)` returns `True`.
 
 ###`.flip(func)`
     
-Sets output flag to the opposite of its current value if `f(row)` returns `True`. 
+Sets output flag to the opposite of its current value if `func(row)` returns `True`. 
 
 ###`.outputtedrows`
 
@@ -113,7 +114,7 @@ Returns a Selection of rows that have been set to not output
 
 ###`.getcell(letter, number)`
 
-This implements simple accessing of rows by an excel like cell accssing. Since rows stored very differently than a table, this only supports simply accessing. 
+This implements simple accessing of rows by an excel like cell accssing. Since rows stored more like a `dict` than a table, this only supports simply accessing. 
 
 ##Outputing
 
