@@ -28,7 +28,7 @@ Now `r` will point to `OtherRow`.  If you want multiple rows (or any additional 
 
 Kwargs can also can be used to reference columns value before it was a formula (This avoids infinit recursion errors)
 
-    row.formula("name", lambda r, **kw: kw["price"] * 2, price=row.price)
+    row.formula("price", lambda r, **kw: kw["price"] * 2, price=row.price)
 
 At this point the formula is starting to get a little big, so it might be time to make it `def` function.
 
