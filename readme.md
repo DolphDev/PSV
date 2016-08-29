@@ -10,20 +10,20 @@ You will be prompted for you github username/password or ssh key password.
 
 ##Usage:
 
-To open the file, it is best to use python's `with` statement. You also can use the libraries inbuilt file loader
+To open the file yourself, it is best to use python's `with` statement. You also can use the libraries bundled file loader
     
-    import fatstax
+    import psv
     import csv
     
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         rows = csv.DictReader(csvfile, delimiter=",")
-        api = fatstax.Api(rows)
+        api = psv.Api(rows)
 
-    api = fatstax.load(fatstax.load("dataset/example-dataset.csv", newline="", encoding="utf-8"))
+    api = psv.load(fatstax.load("dataset/example-dataset.csv", newline="", encoding="utf-8"))
 
 This will put all of yours rows in memory.
 
-FatStax object supports advanced indexing:
+FatStax object supports indexing:
 
     api[0] #First row
     api[::-1] #Rows in reverse order
@@ -33,19 +33,19 @@ FatStax object supports advanced indexing:
 
 
 
-The `FatStax` object stores the rows in the `rows` attribute. These rows are represented by the `BaseRow` object.
+The `Api` object stores the rows in the `rows` attribute. These rows are represented by the `BaseRow` object.
 
 You can loop over this attribute and interact with the rows. `BaseRow` allows you to simply type a condensed version of the column name to access it.
     
     for row in api.rows:
-        print(row.sku) #fatstax supports getting column by column name
+        print(row.sku) #psv supports getting column by column name
         print(row.getcolumn("SKU")) #To get the column by the original column name use .getcolumn()
         row.sku = row.sku + row.companyname #Can change column data 
         row.addcolumn("Brand", row.companyname) #You can add columns using the addcolumn method
         del row.brand #(You can delete rows by using the del keyword)
-        if row.sku=[:3] == "abc":
+        if row.sku[:3] == "abc":
             -row #This tells the row to not output. Use +row to set a row to output (this is the default).
-            # ~row is also supported. This applies the `not` keyword to the row output boolean. 
+            # ~row is also supported. This applies the `not` keyword to the row output boolean.
             
             
 
@@ -54,10 +54,13 @@ When you are ready to output a dataset, you can use the `Api` object's `output` 
 
     api.output("dataset-output/Example-Output.csv", columns=columns, encoding="utf-8", quote_all=True)
 
-Note the columns argument, this wrapper needs an ordered list of the columns to be outputed to the file. The easiest way to get current file's columns is the `with` keyword.
+Note the columns argument, this wrapper needs an ordered list of the columns to be outputed to the file (Depending on how you loaded the data in psv, it may be able to use the columns given to it during initialization). The easiest way to get current file's columns yourself is the `with` keyword.
 
     with open('dataset/example-dataset.csv', encoding="utf-8", newline='') as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar='|'))
+        
+    #psv includes a function for this.
+    psv.column_names('dataset/example-dataset.csv')
 
 You also can specifiy your own list if you want to intentionally add/remove columns. 
 
