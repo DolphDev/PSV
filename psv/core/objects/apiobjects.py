@@ -54,7 +54,6 @@ class Api(Selection):
         return self.__columns__
 
     @columns.setter
-
     def columns(self, v):
         self.rebuildcolumnsmap(v)
 
@@ -99,6 +98,9 @@ class Api(Selection):
 
     def __delitem__(self, v):
         self.__rows__[v] = DeletedRow()
+
+    def sort(self, keyfunc):
+        self.__rows__ = sorted(self.__rows__, key=keyfunc)
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         loc = loc if loc else self.__outputname__
