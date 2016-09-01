@@ -65,9 +65,10 @@ class BaseRow(dict):
             raise KeyError("{}".format(a))
 
     def __repr__(self):
-        return "<'{}':{}'>".format(
-            self.__class__.__name__,
-            len(self.keys()))
+        return "<'{rowname}':{columnamount}>".format(
+            rowname=self.__class__.__name__,
+            columnamount=len(self.keys())
+            )
 
     def __pos__(self):
         self.outputrow = True

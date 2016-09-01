@@ -47,26 +47,25 @@ def column_string(n):
 def generate_func(name, kwargs):
     if isinstance(name, FunctionType):
         return FunctionType
-    elif isinstance(name, str) or kwargs:
-        pass
+    elif isinstance(name, str) or kwargs or name is None:
+        def select_func(row):
+            try:
+                if kwargs:
+                    for k,v in kwargs.items():
+                        if isinstance(v, FunctionType):
+                            assert v(row.getcolumn(k))
+                        else:
+                            assert row.getcolumn(k) == v
+                    return True
+                elif name:
+                    return bool(row.getcolumn(name))
+                else: 
+                    return True
+            except AssertionError:
+                return False
+        return select_func
     else:
         raise TypeError(
-            "'f' cannot not be {}, must be str or function".format(
+            "'f' cannot not be {}, must be str, function, or NoneType".format(
                 type(name)))  
 
-    def select_func(row):
-        try:
-            if kwargs:
-                for k,v in kwargs.items():
-                    if isinstance(v, FunctionType):
-                        assert v(row.getcolumn(k))
-                    else:
-                        assert row.getcolumn(k) == v
-                return True
-            elif name:
-                return bool(row.getcolumn(name))
-            else: 
-                return True
-        except AssertionError:
-            return False
-    return select_func
