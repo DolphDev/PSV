@@ -27,8 +27,9 @@ class Selection(object):
     def columns(self):
         return tuple(self.rows[0].keys())
 
-    def single_find(self, func):
+    def single_find(self, f=None, **kwargs):
         try:
+            func = generate_func(f, kwargs)
             g = self._find_all(func)
             result = next(g)
             next(g)
@@ -36,8 +37,9 @@ class Selection(object):
         except StopIteration:
             return result
 
-    def find(self, func):
+    def find(self, f=None, **kwargs):
         try:
+            func = generate_func(f, kwargs)
             g = self._find_all(func)
             return next(g)
         except StopIteration:
@@ -48,7 +50,8 @@ class Selection(object):
             if func(x):
                 yield x
 
-    def find_all(self, func):
+    def find_all(self, f=None, **kwargs):
+        func = generate_func(f, kwargs)
         return tuple(self._find_all(func))
 
     def flipoutput(self):
@@ -69,29 +72,29 @@ class Selection(object):
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
 
-    def enable(self, v):
+    def enable(self, f=None, **kwargs):
+        v = generate_func(f, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 +x
-    def disable(self, v):
+    def disable(self, f=None, **kwargs):
+        v = generate_func(f, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 -x
 
-    def flip(self, f):
+    def flip(self, f=None, **kwargs):
+        v = generate_func(f, kwargs)
         for x in self.rows:
             if bool(f(x)):
                 ~x
 
     def select(self, f=None, **kwargs):
-        if isinstance(f, FunctionType):
-            return self[f]
-        elif isinstance(f, str) or kwargs:
-            return self[generate_func(f, kwargs)]
-        else:
-            raise TypeError(
-                "'f' unacceptted type".format(
-                    type(f)))  
+        if not f and not kwargs:
+            return Selection(self.__rows__)
+        func = generate_func(f, kwargs)
+        return self[func]
+
 
     def __len__(self):
         return len(self.rows)

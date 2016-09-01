@@ -45,6 +45,15 @@ def column_string(n):
     return string
 
 def generate_func(name, kwargs):
+    if isinstance(name, FunctionType):
+        return FunctionType
+    elif isinstance(name, str) or kwargs:
+        pass
+    else:
+        raise TypeError(
+            "'f' cannot not be {}, must be str or function".format(
+                type(name)))  
+
     def select_func(row):
         try:
             if kwargs:
