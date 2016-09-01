@@ -1,5 +1,5 @@
 from ..output import outputfile
-from ..objects import BaseRow, Selection, DeletedRow
+from ..objects import BaseRow, Selection
 from ..parsing import parser, excelparser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
 from ..utils import column_string, generate_func
@@ -47,7 +47,7 @@ class Api(Selection):
 
     @rows.deleter
     def rows(self, v):
-        del self[v]
+        del self.__rows__[v]
 
     @property
     def columns(self):
@@ -97,7 +97,7 @@ class Api(Selection):
         return r
 
     def __delitem__(self, v):
-        self.__rows__[v] = DeletedRow()
+        del self.__rows__[v]
 
     def sort(self, keyfunc):
         self.__rows__ = sorted(self.__rows__, key=keyfunc)

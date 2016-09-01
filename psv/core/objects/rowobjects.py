@@ -1,6 +1,5 @@
 from ..utils import cleanup_name
 from ..exceptions.messages import RowObjectMsg as msg
-from ..exceptions import DeletedRow as DeletedRow_Err
 from .formulas import Formula
 
 class BaseRow(dict):
@@ -108,26 +107,41 @@ class BaseRow(dict):
         """Allows setting new data to row
         is called if row does not have specially 
         defined set behavior"""
-        try:
-            if attr in super(BaseRow, self).keys():
-                self[attr]["value"] = v
-            else:
-                super(BaseRow, self).__setattr__(attr, v)
-
-        except (KeyError, AttributeError):
+        s = cleanup_name(attr)
+        if attr in super(BaseRow, self).keys():
+            self[attr]["value"] = v
+        elif s in super(BaseRow, self).keys():
+            raise AttributeError((
+                "{}{}"
+                .format(
+                '\'{}\' has no attribute \'{}\''.format(
+                    type(self), attr),
+                ". However, '{s}' is an existing condensed ".format(s=s) + 
+                "column name. Only the condensed version is supported."
+                .format(s=s)
+                )))                
+        else:
             super(BaseRow, self).__setattr__(attr, v)
 
     def __delattr__(self, attr):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
-        try:
-            if attr in super(BaseRow, self).keys():
-                self[attr]["value"] = ""
-            else:
-                super(BaseRow, self).__delattr__(attr)
-
-        except (KeyError, AttributeError):
+        s = cleanup_name(attr)
+        if attr in super(BaseRow, self).keys():
+            self[attr]["value"] = ""
+        elif s in super(BaseRow, self).keys():
+            raise AttributeError((
+                "{}{}"
+                .format(
+                '\'{}\' has no attribute \'{}\''.format(
+                    type(self), attr),
+                ". However, '{s}' is an existing condensed ".format(s=s) + 
+                "column name. Only the condensed version is supported."
+                .format(s=s)
+                )))       
+        else:
             super(BaseRow, self).__delattr__(attr)
+
 
 
     def addcolumn(self, columnname, columndata=""):
@@ -151,38 +165,3 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
 
         return newdict
-
-class DeletedRow(object):
-
-    __slots__ = []
-
-    @property
-    def outputrow(self):
-        return False
-
-    @property
-    def is_deleted(self):
-        return True
-
-    def __getitem__(self, v):
-        raise DeletedRow_Err("Row is deleted")
-
-    def __getattr__(self, attr):
-        raise DeletedRow_Err("Row is deleted")
-
-    def __getattribute__(self, attr):
-        if attr in ["outputrow", "is_deleted"]:
-            return super(DeletedRow, self).__getattribute__(attr)
-        raise DeletedRow_Err("Row is deleted")
-
-
-    def __pos__(self):
-        raise DeletedRow_Err("Row is deleted")
-
-
-    def __neg__(self):
-        raise DeletedRow_Err("Row is deleted")
-
-
-    def __invert__(self):
-        raise DeletedRow_Err("Row is deleted")

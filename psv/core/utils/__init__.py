@@ -49,7 +49,10 @@ def generate_func(name, kwargs):
         try:
             if kwargs:
                 for k,v in kwargs.items():
-                    assert row.getcolumn(k) == v
+                    if isinstance(v, FunctionType):
+                        assert v(row.getcolumn(k))
+                    else:
+                        assert row.getcolumn(k) == v
                 return True
             elif name:
                 return bool(row.getcolumn(name))

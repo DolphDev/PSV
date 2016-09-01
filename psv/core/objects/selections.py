@@ -90,7 +90,7 @@ class Selection(object):
             return self[generate_func(f, kwargs)]
         else:
             raise TypeError(
-                "Argument F must be str or FunctionType not {}".format(
+                "'f' unacceptted type".format(
                     type(f)))  
 
     def __len__(self):

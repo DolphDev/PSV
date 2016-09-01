@@ -1,10 +1,8 @@
 from . import messages
 
-class BCSV_BASE_EXCEPTION(Exception):
+class PSV_BASE_EXCEPTION(Exception):
     pass
 
-class RowError(BCSV_BASE_EXCEPTION):
+class RowError(PSV_BASE_EXCEPTION):
     pass
 
-class DeletedRow(RowError):
-    pass
