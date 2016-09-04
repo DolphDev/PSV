@@ -56,13 +56,11 @@ def generate_func(name, kwargs):
                             assert v(row.getcolumn(k))
                         else:
                             assert row.getcolumn(k) == v
-                    return True
-                elif name:
-                    return bool(row.getcolumn(name))
-                else: 
-                    return True
+                if name:
+                    assert bool(row.getcolumn(name))
             except AssertionError:
                 return False
+            return True
         return select_func
     else:
         raise TypeError(

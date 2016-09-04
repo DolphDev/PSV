@@ -29,6 +29,7 @@ class Selection(object):
 
     def single_find(self, f=None, **kwargs):
         try:
+            result = None
             func = generate_func(f, kwargs)
             g = self._find_all(func)
             result = next(g)
