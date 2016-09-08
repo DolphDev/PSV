@@ -96,6 +96,14 @@ class Selection(object):
         func = generate_func(f, kwargs)
         return self[func]
 
+    def grab(self, *args):
+        arg = tuple(args)
+        if len(arg) > 1:
+            return tuple(self[arg])
+        elif len(arg) == 1:
+            return tuple(self[arg[0]])
+        else:
+            raise Exception("Empty Grab")
 
     def __len__(self):
         return len(self.rows)
