@@ -13,7 +13,7 @@ Copyright (c) 2016 FatStax.
 """
 
 
-version = '0.0.1.5'
+version = '0.0.1.6'
 
 from setuptools import setup
 setup(name='psv',
@@ -23,7 +23,7 @@ setup(name='psv',
       author='Joshua Walters',
       author_email='joshua.walters@fatstax.com',
       url='https://github.com/Dolphman/pynationstates',
-      packages=['psv', 'psv.core', 'psv.core.objects', 'psv.core.parsing', 'psv.core.output'],
+      packages=['psv', 'psv.core', 'psv.core.objects', 'psv.core.parsing', 'psv.core.output', "psv.core.utils"],
       package_data={'': ['LICENSE.txt', "readme.md"]},
       keywords=['csv abstraction'],
       classifiers=["License :: OSI Approved :: MIT License",
