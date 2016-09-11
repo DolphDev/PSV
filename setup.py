@@ -17,12 +17,12 @@ version = '0.0.1.6'
 
 from setuptools import setup
 setup(name='psv',
-      install_requires=["openpyxl"],
+      install_requires=[],
       version=version,
       description='CSV Parser',
       author='Joshua Walters',
       author_email='joshua.walters@fatstax.com',
-      url='https://github.com/Dolphman/pynationstates',
+      url='https://github.com/RedFunnel/PSV',
       packages=['psv', 'psv.core', 'psv.core.objects', 'psv.core.parsing', 'psv.core.output', "psv.core.utils", "psv.core.exceptions"],
       package_data={'': ['LICENSE.txt', "readme.md"]},
       keywords=['csv abstraction'],
