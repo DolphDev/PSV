@@ -1,4 +1,4 @@
-from ..output import outputfile
+from ..output import outputfile, outputstr
 from ..objects import BaseRow, Selection
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
@@ -107,3 +107,9 @@ class Api(Selection):
         if not columns:
             columns = self.__columns__
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
+
+    def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
+
+        if not columns:
+            columns = self.__columns__
+        return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding )
