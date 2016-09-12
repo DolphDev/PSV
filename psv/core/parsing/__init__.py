@@ -1,7 +1,5 @@
 """This file contains all csv/excel parsing code"""
 
-from openpyxl import load_workbook, Workbook
-from openpyxl.utils import get_column_letter
 from ..utils import cleanup_name, translate_type
 
 def parser(csvfile, cls, typetranfer=True, *args, **kwargs):
