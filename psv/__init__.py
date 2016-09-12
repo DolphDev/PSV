@@ -36,13 +36,13 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
     return Api(data, columns=columns ,outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', 
-          typetranfer=True, csv_size_max=None):
+          typetranfer=True, csv_size_max=None, newline="\n"):
     if csv_size_max:
         csv_size_limit(csv_size_max)  
     if isinstance(csvdoc, str):
-        data = csv.DictReader(csvdoc.split("\n"), delimiter=delimiter, quotechar=quotechar)
+        data = csv.DictReader(csvdoc.split(newline), delimiter=delimiter, quotechar=quotechar)
         if not columns:
-            columns = tuple(next(csv.reader(csvdoc, delimiter=',', quotechar=quotechar)))
+            columns = tuple(next(csv.reader(csvdoc.split(newline), delimiter=delimiter, quotechar=quotechar)))
     else:
         data = csvdoc
     api = Api(data, columns=(columns), outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
