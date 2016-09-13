@@ -46,7 +46,7 @@ def column_string(n):
 
 def generate_func(name, kwargs):
     if isinstance(name, FunctionType):
-        return FunctionType
+        return name
     elif isinstance(name, str) or kwargs or name is None:
         def select_func(row):
             try:

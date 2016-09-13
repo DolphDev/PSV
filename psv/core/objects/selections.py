@@ -91,8 +91,6 @@ class Selection(object):
                 ~x
 
     def select(self, f=None, **kwargs):
-        if isinstance(f, FunctionType):
-            return self[func]
         if not f and not kwargs:
             return Selection(self.__rows__)
         func = generate_func(f, kwargs)
