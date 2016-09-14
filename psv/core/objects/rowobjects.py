@@ -17,10 +17,6 @@ class BaseRow(dict):
     def construct(self, *args, **kwargs):
         pass
 
-    @property
-    def is_deleted(self):
-        return False
-
     def formula(self, columnname, func, rowref=None, **kwargs):
         if rowref is None:
             rowref = self
