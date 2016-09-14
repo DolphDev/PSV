@@ -2,6 +2,8 @@ from ..utils import cleanup_name
 from ..exceptions.messages import RowObjectMsg as msg
 from .formulas import Formula
 
+from tabulate import tabulate
+
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
 
@@ -69,6 +71,15 @@ class BaseRow(dict):
             rowname=self.__class__.__name__,
             columnamount=len(self.keys())
             )
+
+    def __str__(self):
+        data = self.longcolumn()
+        sortedcolumns = sorted(data)
+
+        return tabulate(
+            [sortedcolumns] + [[data[c] for c in sortedcolumns]],
+            headers="firstrow", 
+            tablefmt="grid")
 
     def __pos__(self):
         self.outputrow = True
