@@ -1,7 +1,6 @@
 from ..utils import cleanup_name, multiple_index
 from ..utils import  _index_function_gen, generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
-
 from types import FunctionType
 
 class Selection(object):
@@ -114,9 +113,9 @@ class Selection(object):
         if isinstance(v, int):
             return (self.rows[v])
         elif isinstance(v, str):
-            return (x.getcolumn(v) for x in filter(lambda x:not x.is_deleted, self.rows))
+            return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
-            return (multiple_index(x,v) for x in filter(lambda x:not x.is_deleted, self.rows))
+            return (multiple_index(x,v) for x in self.rows)
         elif isinstance(v, FunctionType):
             return Selection(_index_function_gen(self, v))
         else:
@@ -129,3 +128,4 @@ class Selection(object):
     @property
     def nonoutputtedrows(self):
         return Selection(filter(lambda x: not x.outputrow, self.rows))
+
