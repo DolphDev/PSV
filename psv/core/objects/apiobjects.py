@@ -112,4 +112,5 @@ class Api(Selection):
 
         if not columns:
             columns = self.__columns__
-        return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding )
+        return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)
+

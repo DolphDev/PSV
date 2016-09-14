@@ -1,6 +1,6 @@
 from types import FunctionType
 from string import ascii_lowercase, digits, ascii_uppercase
-
+from string import printable
 ascii_lowercase = (ascii_lowercase+"_"+digits)
 
 
@@ -67,3 +67,12 @@ def generate_func(name, kwargs):
             "'f' cannot not be {}, must be str, function, or NoneType".format(
                 type(name)))  
 
+
+def asciireplace(string, rw='?'):
+    def _gen(string):
+        for x in string:
+            if x not in printable:
+                yield rw
+            else:
+                yield x
+    return "".join(_gen(string))
