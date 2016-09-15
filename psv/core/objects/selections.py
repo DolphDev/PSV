@@ -26,7 +26,7 @@ class Selection(object):
 
     @property
     def columns(self):
-        return tuple(self.rows[0].keys())
+        return sorted(tuple(self.rows[0].longcolumn().keys()))
 
     def single_find(self, f=None, **kwargs):
         try:
@@ -131,9 +131,9 @@ class Selection(object):
     def nonoutputtedrows(self):
         return Selection(filter(lambda x: not x.outputrow, self.rows))
 
-    def tabulate(self, limit=100, format="grid", only_ascii=True):
+    def tabulate(self, limit=100, format="grid", only_ascii=True, columns=None):
         data = [x.longcolumn() for x in self.rows[:limit]]
-        sortedcolumns = self.__columns__
+        sortedcolumns = self.columns if not columns else columns
         result = tabulate(
             [sortedcolumns] + [[x[c] for c in sortedcolumns] for x in data],
             headers="firstrow", 

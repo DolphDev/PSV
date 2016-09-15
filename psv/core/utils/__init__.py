@@ -20,7 +20,7 @@ def multiple_index(row, v):
     return tuple(tracker)
 
 def _index_function_gen(api, func):
-    for x in filter(lambda x:not x.is_deleted, api.rows):
+    for x in api.rows:
         if func(x):
             yield x
 
