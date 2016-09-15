@@ -76,3 +76,10 @@ def asciireplace(string, rw='?'):
             else:
                 yield x
     return "".join(_gen(string))
+
+def limit_text(string, limit):
+
+    if limit and isinstance(string, str):
+        return string[:limit]
+    else:
+        return string

@@ -1,4 +1,4 @@
-from ..utils import cleanup_name, multiple_index
+from ..utils import cleanup_name, multiple_index, limit_text
 from ..utils import  _index_function_gen, generate_func, asciireplace
 from ..exceptions.messages import ApiObjectMsg as msg
 
@@ -131,11 +131,11 @@ class Selection(object):
     def nonoutputtedrows(self):
         return Selection(filter(lambda x: not x.outputrow, self.rows))
 
-    def tabulate(self, limit=100, format="grid", only_ascii=True, columns=None):
+    def tabulate(self, limit=100, format="grid", only_ascii=True, columns=None, text_limit=None):
         data = [x.longcolumn() for x in self.rows[:limit]]
         sortedcolumns = self.columns if not columns else columns
         result = tabulate(
-            [sortedcolumns] + [[x[c] for c in sortedcolumns] for x in data],
+            [sortedcolumns] + [[limit_text(x[c], text_limit) for c in sortedcolumns] for x in data],
             headers="firstrow", 
             tablefmt=format)
         if only_ascii:

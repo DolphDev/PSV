@@ -1,4 +1,4 @@
-from ..utils import cleanup_name
+from ..utils import cleanup_name, asciireplace, limit_text
 from ..exceptions.messages import RowObjectMsg as msg
 from .formulas import Formula
 
@@ -173,3 +173,16 @@ class BaseRow(dict):
             newdict.update({self[k]["org_name"]: self[k]["value"]})
 
         return newdict
+
+    def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
+        data = self.longcolumn()
+        sortedcolumns = sorted(data) if not columns else columns
+
+        result = tabulate(
+            [sortedcolumns] + [[limit_text(data[c], text_limit) for c in sortedcolumns]],
+            headers="firstrow", 
+            tablefmt=format)
+        if only_ascii:
+            return asciireplace(result)
+        else:
+            return result
