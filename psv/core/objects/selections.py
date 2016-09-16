@@ -79,17 +79,21 @@ class Selection(object):
         for x in self.rows:
             if bool(v(x)):
                 +x
+        return self
+
     def disable(self, f=None, **kwargs):
         v = generate_func(f, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 -x
+        return self
 
     def flip(self, f=None, **kwargs):
         v = generate_func(f, kwargs)
         for x in self.rows:
             if bool(f(x)):
                 ~x
+        return self
 
     def select(self, f=None, **kwargs):
         if not f and not kwargs:
