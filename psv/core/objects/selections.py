@@ -91,7 +91,7 @@ class Selection(object):
     def flip(self, f=None, **kwargs):
         v = generate_func(f, kwargs)
         for x in self.rows:
-            if bool(f(x)):
+            if bool(v(x)):
                 ~x
         return self
 
