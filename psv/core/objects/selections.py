@@ -7,11 +7,12 @@ from tabulate import tabulate
 
 class Selection(object):
 
-    __slots__ = ["__rows__"]
+    __slots__ = ["__rows__", "__apimother__"]
 
 
-    def __init__(self, selection):
+    def __init__(self, selection, api_mother):
         self.__rows__ = (selection)
+        self.__apimother__ = api_mother
 
         if not self.rows:
             Exception("Selection Error")
@@ -26,7 +27,8 @@ class Selection(object):
 
     @property
     def columns(self):
-        return sorted(tuple(self.rows[0].longcolumn().keys()))
+        return self.__apimother__.__columns__
+
 
     def single_find(self, f=None, **kwargs):
         try:
@@ -97,7 +99,7 @@ class Selection(object):
 
     def select(self, f=None, **kwargs):
         if not f and not kwargs:
-            return Selection(self.__rows__)
+            return Selection(self.__rows__, self.__apimother__)
         func = generate_func(f, kwargs)
         return self[func]
 
@@ -115,7 +117,7 @@ class Selection(object):
 
     def __getitem__(self, v):
         if isinstance(v, slice):
-            return Selection(self.rows[v])
+            return Selection(self.rows[v], self.__apimother__)
         if isinstance(v, int):
             return (self.rows[v])
         elif isinstance(v, str):
@@ -123,17 +125,17 @@ class Selection(object):
         elif isinstance(v, tuple):
             return (multiple_index(x,v) for x in self.rows)
         elif isinstance(v, FunctionType):
-            return Selection(_index_function_gen(self, v))
+            return Selection(_index_function_gen(self, v), self.__apimother__)
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
 
     @property
     def outputtedrows(self):
-        return Selection(filter(lambda x:x.outputrow, self.rows))
+        return Selection(filter(lambda x:x.outputrow, self.rows), self.__apimother__)
 
     @property
     def nonoutputtedrows(self):
-        return Selection(filter(lambda x: not x.outputrow, self.rows))
+        return Selection(filter(lambda x: not x.outputrow, self.rows), self.__apimother__)
 
     def tabulate(self, limit=100, format="grid", only_ascii=True, columns=None, text_limit=None):
         data = [x.longcolumn() for x in self.rows[:limit]]

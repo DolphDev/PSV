@@ -12,10 +12,11 @@ class Api(Selection):
 
     __slots__ = ["__outputname__", "__canrefrencecolumn__", 
                  "__columns__", "__columnsmap__", 
-                 "__rows__"]
+                 "__rows__", "__apimother__"]
 
     def __init__(self, csvdict=None, columns=None,cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         #Since I close the file after this, the row must be placed into memory
+        self.__apimother__ = self
         self.__outputname__ = outputfile
         if columns is None:
             self.__canrefrencecolumn__ = False
