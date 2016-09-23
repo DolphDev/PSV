@@ -69,13 +69,10 @@ class BaseRow(dict):
             )
 
     def __str__(self):
-        data = self.longcolumn()
-        sortedcolumns = sorted(data)
-
-        return tabulate(
-            [sortedcolumns] + [[data[c] for c in sortedcolumns]],
-            headers="firstrow", 
-            tablefmt="grid")
+        return "<'{rowname}':{columnamount}>".format(
+            rowname=self.__class__.__name__,
+            columnamount=len(self.keys())
+            )
 
     def __pos__(self):
         self.outputrow = True
