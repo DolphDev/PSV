@@ -29,6 +29,9 @@ class Selection(object):
     def columns(self):
         return self.__apimother__.__columns__
 
+    @columns.setter
+    def columns(self, v):
+        self.__apimother__.rebuildcolumnsmap(v)
 
     def single_find(self, f=None, **kwargs):
         try:
@@ -128,6 +131,14 @@ class Selection(object):
             return Selection(_index_function_gen(self, v), self.__apimother__)
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
+
+    def addcolumn(self, columnname, columndata="", add_to_columns=True):
+        """Adds a column"""
+        for row in self.rows:
+            row.addcolumn(columnname, columndata)
+        if add_to_columns:
+            self.columns += (columnname,)
+        return self
 
     @property
     def outputtedrows(self):
