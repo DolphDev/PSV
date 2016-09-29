@@ -15,15 +15,28 @@ class BaseRow(dict):
         self.__output__ = True
 
     def construct(self, *args, **kwargs):
+        """This method can be used by inherited objects of :class:`BaseRow`""" 
         pass
 
     def formula(self, columnname, func, rowref=None, **kwargs):
+        """Replaces a cell with a formula
+
+            :param columnname: Name of the column.
+            :param func: Function that accepts 1 argument and optionally kwargs.
+            :param rowref: The referenced row. Defaults to the current row.
+            :param kwargs: Parameters that will be supplied to the function when ran.
+        """
         if rowref is None:
             rowref = self
         self.setcolumn(columnname, Formula(func, rowref, **kwargs))
 
     def getformula(self, columnname):
-        """Get Formula"""
+        """Get Formula
+
+            :param columnname: Gets the result of a formula. Used when 
+            formulas referenced other formulas
+
+        """
         try:
             return self.getcolumn(columnname).call()
         except ValueError:
@@ -41,7 +54,7 @@ class BaseRow(dict):
         self.__output__ = v
 
     def getcolumn(self, v):
-        "Get column by the orginal column name"
+        "Get a cell by the orginal column name"
         s = cleanup_name(v)
         if s in self.keys():
             return getattr(self, s)
@@ -49,6 +62,7 @@ class BaseRow(dict):
             raise KeyError("{}".format(v))
 
     def setcolumn(self, a, v):
+        "Set a cell by the orginal column name"
         s = cleanup_name(a)
         if s in self.keys():
             self.__setattr__(s, v)
@@ -56,6 +70,7 @@ class BaseRow(dict):
             raise Exception("{}".format(a))
 
     def delcolumn(self, v):
+        """Delete a cell by the orginal column name"""
         s = cleanup_name(a)
         if s in self.keys():
             self.__delattr__(s, v)
@@ -172,6 +187,7 @@ class BaseRow(dict):
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
+        """Integrates tabulate library with psv""" 
         data = self.longcolumn()
         sortedcolumns = sorted(data) if not columns else columns
 
