@@ -59,7 +59,12 @@ class Api(Selection):
         self.rebuildcolumnsmap(v)
 
     def getcell(self, letter, number=None):
-        """Accepts an excel like letter-number to directly reference a 'cell'"""
+        """Accepts an excel like letter-number to directly reference a 'cell'
+
+            :param letter: A letter such as "A". Used in the same fashion of spreadsheet software.
+            :param number: A number that referencing a position in the index.
+            :type letter: str
+        """
         if self.__canrefrencecolumn__:
             if number is not None:
                 try:
@@ -110,7 +115,7 @@ class Api(Selection):
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
 
     def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
-
+        """Outputs to str"""
         if not columns:
             columns = self.__columns__
         return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)

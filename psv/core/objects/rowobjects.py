@@ -25,6 +25,11 @@ class BaseRow(dict):
             :param func: Function that accepts 1 argument and optionally kwargs.
             :param rowref: The referenced row. Defaults to the current row.
             :param kwargs: Parameters that will be supplied to the function when ran.
+            :type columnname: :class:`str`
+            :type func: :class:`FunctionType`
+
+            :returns: Nothing
+            :rtype: :class:`NoneType`
         """
         if rowref is None:
             rowref = self
@@ -45,6 +50,7 @@ class BaseRow(dict):
 
     @property
     def outputrow(self):
+        """Returns a boolean of the current output flag for this row"""
         return self.__output__
 
     @outputrow.setter
@@ -53,29 +59,48 @@ class BaseRow(dict):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
         self.__output__ = v
 
-    def getcolumn(self, v):
-        "Get a cell by the orginal column name"
-        s = cleanup_name(v)
+    def getcolumn(self, column):
+        """Get a cell by the orginal column name
+
+        :param column: The column name. Can be both long and short form.
+        :type column: :class:`str`
+
+        :returns: String of the data, or an int/float if a number/decimal.
+        :rtype: :class:`str`, :class:`int`, or :class:`float`
+        """
+        s = cleanup_name(column)
         if s in self.keys():
             return getattr(self, s)
         else:
-            raise KeyError("{}".format(v))
+            raise KeyError("{}".format(column))
 
-    def setcolumn(self, a, v):
-        "Set a cell by the orginal column name"
-        s = cleanup_name(a)
-        if s in self.keys():
-            self.__setattr__(s, v)
-        else:
-            raise Exception("{}".format(a))
+    def setcolumn(self, column, value):
+        """Set a cell by the orginal column name
 
-    def delcolumn(self, v):
-        """Delete a cell by the orginal column name"""
-        s = cleanup_name(a)
+            :param column: The column name. Can be both long and short form.
+            :param value: The data to be set to the specified column
+            :type column: :class:`str`
+
+        """
+        s = cleanup_name(column)
         if s in self.keys():
-            self.__delattr__(s, v)
+            self.__setattr__(s, value)
         else:
-            raise KeyError("{}".format(a))
+            raise Exception("{}".format(column))
+
+    def delcolumn(self, column):
+        """Delete a cell by the orginal column name
+
+        :param column: The column name. Can be both long and short form.
+        :type column: :class:`str`
+
+        """
+
+        s = cleanup_name(column)
+        if s in self.keys():
+            self.__delattr__(s)
+        else:
+            raise KeyError("{}".format(column))
 
     def __repr__(self):
         return "<'{rowname}':{columnamount}>".format(
@@ -174,7 +199,12 @@ class BaseRow(dict):
         
     def longcolumn(self, columns=None):
         """Generates a Dict that uses orginal names of 
-        the column, used for output"""
+        the column, used for output
+
+            :params columns: A collection of columns, if supplied the method 
+                will return only the specified columns
+            :type columns: :class:`tuple`, :class:`list`
+        """
         newdict = {}
         if columns:
             shortcolumns_check = [cleanup_name(x) for x in columns]
@@ -187,7 +217,16 @@ class BaseRow(dict):
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
-        """Integrates tabulate library with psv""" 
+        """Integrates tabulate library with psv
+
+            :param format: A valid format for :class:`tabulate` library.
+            :only_ascii: If :data:`True`, only return valid ascii characters.
+            :param columns: Collection of column names that will be included in the 
+                tabulating.
+            :param text_limit: The number of characters to include per cell.
+            :type format: :class:`str`
+
+        """ 
         data = self.longcolumn()
         sortedcolumns = sorted(data) if not columns else columns
 

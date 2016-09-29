@@ -1,96 +1,142 @@
 .. _rowsdoc:
 
+
 Rows
-===================================
+====
+
+Rows are represented in the module via a heavly specialized ``dict``.
+They do not necessary have same exact properties as an regular
+dictionary.
+
+Accessing/Setting/Deleting columns
+----------------------------------
+
+There are a few ways to access columns.
+
+The first way is through attributes. Attributes are cruched downed
+versions of the column names. All letters are lower case, and spaces (or
+any character that breaks python syntax) are removed.
+
+For this example, say this csv document had columns called ``Name`` and
+"SKU".
+
+Note: ``GetCompanyBySKU`` is an example and not included in this module.
+                                                                        
+
+::
+
+    for row in api.rows:
+        print(row.name)
+        #If you want to delete the column
+        del row.name 
+        #Note: This only sets the column to a empty string internally.
+
+        #You also can set values
+        #Since Delete only sets columns to a empty string, this is supported
+        row.name = GetCompanyBySku(row.sku)
+
+If you want to get a column by its original name, use ``getcolumn``
+Method. ``getcolumn`` and its twins ``setcolumn`` and ``delcolumn``
+accept both the original column name and the crunched down version.
+
+::
+
+    for row in api.rows:
+        #Both short and original column names supproted
+        print(row.getcolumn("Name"))
+        print(row.getcolumn("name"))
+
+        #If you want to delete the column
+        row.delcolumn("Name")
+        #Note: This only sets the column to a empty string internally.
+
+        #You also can set values
+        #Since Delete only sets columns to a empty string, this is supported
+        row.setcolumn("Name", GetCompanyBySku(row.sku))
 
 Formulas
-========
+--------
 
-This module supports a formula like system, which basically act as
-computed cells. Due to the way this module interally represents
-spreadsheet data, this should not be thought as an equivalent to excel’s
-formulas. These act more like conventional python functions, with
-moderate support of refrencing other rows.
+This module supports computed cells called "formulas". While formulas
+allow behavior similar to excel formulas (they are somewhat limited in
+this degree), formulas are more for leveraging python code with rows.
 
-Formula Object
---------------
-
-All formulas are represented by the ``Formula`` object. This object is
-mainly used internally and doesn’t have much usecases outside
-encapsulating functions.
-
-Row Objects
------------
-
-Row objects are where all interaction with formulas are done.
-
-Creating Formulas
-~~~~~~~~~~~~~~~~~
-
-Inherited Row objects should not overwrite ``formula`` method.
-                                                              
-
-Formulas by default will have access to the current row, so in this
-example:
+Formulas are represented by functions that accept 1 argument and
+``**kwargs``. Formulas will not be ran until output or if referenced by
+other formulas.
 
 ::
 
-    row.formula("name", lambda r: r.fullname.split()[0])
+    #Example Function
+    def ex_formula(row, **kw):
+        return row.sku + row.name + kw["id"]
 
-``r`` refers to the current row. This is possible to change.
+    #Example Lambda
+    lambda row, **kw: row.sku + row.name
 
-::
+The ``row`` argument will be supplied with the row this formula is on.
+This can be specified differently in the ``.formula`` method. This is
+simply a default for common usecases. If you wish to send more than 1
+row to the function (or any other kind of data) use ``**kwargs``.
 
-    row.formula("name", lambda r: r.fullname.split()[0], OtherRow)
+for row in api.rows: row.formula('name', ex\_formula, id=1)
 
-Now ``r`` will point to ``OtherRow``. If you want multiple rows (or any
-additional arguments) use ``**kwargs``.
+See the full documentation to see other features..
 
-::
+Setting the output flag
+-----------------------
 
-    row.formula("name", lambda r, **kw: r.fullname.split()[0] + kw["sr"].name, sr=SecondRow)
+All rows will be outputed by default. (Though the API object has methods
+to change this).
 
-Kwargs can also can be used to reference columns value before it was a
-formula (This avoids infinit recursion errors)
+There are 3 operations to change the output flag as psv co-opts unary
+positive, negation, and inversion operations.
 
-::
-
-    row.formula("price", lambda r, **kw: kw["price"] * 2, price=row.price)
-
-At this point the formula is starting to get a little big, so it might
-be time to make it ``def`` function.
-
-::
-
-    def frml(row, **kwargs):
-        return row.fullname.split()[0] + kwargs["sr"].name
-
-
-    row.formula("name", frml, sr=SecondRow)
-
-Formulas are allowed to access other formulas. If they want the result
-of that formula, it need to use a special method to reurn result the
-computation result instead of the ``Formula`` object.
+To enable a row to output:
 
 ::
 
-    row.formula("ExchangeRate", lambda r: GetExchangeRate())
-    row.formula("name", lambda r: r.getformula("ExchangeRate")*r.price)
+    for row in api.rows:
+        +row
 
-Make sure to avoid infinite recursion by creating a circular refrence in
-your formulas. As shown above, there is ways to refrence a value by
-using kwargs.
+To set a row to not output:
 
-Other Details and Gotchas
--------------------------
+::
 
-Using ``str()`` on a formula will return a ``str`` of the result. This
-is used mainly used for output. This can give the wrong impression when
-using ``print`` that a column isn’t a formula. Use ``repr`` to check for
-formulas.
+    for row in api.rows:
+        -row
 
-Output
-------
+To flip a row to the opposite of current output flag:
 
-Row formulas are only computed when outputting, when refernced by an
-external row, or printed.
+::
+
+    for row in api.rows:
+        ~row
+
+You also can set the property ``outputrow`` to a boolean to set the
+output flag.
+
+::
+
+    for row in api.rows:
+        row.outputrow = True #Equivalent to +row
+        row.outputrow = False #Equivalent to -row
+        row.outputrow = not row.outputrow #Equivalent to ~row
+
+Other Methods and Features
+--------------------------
+
+``.addcolumn(columnname, columndata="")``:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This method adds a column to the row. ``columnname`` should be the long
+version (For example "Name"); ``columndata`` is the what the column data
+will be. Its defaults to an empty string.
+
+``.longcolumn(columns=None)``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This method returns a dictionary with the original column names as the
+keys and the text in the columns as the values. This is mainly used in
+output, but may have some other usecases. If columns is None, all
+columns are returned.
