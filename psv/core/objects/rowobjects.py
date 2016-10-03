@@ -149,9 +149,8 @@ class BaseRow(dict):
         type(self), attr))
 
     def __setattr__(self, attr, v):
-        """Allows setting new data to row
-        is called if row does not have specially 
-        defined set behavior"""
+        """Allows setting of rows and attributes (Makes a row empty) by using =
+            statement"""
         s = cleanup_name(attr)
         if attr in super(BaseRow, self).keys():
             self[attr]["value"] = v
@@ -187,10 +186,8 @@ class BaseRow(dict):
         else:
             super(BaseRow, self).__delattr__(attr)
 
-
-
     def addcolumn(self, columnname, columndata=""):
-        """Adds a column"""
+        """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
             self[short_cn] = {"org_name":columnname, "value":columndata}
@@ -198,12 +195,14 @@ class BaseRow(dict):
             raise Exception("Column already exists.")
         
     def longcolumn(self, columns=None):
-        """Generates a Dict that uses orginal names of 
-        the column, used for output
-
+        """
             :params columns: A collection of columns, if supplied the method 
-                will return only the specified columns
+                will return only the specified columns.
             :type columns: :class:`tuple`, :class:`list`
+
+            :returns: Generates a :class:`dict` that uses orginal names of 
+                the column.
+            :rtype: :class:`dict`
         """
         newdict = {}
         if columns:
@@ -220,7 +219,7 @@ class BaseRow(dict):
         """Integrates tabulate library with psv
 
             :param format: A valid format for :class:`tabulate` library.
-            :only_ascii: If :data:`True`, only return valid ascii characters.
+            :only_ascii: If :data:`True`, only return ascii characters.
             :param columns: Collection of column names that will be included in the 
                 tabulating.
             :param text_limit: The number of characters to include per cell.
