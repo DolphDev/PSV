@@ -182,9 +182,10 @@ class Selection(object):
         data = [x.longcolumn() for x in self.rows[:limit]]
         sortedcolumns = self.columns if not columns else columns
         if remove_newline:
-            for key in sortedcolumns.keys():
-                if isinstance(sortedcolumns[key], str):
-                    sortedcolumns[key] = sortedcolumns[key].replace("\n", "")
+            for i, longcolumn in enumerate(data):
+                for key in longcolumn:
+                    if isinstance(longcolumn[key], str):
+                        longcolumn[key] = longcolumn[key].replace("\n", "")
         result = tabulate(
             [sortedcolumns] + [[limit_text(x[c], text_limit) for c in sortedcolumns] for x in data],
             headers="firstrow", 
