@@ -108,7 +108,7 @@ class Selection(object):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
         """
-        if not f and not kwargs:
+        if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
         func = generate_func(selectionfirstarg_data, kwargs)
         return self[func]
