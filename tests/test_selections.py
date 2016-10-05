@@ -11,6 +11,8 @@ Product 6,30,1,Google
 Product 7,10,0,Yahoo
 """
 
+    
+
 # These Tests make sure that Nationstates obj keeps concurrent all object values
 
 class psv_selections_test(unittest.TestCase):
