@@ -1,28 +1,28 @@
 #!/usr/bin/env python
 """
 
- _______    ___   .___________.    _______.___________.    ___      ___   ___ 
-|   ____|  /   \  |           |   /       |           |   /   \     \  \ /  / 
-|  |__    /  ^  \ `---|  |----`  |   (----`---|  |----`  /  ^  \     \  V  /  
-|   __|  /  /_\  \    |  |        \   \       |  |      /  /_\  \     >   <   
-|  |    /  _____  \   |  |    .----)   |      |  |     /  _____  \   /  .  \  
-|__|   /__/     \__\  |__|    |_______/       |__|    /__/     \__\ /__/ \__\ 
-                                                                              
+   ___       __     __                 
+  / _ \___  / /__  / /  __ _  ___ ____ 
+ / // / _ \/ / _ \/ _ \/  ' \/ _ `/ _ \
+/____/\___/_/ .__/_//_/_/_/_/\_,_/_//_/
+           /_/                         
 
-Copyright (c) 2016 FatStax.
+
+
+Copyright (c) 2016 Joshua Walters
 """
 
 
-version = '0.0.1.6'
+version = '0.0.0.1'
 
 from setuptools import setup
 setup(name='psv',
-      install_requires=[],
+      install_requires=["tabulate"],
       version=version,
       description='CSV Parser',
       author='Joshua Walters',
-      author_email='joshua.walters@fatstax.com',
-      url='https://github.com/RedFunnel/PSV',
+      author_email='therealdolphman@gmail.com',
+      url='https://github.com/Dolphman/PSV',
       packages=['psv', 'psv.core', 'psv.core.objects', 'psv.core.parsing', 'psv.core.output', "psv.core.utils", "psv.core.exceptions"],
       package_data={'': ['LICENSE.txt', "readme.md"]},
       keywords=['csv', "Comma Separated Values", "Python Separated Values"],
