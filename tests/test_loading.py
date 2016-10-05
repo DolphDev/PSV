@@ -1,11 +1,21 @@
 import psv
 import unittest
+
 from hypothesis.strategies import text, integers, lists, floats
 from hypothesis import given, settings
 import string
 from random import randint
 
-
+import os
+filenames = ["tests/dataset-folder/", "tests/dataset-only-one/"]
+for filename in filenames:
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+del os
 
 
 class psv_load_tests(unittest.TestCase):
