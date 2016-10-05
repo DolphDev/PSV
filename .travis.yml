@@ -11,6 +11,7 @@ install:
   - pip uninstall psv --yes
   - pip install -r requirements.txt
   - pip install pytest
+  - pip install hypothesis
   - pip install pytest-cov
   - pip install pytest-pep8
 # command to run tests
