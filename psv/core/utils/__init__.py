@@ -45,7 +45,7 @@ def column_string(n):
     return string
 
 def generate_func(name, kwargs):
-    if isinstance(name, FunctionType):
+    if isinstance(name, FunctionType) and not kwargs:
         return name
     elif isinstance(name, str) or kwargs or name is None:
         def select_func(row):
@@ -57,7 +57,10 @@ def generate_func(name, kwargs):
                         else:
                             assert row.getcolumn(k) == v
                 if name:
-                    assert bool(row.getcolumn(name))
+                    if isinstance(name, FunctionType):
+                        assert name(row)
+                    else:
+                        assert bool(row.getcolumn(name))
             except AssertionError:
                 return False
             return True
