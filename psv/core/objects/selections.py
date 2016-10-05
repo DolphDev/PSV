@@ -63,7 +63,7 @@ class Selection(object):
         func = generate_func(selectionfirstarg_data, kwargs)
         return tuple(self._find_all(func))
 
-    def flipoutput(self):
+    def flip_output(self):
         for x in self.rows:
             ~x
         return self
