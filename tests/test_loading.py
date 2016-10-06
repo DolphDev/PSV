@@ -39,9 +39,9 @@ class psv_load_tests(unittest.TestCase):
                     if number == 1:
                         store[column] = text(min_size=3, max_size=30, alphabet=string.ascii_letters).example()
                     elif number == 2:
-                        store[column] = integers()
+                        store[column] = integers().example()
                     elif number == 3:
-                        store[column] = floats()
+                        store[column] = floats().example()
                 yield store
         self.csvloads_dict_tuple = tuple(_gen())
         self.csvloads_dict_columns = columns
@@ -134,5 +134,6 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.load("tests/dataset-only-one/test.csv")
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"))
         except Exception as err:
             self.fail(str(err))

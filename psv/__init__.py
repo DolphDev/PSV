@@ -3,6 +3,7 @@ from .core.objects import BaseRow
 
 
 import csv
+import io
 import glob
 
 
@@ -15,10 +16,12 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
     if csv_size_max:
         csv_size_limit(csv_size_max)
 
-    with open(f, mode=mode, buffering=buffering,
+    with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = Api(data, columns=column_names(f),outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+        api = Api(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+            mode, buffering, encoding, errors, newline, closefd, opener), 
+            outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
 
 def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
