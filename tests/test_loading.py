@@ -27,7 +27,6 @@ class psv_load_tests(unittest.TestCase):
 
     @given(lists(text(min_size=5, max_size=20, alphabet=string.ascii_letters), max_size=20, min_size=3))
     @given(integers(5,500))
-    @settings(max_examples=1)
     def generate_data_str(self, columns, l):
         columns = tuple(set(columns))
         def _gen():
@@ -156,3 +155,13 @@ class psv_load_tests(unittest.TestCase):
         except ValueError:
             #TEST Passed
             pass
+
+
+    @given(lists(text(min_size=5, max_size=20, alphabet=string.ascii_letters), max_size=20, min_size=3))
+    @settings(max_examples=10)
+    def test_api_new(self, columns):
+        try:
+            psv.new()
+            psv.new(columns=columns)
+        except Exception as err:
+            self.fail(str(err))

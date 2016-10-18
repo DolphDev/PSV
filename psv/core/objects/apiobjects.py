@@ -7,8 +7,8 @@ from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
 class Api(Selection):
-    """This class centralizes the parsing, output, and objects
-    functionality of this script"""
+    """This extended selection centralizes the parsing, output, and objects
+    functionality of this library"""
 
     __slots__ = ["__outputname__", "__canrefrencecolumn__", 
                  "__columns__", "__columnsmap__", 
