@@ -137,3 +137,22 @@ class psv_load_tests(unittest.TestCase):
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"))
         except Exception as err:
             self.fail(str(err))
+
+    def test_output_methods(self):
+        self.generate_data_str()
+        api = psv.loads(self.csvloads_str)
+        try:
+            api.outputs(quote_all=False)
+            api.outputs(quote_all=True)
+            api.output("TEST-OUTPUT-1.csv", quote_all=False)
+            api.output("TEST-OUTPUT-1.csv", quote_all=True)
+        except Exception as err:
+            self.fail(str(err))
+
+        try:
+            api.outputs(columns={"NOT SUPPORTED TYPE",})
+            api.output("NAME.csv", columns={"NOT SUPPORTED TYPE",})
+            self.fail("Output Method failed to catch unsupported type")
+        except ValueError:
+            #TEST Passed
+            pass
