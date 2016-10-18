@@ -39,7 +39,7 @@ class psv_load_tests(unittest.TestCase):
                     if number == 1:
                         store[column] = text(min_size=3, max_size=30, alphabet=string.ascii_letters).example()
                     elif number == 2:
-                        store[column] = integers().example()
+                        store[column] = integers(1, 10000).example()
                     elif number == 3:
                         store[column] = floats().example()
                 yield store
