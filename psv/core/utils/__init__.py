@@ -16,6 +16,9 @@ def multiple_index(row, v):
         if x == "ROW_OBJ":
             tracker.append(row)
             continue
+        if x == "|ROW_OBJ|":
+            tracker.append(row.getcolumn("ROW_OBJ"))
+            continue
         tracker.append(row.getcolumn(x))
     return tuple(tracker)
 
