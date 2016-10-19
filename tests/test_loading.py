@@ -158,7 +158,7 @@ class psv_load_tests(unittest.TestCase):
 
 
     @given(lists(text(min_size=5, max_size=20, alphabet=string.ascii_letters), max_size=20, min_size=3))
-    @settings(max_examples=10)
+    @settings(max_examples=1)
     def test_api_new(self, columns):
         try:
             psv.new()
