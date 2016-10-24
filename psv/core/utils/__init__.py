@@ -1,11 +1,18 @@
 from types import FunctionType
 from string import ascii_lowercase, digits, ascii_uppercase
 from string import printable
+
 ascii_lowercase = (ascii_lowercase+"_"+digits)
 
 
 def cleanup_name(s):
-    return "".join(filter(lambda x: x in ascii_lowercase, s.lower()))
+    from .. import non_accepted_key_names
+    result = "".join(filter(lambda x: x in ascii_lowercase, s.lower()))
+    if result in non_accepted_key_names:
+        return "_" + result
+    else:
+        return result
+    return result
 
 def multiple_index(row, v):
     
