@@ -14,6 +14,7 @@ class BaseRow(dict):
         super(BaseRow, self).__init__(data)
         self.__output__ = True
         self(flag=1).construct(*args, **kwargs)
+        self.resetflag()
 
     def __call__(self, flag=1):
         #flag 1 == dict_mode
@@ -174,7 +175,8 @@ class BaseRow(dict):
             result = super(dict, self).__getattribute__(attr)
             return result
         else:
-            return (self(flag=1)[attr]["value"])
+            result = (self(flag=1)[attr]["value"])
+            return result
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
@@ -195,9 +197,11 @@ class BaseRow(dict):
     def __setattr__(self, attr, v):
         """Allows setting of rows and attributes (Makes a row empty) by using =
             statement"""
+
         s = cleanup_name(attr)
         if attr in super(BaseRow, self).keys():
             self(flag=1)[attr]["value"] = v
+            self.resetflag()
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"

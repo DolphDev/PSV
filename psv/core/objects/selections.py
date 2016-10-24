@@ -179,6 +179,7 @@ class Selection(object):
 
     def tabulate(self, limit=100, format="grid", only_ascii=True, 
                 columns=None, text_limit=None, remove_newline=True):
+
         data = [x.longcolumn() for x in self.rows[:limit]]
         sortedcolumns = self.columns if not columns else columns
         if remove_newline:
