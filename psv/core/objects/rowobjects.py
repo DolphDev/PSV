@@ -7,12 +7,24 @@ from tabulate import tabulate
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
 
-    __slots__ = ["__output__"]
+    __slots__ = ["__output__", "__flag__"]
 
     def __init__(self, data, *args, **kwargs):
+        self.__flag__ = 2
         super(BaseRow, self).__init__(data)
-        self.construct(*args, **kwargs)
         self.__output__ = True
+        self(flag=1).construct(*args, **kwargs)
+        self.resetflag()
+
+    def __call__(self, flag=1):
+        """Changes Flag"""
+        #flag 1 = dict_mode
+        #flag 2 = psv_mode
+        self.__flag__ = flag
+        return self
+
+    def resetflag(self, to=2):
+        return self(flag=to)
 
     def construct(self, *args, **kwargs):
         """This method can be used by inherited objects of :class:`BaseRow`""" 
@@ -58,6 +70,39 @@ class BaseRow(dict):
         if not isinstance(v, bool):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
         self.__output__ = v
+
+    def __getitem__(self, key):
+        if self.__flag__ == 1:
+            result = super(BaseRow, self).__getitem__(key)
+            self.resetflag()
+            return result
+        elif self.__flag__ == 2:
+            result = self(flag=1)[key]["value"]
+            return result
+        else:
+            raise Exception("Missing Flag")
+
+    def __setitem__(self, key, v):
+        if self.__flag__ == 1:
+            super(BaseRow, self).__setitem__(key, v)
+            self.resetflag()
+        elif self.__flag__ == 2:
+            result = self(flag=1).update({key: 
+                {"value": v, "org_name": self(flag=1)[key]["org_name"]}})
+            self.resetflag()
+            return result
+        else:
+            raise Exception("Missing Flag")
+
+    def __delitem__(self, key):
+        if self.__flag__ == 1:
+            super(BaseRow, self).__delitem__(key)
+            self.resetflag()
+        elif self.__flag__ == 2:
+            self.__delattr__(key)
+        else:
+            raise Exception("Missing Flag")
+
 
     def getcolumn(self, column):
         """Get a cell by the orginal column name
@@ -127,10 +172,11 @@ class BaseRow(dict):
         return self
 
     def __getattribute__(self, attr):
-        if not (attr in super(BaseRow, self).keys()):
+        if not (attr in super(BaseRow, self).keys()) or self.__flag__ == 1:
             return super(dict, self).__getattribute__(attr)
         else:
-            return (self[attr]["value"])
+            result = (self(flag=1)[attr]["value"])
+            return result
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
@@ -151,9 +197,10 @@ class BaseRow(dict):
     def __setattr__(self, attr, v):
         """Allows setting of rows and attributes (Makes a row empty) by using =
             statement"""
+
         s = cleanup_name(attr)
         if attr in super(BaseRow, self).keys():
-            self[attr]["value"] = v
+            self(flag=1)[attr]["value"] = v
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -172,7 +219,7 @@ class BaseRow(dict):
         del statement"""
         s = cleanup_name(attr)
         if attr in super(BaseRow, self).keys():
-            self[attr]["value"] = ""
+            self(flag=1)[attr]["value"] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -190,7 +237,8 @@ class BaseRow(dict):
         """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
-            self[short_cn] = {"org_name":columnname, "value":columndata}
+            self(flag=1)[short_cn] = {"org_name":columnname, "value":columndata}
+            self.resetflag()
         else:
             raise Exception("Column already exists.")
         
@@ -211,8 +259,8 @@ class BaseRow(dict):
             if columns:
                 if not (k in shortcolumns_check):
                     continue
-            newdict.update({self[k]["org_name"]: self[k]["value"]})
-
+            print(self[k])
+            newdict.update({self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
