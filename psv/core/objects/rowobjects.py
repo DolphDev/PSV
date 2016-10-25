@@ -17,8 +17,9 @@ class BaseRow(dict):
         self.resetflag()
 
     def __call__(self, flag=1):
-        #flag 1 == dict_mode
-        #flag 2 == psv_mode
+        """Changes Flag"""
+        #flag 1 = dict_mode
+        #flag 2 = psv_mode
         self.__flag__ = flag
         return self
 
@@ -172,8 +173,7 @@ class BaseRow(dict):
 
     def __getattribute__(self, attr):
         if not (attr in super(BaseRow, self).keys()) or self.__flag__ == 1:
-            result = super(dict, self).__getattribute__(attr)
-            return result
+            return super(dict, self).__getattribute__(attr)
         else:
             result = (self(flag=1)[attr]["value"])
             return result
@@ -201,7 +201,6 @@ class BaseRow(dict):
         s = cleanup_name(attr)
         if attr in super(BaseRow, self).keys():
             self(flag=1)[attr]["value"] = v
-            self.resetflag()
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -238,7 +237,8 @@ class BaseRow(dict):
         """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
-            self[short_cn] = {"org_name":columnname, "value":columndata}
+            self(flag=1)[short_cn] = {"org_name":columnname, "value":columndata}
+            self.resetflag()
         else:
             raise Exception("Column already exists.")
         
@@ -259,8 +259,8 @@ class BaseRow(dict):
             if columns:
                 if not (k in shortcolumns_check):
                     continue
-            newdict.update({self[k]["org_name"]: self[k]["value"]})
-
+            print(self[k])
+            newdict.update({self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
