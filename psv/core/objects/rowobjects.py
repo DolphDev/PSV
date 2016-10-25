@@ -1,4 +1,5 @@
 from ..utils import cleanup_name, asciireplace, limit_text
+from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
 from .formulas import Formula
 
@@ -80,7 +81,7 @@ class BaseRow(dict):
             result = self(flag=1)[key]["value"]
             return result
         else:
-            raise Exception("Missing Flag")
+            raise FlagError(msg.flagmessage)
 
     def __setitem__(self, key, v):
         if self.__flag__ == 1:
@@ -92,7 +93,7 @@ class BaseRow(dict):
             self.resetflag()
             return result
         else:
-            raise Exception("Missing Flag")
+            raise FlagError(msg.flagmessage)
 
     def __delitem__(self, key):
         if self.__flag__ == 1:
@@ -101,7 +102,7 @@ class BaseRow(dict):
         elif self.__flag__ == 2:
             self.__delattr__(key)
         else:
-            raise Exception("Missing Flag")
+            raise FlagError(msg.flagmessage)
 
 
     def getcolumn(self, column):

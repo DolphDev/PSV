@@ -1,5 +1,6 @@
 from ..utils import cleanup_name, multiple_index, limit_text
 from ..utils import  _index_function_gen, generate_func, asciireplace
+from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -125,7 +126,7 @@ class Selection(object):
         elif len(arg) == 1:
             return tuple(self[arg[0]])
         else:
-            raise Exception("Empty Grab")
+            raise SelectionError(msg.ApiObjectMsg.badgrab)
 
     def unique(self, *args):
         arg = tuple(args)
