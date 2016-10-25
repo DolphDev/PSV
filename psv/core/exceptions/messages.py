@@ -3,7 +3,7 @@ class RowObjectMsg:
 
     getformulamsg = "'{}' cell is not a formula."
     outputrowmsg = "output must be {}, not {}"
-    flagmessage - "Missing Flag"
+    flagmessage = "Missing Flag"
 
 class ApiObjectMsg:
 
