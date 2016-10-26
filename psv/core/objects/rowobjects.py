@@ -260,7 +260,6 @@ class BaseRow(dict):
             if columns:
                 if not (k in shortcolumns_check):
                     continue
-            print(self[k])
             newdict.update({self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
         return newdict
 
