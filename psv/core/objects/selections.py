@@ -198,13 +198,12 @@ class Selection(object):
         return result
 
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
-        loc = loc if loc else self.__outputname__
         if not columns:
-            columns = self.__columns__
+            columns = self.columns
         outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
 
     def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
         """Outputs to str"""
         if not columns:
-            columns = self.__columns__
+            columns = self.columns
         return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)
