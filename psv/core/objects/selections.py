@@ -1,3 +1,4 @@
+from ..output import outputfile, outputstr
 from ..utils import cleanup_name, multiple_index, limit_text
 from ..utils import  _index_function_gen, generate_func, asciireplace
 from ..exceptions import SelectionError
@@ -195,3 +196,15 @@ class Selection(object):
         if only_ascii:
             return asciireplace(result)
         return result
+
+    def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
+        loc = loc if loc else self.__outputname__
+        if not columns:
+            columns = self.__columns__
+        outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
+
+    def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
+        """Outputs to str"""
+        if not columns:
+            columns = self.__columns__
+        return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)

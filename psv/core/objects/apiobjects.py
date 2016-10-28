@@ -1,4 +1,3 @@
-from ..output import outputfile, outputstr
 from ..objects import BaseRow, Selection
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
@@ -6,9 +5,9 @@ from ..utils import column_string, generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
-class Api(Selection):
-    """This extended selection centralizes the parsing, output, and objects
-    functionality of this library"""
+class MainSelection(Selection):
+    """This extended selection allows the acceptance of the parsing data and the ability
+    to delete rows in a supported way"""
 
     __slots__ = ["__outputname__", "__canrefrencecolumn__", 
                  "__columns__", "__columnsmap__", 
@@ -105,18 +104,5 @@ class Api(Selection):
     def __delitem__(self, v):
         del self.__rows__[v]
 
-    def sort(self, keyfunc):
-        self.__rows__ = sorted(self.__rows__, key=keyfunc)
 
-    def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
-        loc = loc if loc else self.__outputname__
-        if not columns:
-            columns = self.__columns__
-        outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
-
-    def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
-        """Outputs to str"""
-        if not columns:
-            columns = self.__columns__
-        return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)
 

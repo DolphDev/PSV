@@ -1,4 +1,4 @@
-from .core.objects.apiobjects import Api
+from .core.objects.apiobjects import MainSelection
 from .core.objects import BaseRow
 
 
@@ -29,7 +29,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
     with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
         encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = Api(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+        api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
             mode, buffering, encoding, errors, newline, closefd, opener), 
             outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
@@ -48,7 +48,7 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
         with open(files, mode=mode, buffering=buffering,
             encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
             data = data + list(csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar))
-    return Api(data, columns=columns ,outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+    return MainSelection(data, columns=columns ,outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', 
           typetranfer=True, csv_size_max=None, newline="\n"):
@@ -60,14 +60,14 @@ def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quo
             columns = tuple(next(csv.reader(csvdoc.split(newline), delimiter=delimiter, quotechar=quotechar)))
     else:
         data = csvdoc
-    api = Api(data, columns=(columns), outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+    api = MainSelection(data, columns=(columns), outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
 
 def new(cls=BaseRow, columns=None, outputfile=None,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max) 
-    return Api(columns=columns, outputfiled=outputfile, cls=cls)
+    return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
 
 def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                 errors=None, newline=None, closefd=True, opener=None,
