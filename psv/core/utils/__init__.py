@@ -2,14 +2,14 @@ from types import FunctionType
 from string import ascii_lowercase, digits, ascii_uppercase
 from string import printable
 
-ascii_lowercase = (ascii_lowercase+"_"+digits)
+accepted_chars = (ascii_lowercase + "_" + digits)
 
 
 def cleanup_name(s):
     from .. import non_accepted_key_names
-    result = "".join(filter(lambda x: x in ascii_lowercase, s.lower()))
+    result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if result in non_accepted_key_names:
-        return "_" + result
+        return "psv_" + result 
     else:
         return result
     return result

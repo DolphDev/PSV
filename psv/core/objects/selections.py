@@ -127,9 +127,14 @@ class Selection(object):
         elif len(arg) == 1:
             return tuple(self[arg[0]])
         else:
-            raise SelectionError(msg.ApiObjectMsg.badgrab)
+            raise SelectionError(msg.badgrab)
 
     def unique(self, *args):
+        """Grabs specified columns from every row
+
+        :returns: :class:`set` of the result.
+
+        """
         arg = tuple(args)
         if len(arg) > 1:
             return set(self[arg])
