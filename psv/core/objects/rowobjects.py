@@ -24,11 +24,14 @@ class BaseRow(dict):
         self.__flag__ = flag
         return self
 
+    def __hash__(self):
+        return hash((column, self.getcolumn(column)) for column in sorted(self.keys()))
+
     def resetflag(self, to=2):
         return self(flag=to)
 
     def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow`""" 
+        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__""" 
         pass
 
     def formula(self, columnname, func, rowref=None, **kwargs):

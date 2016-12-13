@@ -19,6 +19,13 @@ class Selection(object):
         if not self.rows:
             Exception("Selection Error")
 
+    def merge(sel):
+        return self + sel
+
+    def __add__(self, sel):
+        if isinstance(sel, Selection):
+            return Selection(set(self.rows + sel.rows), self.__apimother__)
+
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):

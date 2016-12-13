@@ -7,7 +7,7 @@ from types import FunctionType
 
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
-    to delete rows in a supported way"""
+    to delete/add rows in a supported way"""
 
     __slots__ = ["__outputname__", "__canrefrencecolumn__", 
                  "__columns__", "__columnsmap__", 
