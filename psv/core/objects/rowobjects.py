@@ -199,7 +199,7 @@ class BaseRow(dict):
         type(self), attr))
 
     def __setattr__(self, attr, v):
-        """Allows setting of rows and attributes (Makes a row empty) by using =
+        """Allows setting of rows and attributes by using =
             statement"""
 
         s = cleanup_name(attr)
