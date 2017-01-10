@@ -5,7 +5,7 @@ from .core.objects import BaseRow
 import csv
 import io
 import glob
-
+import itertools
 
 def csv_size_limit(size):
     """Changes the csv field size limit.
@@ -16,7 +16,7 @@ def csv_size_limit(size):
 
 def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetranfer=True, 
-         csv_size_max=None):
+         csv_size_max=None, csv_max_row=None):
     """Loads a file into psv
 
         :param cls: The class that will be used for csv data.
@@ -26,12 +26,20 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
     if csv_size_max:
         csv_size_limit(csv_size_max)
 
-    with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
-        encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
-        data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
-        api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
-            mode, buffering, encoding, errors, newline, closefd, opener), 
-            outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+    if not csv_max_row:
+        with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
+            encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
+            data = csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar)
+            api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+                mode, buffering, encoding, errors, newline, closefd, opener), 
+                outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+    else:
+        with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
+            encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
+            data = itertools.islice(csv.DictReader(csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
+            api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+                mode, buffering, encoding, errors, newline, closefd, opener), 
+                outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
 
 def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
