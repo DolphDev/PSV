@@ -96,9 +96,12 @@ class MainSelection(Selection):
         except IndexError as err:
             raise err       
 
-    def addrow(self, columns=None, cls=BaseRow):
+    def addrow(self, columns=None, cls=BaseRow, **kwargs):
         r = parser_addrow(columns if columns else self.__columns__, cls)
         self.__rows__.append(r)
+        if kwargs:
+            for k, v in kwargs.items():
+                r.setcolumn(k, v)
         return r
 
     def __delitem__(self, v):
