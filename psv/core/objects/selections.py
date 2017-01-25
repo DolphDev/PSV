@@ -150,6 +150,10 @@ class Selection(object):
         else:
             raise Exception("Empty Grab")
 
+    def fast_add(self, sel):
+        #Much faster than __add__, but doesn't guarantee no repeats.
+        return Selection(tuple(self.rows) + tuple(self.rows), self.__apimother__)
+
     def __len__(self):
         return len(self.rows)
 

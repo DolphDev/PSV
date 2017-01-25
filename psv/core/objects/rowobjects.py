@@ -25,7 +25,7 @@ class BaseRow(dict):
         return self
 
     def __hash__(self):
-        return hash((column, self.getcolumn(column)) for column in sorted(self.keys()))
+        return hash((column, self[column]["value"]) for column in sorted(self.keys()))
 
     def resetflag(self, to=2):
         return self(flag=to)
