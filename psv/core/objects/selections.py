@@ -11,7 +11,6 @@ class Selection(object):
 
     __slots__ = ["__rows__", "__apimother__"]
 
-
     def __init__(self, selection, api_mother):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
@@ -23,9 +22,11 @@ class Selection(object):
         return self + sel
 
     def __add__(self, sel):
-        if isinstance(sel, Selection):
-            return Selection(set(self.rows + sel.rows), self.__apimother__)
-
+        try:
+            if isinstance(sel, Selection):
+                return Selection(set(self.rows + sel.rows), self.__apimother__)
+        except TypeError:
+            raise TypeError("Can't Merge Mainselections and Selections")
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):
