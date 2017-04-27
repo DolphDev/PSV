@@ -18,15 +18,16 @@ class Selection(object):
         if not self.rows:
             Exception("Selection Error")
 
-    def merge(sel):
-        return self + sel
+    def merge(self, sel, safe_merge=True):
+        if safe_merge:
+            return self + sel
+        else:
+            return self.fast_add(sel)
 
     def __add__(self, sel):
-        try:
-            if isinstance(sel, Selection):
-                return Selection(set(self.rows + sel.rows), self.__apimother__)
-        except TypeError:
-            raise TypeError("Can't Merge Mainselections and Selections")
+        return Selection(set(
+                    tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
+
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):
