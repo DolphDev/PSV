@@ -5,16 +5,17 @@ from ..utils import column_string, generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
+
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
     to delete/add rows in a supported way"""
 
-    __slots__ = ["__outputname__", "__canrefrencecolumn__", 
-                 "__columns__", "__columnsmap__", 
+    __slots__ = ["__outputname__", "__canrefrencecolumn__",
+                 "__columns__", "__columnsmap__",
                  "__rows__", "__apimother__"]
 
-    def __init__(self, csvdict=None, columns=None,cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
-        #Since I close the file after this, the row must be placed into memory
+    def __init__(self, csvdict=None, columns=None, cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
+        # Since I close the file after this, the row must be placed into memory
         self.__apimother__ = self
         self.__outputname__ = outputfile
         if columns is None:
@@ -24,22 +25,22 @@ class MainSelection(Selection):
         else:
             self.__canrefrencecolumn__ = True
             self.__columns__ = columns
-            self.__columnsmap__ = {column_string(i+1): 
-                c for i,c in enumerate(self.__columns__)}
-
+            self.__columnsmap__ = {column_string(i+1):
+                                   c for i, c in enumerate(self.__columns__)}
 
         if csvdict is None:
             csvdict = {}
         if csvdict:
-            self.__rows__ = list(parser(csvdict, cls, typetranfer, *args, **kwargs))
+            self.__rows__ = list(
+                parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
             self.__rows__ = list()
 
     def rebuildcolumnsmap(self, columns):
         self.__canrefrencecolumn__ = True
         self.__columns__ = columns
-        self.__columnsmap__ = {column_string(i+1): 
-                c for i,c in enumerate(self.__columns__)}
+        self.__columnsmap__ = {column_string(i+1):
+                               c for i, c in enumerate(self.__columns__)}
 
     @property
     def rows(self):
@@ -69,16 +70,19 @@ class MainSelection(Selection):
                 try:
                     return self.rows[number].getcolumn(self.__columnsmap__[letter])
                 except KeyError:
-                    raise KeyError("{} is not mapped to any column".format(letter))
+                    raise KeyError(
+                        "{} is not mapped to any column".format(letter))
                 except IndexError as err:
                     raise err
             else:
                 try:
                     return self[self.__columnsmap__[letter]]
                 except KeyError:
-                    raise KeyError("{} is not mapped to any column".format(letter))
+                    raise KeyError(
+                        "{} is not mapped to any column".format(letter))
         else:
-            raise Exception("Column mapping not supported. Columns must be provided during intialization")
+            raise Exception(
+                "Column mapping not supported. Columns must be provided during intialization")
 
     def setcell(self, letter, number, value):
         try:
@@ -86,7 +90,7 @@ class MainSelection(Selection):
         except KeyError:
             raise KeyError("{} is not mapped to any column".format(letter))
         except IndexError as err:
-            raise err       
+            raise err
 
     def delcell(self, letter, number):
         try:
@@ -94,7 +98,7 @@ class MainSelection(Selection):
         except KeyError:
             raise KeyError("{} is not mapped to any column".format(letter))
         except IndexError as err:
-            raise err       
+            raise err
 
     def addrow(self, columns=None, cls=BaseRow, **kwargs):
         r = parser_addrow(columns if columns else self.__columns__, cls)
@@ -106,6 +110,3 @@ class MainSelection(Selection):
 
     def __delitem__(self, v):
         del self.__rows__[v]
-
-
-

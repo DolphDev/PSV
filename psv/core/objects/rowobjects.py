@@ -5,6 +5,7 @@ from .formulas import Formula
 
 from tabulate import tabulate
 
+
 class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
 
@@ -19,8 +20,8 @@ class BaseRow(dict):
 
     def __call__(self, flag=1):
         """Changes Flag"""
-        #flag 1 = dict_mode
-        #flag 2 = psv_mode
+        # flag 1 = dict_mode
+        # flag 2 = psv_mode
         self.__flag__ = flag
         return self
 
@@ -31,7 +32,7 @@ class BaseRow(dict):
         return self(flag=to)
 
     def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__""" 
+        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
         pass
 
     def formula(self, columnname, func, rowref=None, **kwargs):
@@ -91,8 +92,8 @@ class BaseRow(dict):
             super(BaseRow, self).__setitem__(key, v)
             self.resetflag()
         elif self.__flag__ == 2:
-            result = self(flag=1).update({key: 
-                {"value": v, "org_name": self(flag=1)[key]["org_name"]}})
+            result = self(flag=1).update({key:
+                                          {"value": v, "org_name": self(flag=1)[key]["org_name"]}})
             self.resetflag()
             return result
         else:
@@ -106,7 +107,6 @@ class BaseRow(dict):
             self.__delattr__(key)
         else:
             raise FlagError(msg.flagmessage)
-
 
     def getcolumn(self, column):
         """Get a cell by the orginal column name
@@ -155,13 +155,13 @@ class BaseRow(dict):
         return "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
             columnamount=len(self.keys())
-            )
+        )
 
     def __str__(self):
         return "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
             columnamount=len(self.keys())
-            )
+        )
 
     def __pos__(self):
         self.outputrow = True
@@ -188,15 +188,15 @@ class BaseRow(dict):
             raise AttributeError((
                 "{}{}"
                 .format(
-                '\'{}\' has no attribute \'{}\''.format(
-                    type(self), attr),
-                ". However, '{s}' is an existing condensed ".format(s=s) + 
-                "column name. Only the condensed version is supported."
-                .format(s=s)
+                    '\'{}\' has no attribute \'{}\''.format(
+                        type(self), attr),
+                    ". However, '{s}' is an existing condensed ".format(s=s) +
+                    "column name. Only the condensed version is supported."
+                    .format(s=s)
                 )))
         else:
             raise AttributeError('\'{}\' has no attribute \'{}\''.format(
-        type(self), attr))
+                type(self), attr))
 
     def __setattr__(self, attr, v):
         """Allows setting of rows and attributes by using =
@@ -209,12 +209,12 @@ class BaseRow(dict):
             raise AttributeError((
                 "{}{}"
                 .format(
-                '\'{}\' has no attribute \'{}\''.format(
-                    type(self), attr),
-                ". However, '{s}' is an existing condensed ".format(s=s) + 
-                "column name. Only the condensed version is supported."
-                .format(s=s)
-                )))                
+                    '\'{}\' has no attribute \'{}\''.format(
+                        type(self), attr),
+                    ". However, '{s}' is an existing condensed ".format(s=s) +
+                    "column name. Only the condensed version is supported."
+                    .format(s=s)
+                )))
         else:
             super(BaseRow, self).__setattr__(attr, v)
 
@@ -228,12 +228,12 @@ class BaseRow(dict):
             raise AttributeError((
                 "{}{}"
                 .format(
-                '\'{}\' has no attribute \'{}\''.format(
-                    type(self), attr),
-                ". However, '{s}' is an existing condensed ".format(s=s) + 
-                "column name. Only the condensed version is supported."
-                .format(s=s)
-                )))       
+                    '\'{}\' has no attribute \'{}\''.format(
+                        type(self), attr),
+                    ". However, '{s}' is an existing condensed ".format(s=s) +
+                    "column name. Only the condensed version is supported."
+                    .format(s=s)
+                )))
         else:
             super(BaseRow, self).__delattr__(attr)
 
@@ -241,11 +241,12 @@ class BaseRow(dict):
         """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
-            self(flag=1)[short_cn] = {"org_name":columnname, "value":columndata}
+            self(flag=1)[short_cn] = {
+                "org_name": columnname, "value": columndata}
             self.resetflag()
         else:
             raise Exception("Column already exists.")
-        
+
     def longcolumn(self, columns=None):
         """
             :params columns: A collection of columns, if supplied the method 
@@ -263,7 +264,8 @@ class BaseRow(dict):
             if columns:
                 if not (k in shortcolumns_check):
                     continue
-            newdict.update({self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
+            newdict.update(
+                {self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
@@ -276,13 +278,14 @@ class BaseRow(dict):
             :param text_limit: The number of characters to include per cell.
             :type format: :class:`str`
 
-        """ 
+        """
         data = self.longcolumn()
         sortedcolumns = sorted(data) if not columns else columns
 
         result = tabulate(
-            [sortedcolumns] + [[limit_text(data[c], text_limit) for c in sortedcolumns]],
-            headers="firstrow", 
+            [sortedcolumns] +
+            [[limit_text(data[c], text_limit) for c in sortedcolumns]],
+            headers="firstrow",
             tablefmt=format)
         if only_ascii:
             return asciireplace(result)

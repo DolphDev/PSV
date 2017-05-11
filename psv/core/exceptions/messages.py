@@ -5,6 +5,7 @@ class RowObjectMsg:
     outputrowmsg = "output must be {}, not {}"
     flagmessage = "Missing Flag"
 
+
 class ApiObjectMsg:
 
     singlefindmsg = "Function returned more than 1 result"

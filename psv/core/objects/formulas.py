@@ -4,7 +4,7 @@ class Formula(object):
 
     def __init__(self, formula, rowreference, **kwargs):
         self.__formula__ = formula
-        self.__rowreference__ = rowreference 
+        self.__rowreference__ = rowreference
         self.__kwargs__ = kwargs
 
     def __call__(self):

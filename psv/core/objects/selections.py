@@ -1,11 +1,12 @@
 from ..output import outputfile, outputstr
 from ..utils import cleanup_name, multiple_index, limit_text
-from ..utils import  _index_function_gen, generate_func, asciireplace
+from ..utils import _index_function_gen, generate_func, asciireplace
 from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
 from tabulate import tabulate
+
 
 class Selection(object):
 
@@ -26,7 +27,7 @@ class Selection(object):
 
     def __add__(self, sel):
         return Selection(set(
-                    tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
+            tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
 
     @property
     def rows(self):
@@ -46,7 +47,7 @@ class Selection(object):
 
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
-            will raise error if returns more than one result""" 
+            will raise error if returns more than one result"""
         try:
             result = None
             func = generate_func(selectionfirstarg_data, kwargs)
@@ -153,7 +154,7 @@ class Selection(object):
             raise Exception("Empty Grab")
 
     def fast_add(self, sel):
-        #Much faster than __add__, but doesn't guarantee no repeats.
+        # Much faster than __add__, but doesn't guarantee no repeats.
         return Selection(tuple(self.rows) + tuple(self.rows), self.__apimother__)
 
     def __len__(self):
@@ -167,7 +168,7 @@ class Selection(object):
         elif isinstance(v, str):
             return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
-            return (multiple_index(x,v) for x in self.rows)
+            return (multiple_index(x, v) for x in self.rows)
         elif isinstance(v, FunctionType):
             return Selection(_index_function_gen(self, v), self.__apimother__)
         else:
@@ -191,14 +192,14 @@ class Selection(object):
 
     @property
     def outputtedrows(self):
-        return Selection(filter(lambda x:x.outputrow, self.rows), self.__apimother__)
+        return Selection(filter(lambda x: x.outputrow, self.rows), self.__apimother__)
 
     @property
     def nonoutputtedrows(self):
         return Selection(filter(lambda x: not x.outputrow, self.rows), self.__apimother__)
 
-    def tabulate(self, limit=100, format="grid", only_ascii=True, 
-                columns=None, text_limit=None, remove_newline=True):
+    def tabulate(self, limit=100, format="grid", only_ascii=True,
+                 columns=None, text_limit=None, remove_newline=True):
 
         data = [x.longcolumn() for x in self.rows[:limit]]
         sortedcolumns = self.columns if not columns else columns
@@ -208,8 +209,9 @@ class Selection(object):
                     if isinstance(longcolumn[key], str):
                         longcolumn[key] = longcolumn[key].replace("\n", "")
         result = tabulate(
-            [sortedcolumns] + [[limit_text(x[c], text_limit) for c in sortedcolumns] for x in data],
-            headers="firstrow", 
+            [sortedcolumns] + [[limit_text(x[c], text_limit)
+                                for c in sortedcolumns] for x in data],
+            headers="firstrow",
             tablefmt=format)
         if only_ascii:
             return asciireplace(result)
@@ -218,7 +220,8 @@ class Selection(object):
     def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
         if not columns:
             columns = self.columns
-        outputfile(loc, self.rows, columns, quote_all=quote_all, encoding=encoding )
+        outputfile(loc, self.rows, columns,
+                   quote_all=quote_all, encoding=encoding)
 
     def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
         """Outputs to str"""

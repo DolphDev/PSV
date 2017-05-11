@@ -9,7 +9,7 @@ import itertools
 
 def csv_size_limit(size):
     """Changes the csv field size limit.
-        :param size: The size limit of the csv data.
+        :param size: The size limit of the csv data. 
         :type size: :class:`type`
     """
     csv.field_size_limit(size)
