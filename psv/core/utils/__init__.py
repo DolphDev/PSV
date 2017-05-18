@@ -8,7 +8,7 @@ accepted_chars = (ascii_lowercase + "_" + digits)
 def cleanup_name(s):
     from .. import non_accepted_key_names
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
-    if non_accepted_key_names.get(s, False):
+    if result in non_accepted_key_names:
         return "psv_" + result 
     else:
         return result
