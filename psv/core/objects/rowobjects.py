@@ -118,7 +118,8 @@ class BaseRow(dict):
         :rtype: :class:`str`, :class:`int`, or :class:`float`
         """
         s = cleanup_name(column)
-        if s in self.keys():
+        if s in self(1).keys():
+            self.resetflag()
             return getattr(self, s)
         else:
             raise KeyError("{}".format(column))
@@ -132,7 +133,8 @@ class BaseRow(dict):
 
         """
         s = cleanup_name(column)
-        if s in self.keys():
+        if s in self(1).keys():
+            self.resetflag()
             self.__setattr__(s, value)
         else:
             raise Exception("{}".format(column))
@@ -158,10 +160,12 @@ class BaseRow(dict):
         )
 
     def __str__(self):
-        return "<'{rowname}':{columnamount}>".format(
+        rv = "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self.keys())
+            columnamount=len(self(1).keys())
         )
+        self.resetflag()
+        return rv
 
     def __pos__(self):
         self.outputrow = True
@@ -176,7 +180,7 @@ class BaseRow(dict):
         return self
 
     def __getattribute__(self, attr):
-        if not (attr in super(BaseRow, self).keys()) or self.__flag__ == 1:
+        if not super(BaseRow, self).get(attr, False) or self.__flag__ == 1:
             return super(dict, self).__getattribute__(attr)
         else:
             result = (self(flag=1)[attr]["value"])
@@ -260,12 +264,13 @@ class BaseRow(dict):
         newdict = {}
         if columns:
             shortcolumns_check = [cleanup_name(x) for x in columns]
-        for k in self.keys():
+        for k in self(flag=1).keys():
             if columns:
                 if not (k in shortcolumns_check):
                     continue
             newdict.update(
                 {self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
+        self.resetflag()
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
