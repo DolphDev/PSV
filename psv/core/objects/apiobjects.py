@@ -16,6 +16,8 @@ class MainSelection(Selection):
 
     def __init__(self, csvdict=None, columns=None, cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
         # Since I close the file after this, the row must be placed into memory
+        if "__flag__" in columns:
+            raise KeyError("__flag__ is not a supported column")
         self.__apimother__ = self
         self.__outputname__ = outputfile
         if columns is None:
