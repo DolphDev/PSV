@@ -1,9 +1,13 @@
-from ..utils import cleanup_name, asciireplace, limit_text
+from ..utils import asciireplace, limit_text
 from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
 from .formulas import Formula
 
 from tabulate import tabulate
+from string import ascii_lowercase, digits
+
+import keyword
+accepted_chars = (ascii_lowercase + "_" + digits)
 
 
 class BaseRow(dict):
@@ -296,3 +300,18 @@ class BaseRow(dict):
             return asciireplace(result)
         else:
             return result
+
+#This block was in utils, 
+# but it relied on a circular reference that re-imported
+# a variable everytime this core function was called.
+#While less clean, this produces a decent speedup.
+non_accepted_key_names = set(tuple(dir(
+    BaseRow)) + ("__flag__", "row_obj") + tuple(keyword.kwlist))
+
+def cleanup_name(s):
+    result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
+    if result in non_accepted_key_names:
+        return "psv_" + result 
+    else:
+        return result
+    return result

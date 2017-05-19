@@ -1,18 +1,5 @@
 from types import FunctionType
-from string import ascii_lowercase, digits, ascii_uppercase
 from string import printable
-
-accepted_chars = (ascii_lowercase + "_" + digits)
-
-
-def cleanup_name(s):
-    from .. import non_accepted_key_names
-    result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
-    if result in non_accepted_key_names:
-        return "psv_" + result 
-    else:
-        return result
-    return result
 
 def multiple_index(row, v):
     

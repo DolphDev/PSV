@@ -1,5 +1,5 @@
 from ..output import outputfile, outputstr
-from ..utils import cleanup_name, multiple_index, limit_text
+from ..utils import multiple_index, limit_text
 from ..utils import _index_function_gen, generate_func, asciireplace
 from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg

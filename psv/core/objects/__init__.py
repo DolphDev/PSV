@@ -1,2 +1,2 @@
-from .rowobjects import BaseRow
+from .rowobjects import BaseRow, cleanup_name
 from .selections import Selection

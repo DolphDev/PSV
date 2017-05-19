@@ -1,6 +1,7 @@
 """This file contains all csv/excel parsing code"""
 
-from ..utils import cleanup_name, translate_type
+from ..utils import translate_type
+from ..objects import cleanup_name
 
 
 def parser(csvfile, cls, typetranfer=True, *args, **kwargs):
