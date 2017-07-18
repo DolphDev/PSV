@@ -28,7 +28,11 @@ class BaseRow(dict):
         # flag 2 = psv_mode
         self.__flag__ = flag
         return self
-        
+
+    def __hashvalue__(self):
+        """Returns the raw data the hash uses"""
+        return (tuple((column, self[column]) for column in sorted(self.keys())))
+
     def __hash__(self):
         return hash(tuple((column, self[column]) for column in sorted(self.keys())))
 
