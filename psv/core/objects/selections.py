@@ -22,7 +22,7 @@ class Selection(object):
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
-            maps.append({hash(x):x for x in con.rows})
+            maps.append({(x.__hashvalue__()):x for x in con.rows})
         master = {}
         for d in maps:
             master.update(d)
@@ -44,10 +44,7 @@ class Selection(object):
             return Selection(tuple(self._merge(args)), self.__apimother__)
 
         else:
-            out = self
-            for x in args:
-                out = out.fast_add(x)
-            return 
+            return self.merge(*args, safe_merge=True)
 
     def safe_merge(self, *args):
         """This is much slower but is guarantee to be correct in all cases"""
@@ -167,6 +164,17 @@ class Selection(object):
         else:
             raise SelectionError(msg.badgrab)
 
+    def remove_duplicates(self, soft=True):
+        """Removes duplicates.
+           if soft is true, return a selection
+           else: edit this object
+        """
+        if soft:
+            return self.merge(self)
+        else:
+            self.__rows__ = self.remove_duplicates().__rows__
+        
+
     def unique(self, *args):
         """Grabs specified columns from every row
 
@@ -183,7 +191,7 @@ class Selection(object):
 
     def fast_add(self, sel):
         # Much faster than __add__, but doesn't guarantee no repeats.
-        return Selection(tuple(self.rows) + tuple(self.rows), self.__apimother__)
+        return Selection(tuple(self.rows) + tuple(sel.rows), self.__apimother__)
 
     def __len__(self):
         return len(self.rows)
