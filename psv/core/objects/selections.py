@@ -20,18 +20,18 @@ class Selection(object):
             Exception("Selection Error")
 
     def _merge(self, args):
-        maps = ({hash(x):x} for x in ((self,) + args))
+        maps = []
+        for con in (self,) + args:
+            maps.append({hash(x):x for x in con.rows})
         master = {}
         for d in maps:
             master.update(d)
-        keys = set()
-        for x in maps:
-            keys = keys | x
+        keys = set(master.keys())
         for key in keys:
             yield master[key]
 
 
-    def merge(self, *args, safe_merge=False, unique=True):
+    def merge(self, *args, safe_merge=False, quick_merge=True):
         """Merges selctions"""
         if not all(self.__apimother__ is x.__apimother__ for x in args):
             raise Exception("Merge only accepts rows from same origin")
@@ -40,14 +40,18 @@ class Selection(object):
             for x in args:
                 out = out + x
             return out
-        elif unique:
+        elif quick_merge:
             return Selection(tuple(self._merge(args)), self.__apimother__)
 
         else:
             out = self
             for x in args:
                 out = out.fast_add(x)
-            return out
+            return 
+
+    def safe_merge(self, *args):
+        """This is much slower but is guarantee to be correct in all cases"""
+        return self.merge(self, *args, safe_merge=True)
 
     def __add__(self, sel):
         return Selection(set(
