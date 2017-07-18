@@ -19,11 +19,35 @@ class Selection(object):
         if not self.rows:
             Exception("Selection Error")
 
-    def merge(self, sel, safe_merge=True):
+    def _merge(self, args):
+        maps = ({hash(x):x} for x in ((self,) + args))
+        master = {}
+        for d in maps:
+            master.update(d)
+        keys = set()
+        for x in maps:
+            keys = keys | x
+        for key in keys:
+            yield master[key]
+
+
+    def merge(self, *args, safe_merge=False, unique=True):
+        """Merges selctions"""
+        if not all(self.__apimother__ is x.__apimother__ for x in args):
+            raise Exception("Merge only accepts rows from same origin")
         if safe_merge:
-            return self + sel
+            out = self
+            for x in args:
+                out = out + x
+            return out
+        elif unique:
+            return Selection(tuple(self._merge(args)), self.__apimother__)
+
         else:
-            return self.fast_add(sel)
+            out = self
+            for x in args:
+                out = out.fast_add(x)
+            return out
 
     def __add__(self, sel):
         return Selection(set(
@@ -176,7 +200,6 @@ class Selection(object):
 
     def addcolumn(self, columnname, columndata="", add_to_columns=True):
         """Adds a column
-
         :param columnname: Name of the column to add.
         :param columndata: The default value of the new column.
         :param add_to_columns: Determines whether this column should
@@ -228,3 +251,11 @@ class Selection(object):
         if not columns:
             columns = self.columns
         return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)
+
+
+def output_safe_grab(sel):
+    for x in sel:
+        rs = x(1).__output__
+        x.resetflag()
+        yield rs
+    
