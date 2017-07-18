@@ -28,9 +28,9 @@ class BaseRow(dict):
         # flag 2 = psv_mode
         self.__flag__ = flag
         return self
-
+        
     def __hash__(self):
-        return hash((column, self[column]["value"]) for column in sorted(self.keys()))
+        return hash(tuple((column, self[column]) for column in sorted(self.keys())))
 
     def resetflag(self, to=2):
         return self(flag=to)
