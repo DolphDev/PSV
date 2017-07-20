@@ -30,25 +30,53 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-
     def merge(self, *args, safe_merge=False, quick_merge=True):
-        """Merges selctions"""
-        if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise Exception("Merge only accepts rows from same origin")
-        if safe_merge:
-            out = self
-            for x in args:
-                out = out + x
-            return out
-        elif quick_merge:
-            return Selection(tuple(self._merge(args)), self.__apimother__)
+        """Merges selctions
 
-        else:
-            return self.merge(*args, safe_merge=True)
+
+           Note: Merges rely on all data in a row being hashable, use non_hash_merge.
+        """
+        try:
+            if not all(self.__apimother__ is x.__apimother__ for x in args):
+                raise Exception("Merge only accepts rows from same origin")
+
+            if safe_merge:
+                out = self
+                for x in args:
+                    out = out + x
+                return out
+            elif quick_merge:
+                return Selection(tuple(self._merge(args)), self.__apimother__)
+
+            else:
+                return self.merge(*args, safe_merge=True)
+        except TypeError as exc:
+            raise TypeError(
+                "{} - Use the non_hash_merge to merge rows with non-hashable datatypes.".format(exc))
 
     def safe_merge(self, *args):
-        """This is much slower but is guarantee to be correct in all cases"""
+        """This is much slower but is hashes rows as processed instead of preprocessing them"""
         return self.merge(self, *args, safe_merge=True)
+
+    def non_hash_merge(self, *args):
+        """This merge uses the exploits the __output__ flag of a row instead of it's hashed contents
+           This allows merging of of rows that contain unhashable mutable data such as sets or dict
+           This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
+        """
+        if not all(self.__apimother__ is x.__apimother__ for x in args):
+            raise Exception("Merge only accepts rows from same origin")
+        outputstore = tuple(x.__output__ for x in self.__apimother__)
+        self.__apimother__.no_output() 
+        for x in ((self,) + args):
+            for row in x:
+                +row
+        result = self.__apimother__.outputtedrows
+        for x, row in zip(outputstore, self.__apimother__.rows):
+            if x:
+                +row
+            else:
+                -row
+        return result
 
     def __add__(self, sel):
         return Selection(set(

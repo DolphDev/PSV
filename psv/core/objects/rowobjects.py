@@ -36,6 +36,12 @@ class BaseRow(dict):
     def __hash__(self):
         return hash(tuple((column, self[column]) for column in sorted(self.keys())))
 
+    def __eq__(self, other):
+        if isinstance(other, self(flag=1).__class__):
+            self.resetflag()
+            return self.__hashvalue__() == other.__hashvalue__()
+        return False
+
     def resetflag(self, to=2):
         return self(flag=to)
 
