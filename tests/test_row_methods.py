@@ -64,7 +64,7 @@ class psv_selections_test(unittest.TestCase):
     def test__getattr__(self):
         self.construct()
         try: 
-            self.name1
+            self.csvdoc[0].name1
             self.fail("Attribute Error Failed to trigger")
         except AttributeError:
             pass
@@ -72,7 +72,7 @@ class psv_selections_test(unittest.TestCase):
     def test__setattr__(self):
         self.construct()
         try: 
-            self.name1 = 1
+            self.csvdoc[0].name1 = 1
             self.fail("Attribute Error Failed to trigger")
         except AttributeError:
             pass
@@ -80,7 +80,7 @@ class psv_selections_test(unittest.TestCase):
     def test__delattr__(self):
         self.construct()
         try: 
-            self.name1 = 1
+            del self.csvdoc[0].name1
             self.fail("Attribute Error Failed to trigger")
         except AttributeError:
             pass
@@ -88,6 +88,6 @@ class psv_selections_test(unittest.TestCase):
     def test_tabulate(self):
         self.construct()
         try: 
-            self.tabulate()
+            self.csvdoc.tabulate()
         except Exception as err:
             self.fail(err)
