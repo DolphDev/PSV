@@ -32,7 +32,6 @@ class BaseRow(RowSkeleton):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            self.resetflag()
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
