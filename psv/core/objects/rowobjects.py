@@ -10,19 +10,23 @@ import keyword
 accepted_chars = (ascii_lowercase + "_" + digits)
 
 
-class BaseRow(dict):
-    """This Base Class represents a row in a spreadsheet"""
+class RowSkeleton(dict):
+    __output__ = None
 
-    __slots__ = ["__output__", "__flag__"]
+
+class BaseRow(RowSkeleton):
+    """This Base Class represents a row in a spreadsheet"""
+    __slots__ = []
+    __output__ = None
 
     def __init__(self, data, *args, **kwargs):
-        self.__flag__ = 2
+        #self.__flag__ = 2
         super(BaseRow, self).__init__(data)
         self.__output__ = True
-        self(flag=1).construct(*args, **kwargs)
-        self.resetflag()
+        self.construct(*args, **kwargs)
 
     def __call__(self, flag=1):
+        raise Exception("Flag Called")
         """Changes Flag"""
         # flag 1 = dict_mode
         # flag 2 = psv_mode
@@ -90,37 +94,18 @@ class BaseRow(dict):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
         self.__output__ = v
 
-    def __getitem__(self, key):
-        if self.__flag__ == 1:
-            result = super(BaseRow, self).__getitem__(key)
-            self.resetflag()
-            return result
-        elif self.__flag__ == 2:
-            result = self(flag=1)[key]["value"]
-            return result
-        else:
-            raise FlagError(msg.flagmessage)
+    #def __getitem__(self, key):
+    #    result = self[key]["value"]
+    #   return result
 
-    def __setitem__(self, key, v):
-        if self.__flag__ == 1:
-            super(BaseRow, self).__setitem__(key, v)
-            self.resetflag()
-        elif self.__flag__ == 2:
-            result = self(flag=1).update({key:
-                                          {"value": v, "org_name": self(flag=1)[key]["org_name"]}})
-            self.resetflag()
-            return result
-        else:
-            raise FlagError(msg.flagmessage)
 
-    def __delitem__(self, key):
-        if self.__flag__ == 1:
-            super(BaseRow, self).__delitem__(key)
-            self.resetflag()
-        elif self.__flag__ == 2:
-            self.__delattr__(key)
-        else:
-            raise FlagError(msg.flagmessage)
+    #def __setitem__(self, key, v):
+    #    result = self.update({key:
+    #                        {"value": v, "org_name": super(BaseRow, self)[key]["org_name"]}})
+    #    return result
+
+    #def __delitem__(self, key):
+    #    self.__delattr__(key)
 
     def getcolumn(self, column):
         """Get a cell by the orginal column name
@@ -132,8 +117,7 @@ class BaseRow(dict):
         :rtype: :class:`str`, :class:`int`, or :class:`float`
         """
         s = cleanup_name(column)
-        if s in self(1).keys():
-            self.resetflag()
+        if s in self.keys():
             return getattr(self, s)
         else:
             raise KeyError("{}".format(column))
@@ -147,8 +131,7 @@ class BaseRow(dict):
 
         """
         s = cleanup_name(column)
-        if s in self(1).keys():
-            self.resetflag()
+        if s in self.keys():
             self.__setattr__(s, value)
         else:
             raise Exception("{}".format(column))
@@ -194,10 +177,10 @@ class BaseRow(dict):
         return self
 
     def __getattribute__(self, attr):
-        if not super(BaseRow, self).get(attr, False) or self.__flag__ == 1:
+        if not super(BaseRow, self).get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
-            result = (self(flag=1)[attr]["value"])
+            result = (self[attr]["value"])
             return result
 
     def __getattr__(self, attr):
@@ -221,9 +204,9 @@ class BaseRow(dict):
             statement"""
 
         s = cleanup_name(attr)
-        if attr in super(BaseRow, self).keys():
-            self(flag=1)[attr]["value"] = v
-        elif s in super(BaseRow, self).keys():
+        if attr in self.keys():
+            self[attr]["value"] = v
+        elif s in self.keys():
             raise AttributeError((
                 "{}{}"
                 .format(
@@ -240,8 +223,8 @@ class BaseRow(dict):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
         s = cleanup_name(attr)
-        if attr in super(BaseRow, self).keys():
-            self(flag=1)[attr]["value"] = ""
+        if attr in self.keys():
+            self[attr]["value"] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -259,9 +242,8 @@ class BaseRow(dict):
         """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
-            self(flag=1)[short_cn] = {
+            self[short_cn] = {
                 "org_name": columnname, "value": columndata}
-            self.resetflag()
         else:
             raise Exception("Column already exists.")
 
@@ -278,13 +260,12 @@ class BaseRow(dict):
         newdict = {}
         if columns:
             shortcolumns_check = [cleanup_name(x) for x in columns]
-        for k in self(flag=1).keys():
+        for k in self.keys():
             if columns:
                 if not (k in shortcolumns_check):
                     continue
             newdict.update(
-                {self(flag=1)[k]["org_name"]: self(flag=1)[k]["value"]})
-        self.resetflag()
+                {self[k]["org_name"]: self[k]["value"]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
