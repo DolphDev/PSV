@@ -25,10 +25,10 @@ class BaseRow(RowSkeleton):
 
     def __hashvalue__(self):
         """Returns the raw data the hash uses"""
-        return (tuple((column, self[column]) for column in sorted(self.keys())))
+        return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))
 
     def __hash__(self):
-        return hash(tuple((column, self[column]) for column in sorted(self.keys())))
+        return hash(tuple((column, self[column]["value"]) for column in sorted(self.keys())))
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
