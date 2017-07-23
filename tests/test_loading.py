@@ -158,6 +158,36 @@ class psv_load_tests(unittest.TestCase):
             pass
 
 
+    def test_getcolumn_random_data(self):
+        self.populate_folders()
+        try:
+            api = psv.load("tests/dataset-only-one/test.csv")
+            for row in api:
+                for c in api.columns:
+                    row.getcolumn(x)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_setcolumn_random_data(self):
+        self.populate_folders()
+        try:
+            api = psv.load("tests/dataset-only-one/test.csv")
+            for row in api:
+                for c in api.columns:
+                    row.setcolumn(x, None)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_delcolumn_random_data(self):
+        self.populate_folders()
+        try:
+            api = psv.load("tests/dataset-only-one/test.csv")
+            for row in api:
+                for c in api.columns:
+                    row.delcolumn(x)
+        except Exception as err:
+            self.fail(str(err))
+
     @given(lists(text(min_size=5, max_size=20, alphabet=string.ascii_letters), max_size=20, min_size=3))
     @settings(max_examples=1)
     def test_api_new(self, columns):
