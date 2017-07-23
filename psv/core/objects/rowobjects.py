@@ -21,7 +21,7 @@ class BaseRow(RowSkeleton):
     __slots__ = []
 
     def __init__(self, data, *args, **kwargs):
-        super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__",)))
+        super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__", "outputrow")))
         super(BaseRow, self).__setattr__("__dirstore__", (dir(self)))
         super(BaseRow, self).__init__(data)
         self.__output__ = True
@@ -181,7 +181,6 @@ class BaseRow(RowSkeleton):
             statement"""
         s = cleanup_name(attr)
         if attr in self.keys():
-            print(self.keys())
             self[attr]["value"] = v
         elif s in self.keys():
             raise AttributeError((
