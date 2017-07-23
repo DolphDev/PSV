@@ -12,6 +12,8 @@ accepted_chars = (ascii_lowercase + "_" + digits)
 
 class RowSkeleton(dict):
     __output__ = None
+    __sawhitelist__ = None
+    __dirstore__ = None
 
 
 class BaseRow(RowSkeleton):
@@ -19,6 +21,8 @@ class BaseRow(RowSkeleton):
     __slots__ = []
 
     def __init__(self, data, *args, **kwargs):
+        super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__",)))
+        super(BaseRow, self).__setattr__("__dirstore__", (dir(self)))
         super(BaseRow, self).__init__(data)
         self.__output__ = True
         self.construct(*args, **kwargs)
@@ -175,9 +179,9 @@ class BaseRow(RowSkeleton):
     def __setattr__(self, attr, v):
         """Allows setting of rows and attributes by using =
             statement"""
-
         s = cleanup_name(attr)
         if attr in self.keys():
+            print(self.keys())
             self[attr]["value"] = v
         elif s in self.keys():
             raise AttributeError((
@@ -190,7 +194,14 @@ class BaseRow(RowSkeleton):
                     .format(s=s)
                 )))
         else:
-            super(BaseRow, self).__setattr__(attr, v)
+            if attr in self.__sawhitelist__:
+                super(BaseRow, self).__setattr__(attr, v)
+            elif attr in self.__dirstore__:
+                raise AttributeError("'{}' object attribute '{}' is read-only".format(self.__class__, attr))
+
+            else:
+                raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+                type(self), attr))
 
     def __delattr__(self, attr):
         """Allows deletion of rows and attributes (Makes a row empty) by using
