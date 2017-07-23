@@ -164,7 +164,7 @@ class psv_load_tests(unittest.TestCase):
             api = psv.load("tests/dataset-only-one/test.csv")
             for row in api:
                 for c in api.columns:
-                    row.getcolumn(x)
+                    row.getcolumn(c)
         except Exception as err:
             self.fail(str(err))
 
@@ -174,7 +174,7 @@ class psv_load_tests(unittest.TestCase):
             api = psv.load("tests/dataset-only-one/test.csv")
             for row in api:
                 for c in api.columns:
-                    row.setcolumn(x, None)
+                    row.setcolumn(c, None)
         except Exception as err:
             self.fail(str(err))
 
@@ -184,7 +184,7 @@ class psv_load_tests(unittest.TestCase):
             api = psv.load("tests/dataset-only-one/test.csv")
             for row in api:
                 for c in api.columns:
-                    row.delcolumn(x)
+                    row.delcolumn(c)
         except Exception as err:
             self.fail(str(err))
 
