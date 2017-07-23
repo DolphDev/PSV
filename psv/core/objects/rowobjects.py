@@ -17,21 +17,11 @@ class RowSkeleton(dict):
 class BaseRow(RowSkeleton):
     """This Base Class represents a row in a spreadsheet"""
     __slots__ = []
-    __output__ = None
 
     def __init__(self, data, *args, **kwargs):
-        #self.__flag__ = 2
         super(BaseRow, self).__init__(data)
         self.__output__ = True
         self.construct(*args, **kwargs)
-
-    def __call__(self, flag=1):
-        raise Exception("Flag Called")
-        """Changes Flag"""
-        # flag 1 = dict_mode
-        # flag 2 = psv_mode
-        self.__flag__ = flag
-        return self
 
     def __hashvalue__(self):
         """Returns the raw data the hash uses"""
@@ -41,13 +31,11 @@ class BaseRow(RowSkeleton):
         return hash(tuple((column, self[column]) for column in sorted(self.keys())))
 
     def __eq__(self, other):
-        if isinstance(other, self(flag=1).__class__):
+        if isinstance(other, self.__class__):
             self.resetflag()
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
-    def resetflag(self, to=2):
-        return self(flag=to)
 
     def construct(self, *args, **kwargs):
         """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
@@ -93,19 +81,6 @@ class BaseRow(RowSkeleton):
         if not isinstance(v, bool):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
         self.__output__ = v
-
-    #def __getitem__(self, key):
-    #    result = self[key]["value"]
-    #   return result
-
-
-    #def __setitem__(self, key, v):
-    #    result = self.update({key:
-    #                        {"value": v, "org_name": super(BaseRow, self)[key]["org_name"]}})
-    #    return result
-
-    #def __delitem__(self, key):
-    #    self.__delattr__(key)
 
     def getcolumn(self, column):
         """Get a cell by the orginal column name
@@ -159,9 +134,8 @@ class BaseRow(RowSkeleton):
     def __str__(self):
         rv = "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self(1).keys())
+            columnamount=len(self.keys())
         )
-        self.resetflag()
         return rv
 
     def __pos__(self):
@@ -297,7 +271,7 @@ class BaseRow(RowSkeleton):
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
 non_accepted_key_names = set(tuple(dir(
-    BaseRow)) + ("__flag__", "row_obj") + tuple(keyword.kwlist))
+    BaseRow)) + ("row_obj",) + tuple(keyword.kwlist))
 
 def cleanup_name(s):
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
