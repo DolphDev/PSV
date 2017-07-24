@@ -14,6 +14,7 @@ class RowSkeleton(dict):
     __output__ = None
     __sawhitelist__ = None
     __dirstore__ = None
+    __delwhitelist__ = None
 
 
 class BaseRow(RowSkeleton):
@@ -22,7 +23,8 @@ class BaseRow(RowSkeleton):
 
     def __init__(self, data, *args, **kwargs):
         super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__", "outputrow")))
-        super(BaseRow, self).__setattr__("__dirstore__", (dir(self)))
+        super(BaseRow, self).__setattr__("__delwhitelist__", set())
+        super(BaseRow, self).__setattr__("__dirstore__", (set(dir(self))))
         super(BaseRow, self).__init__(data)
         self.__output__ = True
         self.construct(*args, **kwargs)
@@ -219,8 +221,14 @@ class BaseRow(RowSkeleton):
                     .format(s=s)
                 )))
         else:
-            super(BaseRow, self).__delattr__(attr)
-
+            if attr in self.__delwhitelist__:
+                super(BaseRow, self).__delattr__(attr)
+            elif attr in self.__dirstore__:
+                raise AttributeError("'{}' object attribute '{}' is read-only".format(self.__class__, attr))
+            else:
+                raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+                type(self), attr))
+                
     def addcolumn(self, columnname, columndata=""):
         """Adds a column for this row only"""
         short_cn = cleanup_name(columnname)
