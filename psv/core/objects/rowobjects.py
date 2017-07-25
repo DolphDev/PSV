@@ -35,6 +35,14 @@ class BaseRow(dict):
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
+    def add_valid_attribute(self, attr, deletable=False):
+        "Used by classes that inherit to add attributes to the whitelists"
+        if self.__class__ is BaseRow:
+            raise TypeError("Only inherited Rows can uses add_valid_attribute")
+        super(BaseRow, self).__setattr__("__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
+        if deletable:
+            super(BaseRow, self).__setattr__("__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
+
 
     def construct(self, *args, **kwargs):
         """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
