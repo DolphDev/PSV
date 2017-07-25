@@ -116,7 +116,7 @@ class BaseRow(dict):
         if s in self.keys():
             self.__setattr__(s, value)
         else:
-            raise Exception("{}".format(column))
+            raise KeyError("{}".format(column))
 
     def delcolumn(self, column):
         """Delete a cell by the orginal column name
