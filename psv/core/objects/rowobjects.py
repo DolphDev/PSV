@@ -291,16 +291,15 @@ class BaseRow(dict):
 #While less clean, this produces a decent speedup.
 non_accepted_key_names = set(tuple(dir(
     BaseRow)) + ("row_obj",) + tuple(keyword.kwlist))
-expermental_store = {}
-
+store_cleanup = {}
 
 def cleanup_name(s):
-    test = expermental_store.get(s, False)
-    if test: return test
+    sresult = store_cleanup.get(s, False)
+    if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if result in non_accepted_key_names:
-        expermental_store.update({s:result})
+        store_cleanup.update({s:result})
         return "psv_" + result 
     else:
-        expermental_store.update({s:result})
+        store_cleanup.update({s:result})
         return result
