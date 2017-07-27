@@ -298,8 +298,6 @@ def cleanup_name(s):
     if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if result in non_accepted_key_names:
-        store_cleanup.update({s:result})
-        return "psv_" + result 
-    else:
-        store_cleanup.update({s:result})
-        return result
+        result = "psv_" + result
+    store_cleanup.update({s:result})
+    return result
