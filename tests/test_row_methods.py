@@ -118,9 +118,7 @@ class psv_selections_test(unittest.TestCase):
 
     def test_add_valid_attribute_fail(self):
         with self.assertRaises(TypeError) as cm:
-            do_something()
             psv.core.objects.rowobjects.BaseRow({"data":{"org_row":"DATA", "value":""}}).add_valid_attribute("name")
-            self.fail("add_valid_attribute() failed to catch BaseRow")
 
 
     def test_outputrow_catches_non_bool():

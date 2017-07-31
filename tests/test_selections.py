@@ -60,7 +60,7 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.all_output()
         self.assertEqual(self.csvdoc.lenoutput(), 7)
 
-    def test_all_output(self):
+    def test_flip_output(self):
         self.construct()
         self.csvdoc[:3].no_output()
         self.csvdoc.flip_output()
