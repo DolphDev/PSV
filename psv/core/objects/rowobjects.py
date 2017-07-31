@@ -1,7 +1,6 @@
 from ..utils import asciireplace, limit_text
 from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
-from .formulas import Formula
 
 from tabulate import tabulate
 from string import ascii_lowercase, digits
@@ -49,36 +48,6 @@ class BaseRow(dict):
     def construct(self, *args, **kwargs):
         """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
         pass
-
-    def formula(self, columnname, func, rowref=None, **kwargs):
-        """Replaces a cell with a formula
-
-            :param columnname: Name of the column.
-            :param func: Function that accepts 1 argument and optionally kwargs.
-            :param rowref: The referenced row. Defaults to the current row.
-            :param kwargs: Parameters that will be supplied to the function when ran.
-            :type columnname: :class:`str`
-            :type func: :class:`FunctionType`
-
-            :returns: Nothing
-            :rtype: :class:`NoneType`
-        """
-        if rowref is None:
-            rowref = self
-        self.setcolumn(columnname, Formula(func, rowref, **kwargs))
-
-    def getformula(self, columnname):
-        """Get Formula
-
-            :param columnname: Gets the result of a formula. Used when 
-            formulas referenced other formulas
-
-        """
-        try:
-            return self.getcolumn(columnname).call()
-        except ValueError:
-            raise ValueError(
-                msg.getformulamsg.format(columnname))
 
     @property
     def outputrow(self):

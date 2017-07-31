@@ -1,7 +1,6 @@
 
 class RowObjectMsg:
 
-    getformulamsg = "'{}' cell is not a formula."
     outputrowmsg = "output must be {}, not {}"
     flagmessage = "Missing Flag"
     attribute_readonly = "'{classname}' object attribute '{attr}' is read-only. Note: '{attr}' is likely method/class attribute and not part of this row's data"
