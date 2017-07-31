@@ -30,15 +30,20 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-    def merge(self, *args, safe_merge=False, quick_merge=True):
+    def merge(self, *args, safe_merge=False, quick_merge=True, force_saftey=True):
         """Merges selctions
 
 
-           Note: Merges rely on all data in a row being hashable, use non_hash_merge.
+           Note: This Merge relies on all data in a row being hashable, use non_hash_merge if you
+           can't guarantee this
+
+           Saftey Note: You will lose saftey on some of Selection's functionality 
+           (such as creating selections) or finding a row if all rows don't have the same exact columns)
+           
         """
         try:
-            if not all(self.__apimother__ is x.__apimother__ for x in args):
-                raise Exception("Merge only accepts rows from same origin")
+            if (not all(self.__apimother__ is x.__apimother__ for x in args)) and force_saftey:
+                raise TypeError("Merge by default only accepts rows from same origin")
 
             if safe_merge:
                 out = self
@@ -60,11 +65,14 @@ class Selection(object):
 
     def non_hash_merge(self, *args):
         """This merge uses the exploits the __output__ flag of a row instead of it's hashed contents
-           This allows merging of of rows that contain unhashable mutable data such as sets or dict
+           This allows merging of of rows that contain unhashable mutable data such as sets or dict.
            This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
+
+           Note: This function is effectively single-threaded and editing the outputflag during
+           while its running will effect results of the merge.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise Exception("Merge only accepts rows from same origin")
+            raise Exception("non_hash_merge only accepts rows from same origin")
         outputstore = tuple(x.__output__ for x in self.__apimother__)
         self.__apimother__.no_output() 
         for x in ((self,) + args):
@@ -218,7 +226,7 @@ class Selection(object):
             raise Exception("Empty Grab")
 
     def fast_add(self, sel):
-        # Much faster than __add__, but doesn't guarantee no repeats.
+        """faster than __add__, but doesn't guarantee no repeats."""
         return Selection(tuple(self.rows) + tuple(sel.rows), self.__apimother__)
 
     def __len__(self):
@@ -291,11 +299,3 @@ class Selection(object):
         if not columns:
             columns = self.columns
         return outputstr(self.rows, columns, quote_all=quote_all, encoding=encoding)
-
-
-def output_safe_grab(sel):
-    for x in sel:
-        rs = x(1).__output__
-        x.resetflag()
-        yield rs
-    
