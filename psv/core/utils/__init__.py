@@ -31,15 +31,6 @@ def translate_type(string):
     except AttributeError:
         return string
 
-def column_string(n):
-    div=n
-    string=""
-    temp=0
-    while div>0:
-        module=(div-1)%26
-        string=chr(65+module)+string
-        div=int((div-module)/26)
-    return string
 
 def generate_func(name, kwargs):
     if isinstance(name, FunctionType) and not kwargs:
