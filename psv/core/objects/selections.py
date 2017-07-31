@@ -137,6 +137,7 @@ class Selection(object):
         return tuple(self._find_all(func))
 
     def flip_output(self):
+        """flips all output boolean for all rows in this selection"""
         for x in self.rows:
             ~x
         return self
@@ -155,6 +156,9 @@ class Selection(object):
 
     def lenoutput(self):
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
+
+    def len_no_output(self):
+        return len(tuple(filter(lambda x: not x.outputrow, self.rows)))
 
     def enable(self, selectionfirstarg_data=None, **kwargs):
         v = generate_func(selectionfirstarg_data, kwargs)
@@ -208,7 +212,7 @@ class Selection(object):
         if soft:
             return self.merge(self)
         else:
-            self.__rows__ = self.remove_duplicates().__rows__
+            self.__rows__ = self.merge(self).rows
         
 
     def unique(self, *args):
