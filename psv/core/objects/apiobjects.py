@@ -1,7 +1,7 @@
 from ..objects import BaseRow, Selection
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
-from ..utils import column_string, generate_func
+from ..utils import generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 
