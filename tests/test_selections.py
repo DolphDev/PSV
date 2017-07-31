@@ -142,7 +142,7 @@ class psv_selections_test(unittest.TestCase):
     def test_safe_merge(self):
         self.construct()
         try:
-            self.csvdoc.merge(self.csvdoc[:int(len(self.csvdoc)/2)], safe=True)
+            self.csvdoc.safe_merge(self.csvdoc[:int(len(self.csvdoc)/2)])
         except Exception as err:
             self.fail(err)
 

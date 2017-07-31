@@ -121,7 +121,7 @@ class psv_selections_test(unittest.TestCase):
             psv.core.objects.rowobjects.BaseRow({"data":{"org_row":"DATA", "value":""}}).add_valid_attribute("name")
 
 
-    def test_outputrow_catches_non_bool():
+    def test_outputrow_catches_non_bool(self):
         self.construct()
         with self.assertRaises(TypeError) as cm:
             self.csvdoc[0].outputrow("TEST")
@@ -129,6 +129,7 @@ class psv_selections_test(unittest.TestCase):
     def test_setcolumn_keyerror(self):
         self.construct()
         import random
+        import string
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
         with self.assertRaises(KeyError) as cm:
             for x in self.csvdoc:
@@ -137,6 +138,8 @@ class psv_selections_test(unittest.TestCase):
     def test_delcolumn_keyerror(self):
         self.construct()
         import random
+        import string
+
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
         with self.assertRaises(KeyError) as cm:
             for x in self.csvdoc:
@@ -145,6 +148,7 @@ class psv_selections_test(unittest.TestCase):
     def test_getcolumn_keyerror(self):
         self.construct()
         import random
+        import string
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
         with self.assertRaises(KeyError) as cm:
             for x in self.csvdoc:
