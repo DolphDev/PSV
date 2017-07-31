@@ -142,7 +142,7 @@ class psv_selections_test(unittest.TestCase):
     def test_non_hash_merge(self):
         self.construct()
         try:
-            self.csvdoc.test_non_hash_merge(self.csvdoc[:int(len(self.csvdoc)/2)])
+            self.csvdoc.non_hash_merge(self.csvdoc[:int(len(self.csvdoc)/2)])
         except Exception as err:
             self.fail(err)
 
@@ -154,8 +154,8 @@ class psv_selections_test(unittest.TestCase):
     def test_addrow(self):
         self.construct()
         row = self.csvdoc.addrow()
-        self.assertEqual(row, self.csvdoc[::-1])
+        self.assertEqual(row, self.csvdoc[-1])
 
-    
+
 
 
