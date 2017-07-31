@@ -38,10 +38,12 @@ class BaseRow(dict):
     def add_valid_attribute(self, attr, deletable=False):
         "Used by classes that inherit to add attributes to the whitelists"
         if self.__class__ is BaseRow:
-            raise TypeError("Only inherited Rows can uses add_valid_attribute")
-        super(BaseRow, self).__setattr__("__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
+            raise TypeError(msg.inherited_rows)
+        super(BaseRow, self).__setattr__(
+            "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
         if deletable:
-            super(BaseRow, self).__setattr__("__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
+            super(BaseRow, self).__setattr__(
+                "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
 
 
     def construct(self, *args, **kwargs):
@@ -177,7 +179,7 @@ class BaseRow(dict):
                     .format(s=s)
                 )))
         else:
-            raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+            raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
 
     def __setattr__(self, attr, v):
@@ -200,10 +202,10 @@ class BaseRow(dict):
             if attr in self.__sawhitelist__:
                 super(BaseRow, self).__setattr__(attr, v)
             elif attr in self.__dirstore__:
-                raise AttributeError("'{}' object attribute '{}' is read-only".format(self.__class__, attr))
-
+                raise AttributeError(
+                    msg.attribute_readonly.format(self.__class__, attr))
             else:
-                raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+                raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
 
     def __delattr__(self, attr):
@@ -226,9 +228,10 @@ class BaseRow(dict):
             if attr in self.__delwhitelist__:
                 super(BaseRow, self).__delattr__(attr)
             elif attr in self.__dirstore__:
-                raise AttributeError("'{}' object attribute '{}' is read-only".format(self.__class__, attr))
+                raise AttributeError(
+                    msg.attribute_readonly.format(self.__class__, attr))
             else:
-                raise AttributeError('\'{}\' has no attribute \'{}\''.format(
+                raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
 
     def addcolumn(self, columnname, columndata=""):
@@ -291,13 +294,15 @@ class BaseRow(dict):
 #While less clean, this produces a decent speedup.
 non_accepted_key_names = set(tuple(dir(
     BaseRow)) + ("row_obj",) + tuple(keyword.kwlist))
+bad_first_char = set(digits)
 store_cleanup = {}
+
 
 def cleanup_name(s):
     sresult = store_cleanup.get(s, False)
     if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
-    if result in non_accepted_key_names:
+    if result in non_accepted_key_names or result[0] in bad_first_char:
         result = "psv_" + result
     store_cleanup.update({s:result})
     return result
