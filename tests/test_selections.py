@@ -47,7 +47,6 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name, price=10)), 2)
         self.assertEqual(len(self.csvdoc.select("name", price=lambda p: p > 10)), 4)
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name, price=lambda p: p > 10)), 4)
-
         self.assertEqual(len(self.csvdoc.select("name", price=10, company="Yahoo", available=1)), 1)
 
     def test_no_output(self):
@@ -133,4 +132,30 @@ class psv_selections_test(unittest.TestCase):
         except Exception:
             pass
 
+    def test_merge(self):
+        self.construct()
+        try:
+            self.csvdoc.merge(self.csvdoc[:int(len(self.csvdoc)/2)])
+        except Exception as err:
+            self.fail(err)
+
+    def test_non_hash_merge(self):
+        self.construct()
+        try:
+            self.csvdoc.test_non_hash_merge(self.csvdoc[:int(len(self.csvdoc)/2)])
+        except Exception as err:
+            self.fail(err)
+
+    def test_columns(self):
+        self.construct()
+        self.csvdoc.columns
+        self.csvdoc.columns = ["Hello 5"]
     
+    def test_addrow(self):
+        self.construct()
+        row = self.csvdoc.addrow()
+        self.assertEqual(row, self.csvdoc[::-1])
+
+    
+
+

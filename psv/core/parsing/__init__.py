@@ -11,7 +11,6 @@ def parser(csvfile, cls, typetranfer=True, *args, **kwargs):
         yield cls({cleanup_name(x): {"org_name": x, "value": translate_type(row[x]) if typetranfer else row[x]}
                    for x in row.keys()}, *args, **kwargs)
 
-
 def parser_addrow(columns, cls, typetranfer=True, *args, **kwargs):
     r = cls({}, *args, **kwargs)
     r.update(({cleanup_name(x): {"org_name": x, "value": ""} for x in columns}))
