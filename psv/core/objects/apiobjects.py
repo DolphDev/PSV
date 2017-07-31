@@ -18,10 +18,7 @@ class MainSelection(Selection):
         # Since I close the file after this, the row must be placed into memory
         self.__apimother__ = self
         self.__outputname__ = outputfile
-        if columns is None:
-            self.__columns__ = None
-        else:
-            self.__columns__ = columns
+        self.__columns__ = columns
 
         if csvdict is None:
             csvdict = {}
