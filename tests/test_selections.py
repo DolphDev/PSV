@@ -139,6 +139,14 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_safe_merge(self):
+        self.construct()
+        try:
+            self.csvdoc.merge(self.csvdoc[:int(len(self.csvdoc)/2)], safe=True)
+        except Exception as err:
+            self.fail(err)
+
+
     def test_non_hash_merge(self):
         self.construct()
         try:
@@ -155,6 +163,8 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         row = self.csvdoc.addrow()
         self.assertEqual(row, self.csvdoc[-1])
+
+
 
 
 

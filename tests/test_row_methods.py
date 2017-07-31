@@ -49,9 +49,22 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         try:
             for x in self.csvdoc:
-                (x) == (x)
+                self.assertTrue((x) == (x))
         except Exception as err:
             self.fail(err)
+
+    def test_n_eq_non_row(self):
+        self.construct()
+        try:
+            for x in self.csvdoc:
+                (x) == None
+        except Exception as err:
+            self.fail(err)
+
+    def test_n_eq_row(self):
+        self.construct()
+        self.csvdoc.addrow()
+        self.assertFalse(self.csvdoc[0] == self.csvdoc[-1])
 
     def test_hash_value(self):
         self.construct()
@@ -88,6 +101,54 @@ class psv_selections_test(unittest.TestCase):
     def test_tabulate(self):
         self.construct()
         try: 
-            self.csvdoc.tabulate()
+            for x in self.csvdoc:
+                x.tabulate()
         except Exception as err:
             self.fail(err)
+
+    def test_add_valid_attribute(self):
+        class TestRow(psv.core.objects.rowobjects.BaseRow):
+            def construct(self, *args, **kwargs):
+                self.add_valid_attribute("Test1")
+                self.add_valid_attribute("Test2", True)
+
+        row = TestRow({"data":{"org_row":"DATA", "value":""})
+        row.add_valid_attribute("Test3")
+        row.add_valid_attribute("Test4", True)
+
+    def test_add_valid_attribute_fail(self):
+        with self.assertRaises(TypeError) as cm:
+            do_something()
+            psv.core.objects.rowobjects.BaseRow({"data":{"org_row":"DATA", "value":""}}).add_valid_attribute("name")
+            self.fail("add_valid_attribute() failed to catch BaseRow")
+
+
+    def test_outputrow_catches_non_bool():
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc[0].outputrow("TEST")
+
+    def test_setcolumn_keyerror(self):
+        self.construct()
+        import random
+        column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+        with self.assertRaises(KeyError) as cm:
+            for x in self.csvdoc:
+                x.setcolumn(column, "test")
+            
+    def test_delcolumn_keyerror(self):
+        self.construct()
+        import random
+        column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+        with self.assertRaises(KeyError) as cm:
+            for x in self.csvdoc:
+                x.delcolumn(column)
+
+    def test_getcolumn_keyerror(self):
+        self.construct()
+        import random
+        column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+        with self.assertRaises(KeyError) as cm:
+            for x in self.csvdoc:
+                x.getcolumn(column)
+            
