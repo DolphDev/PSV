@@ -78,7 +78,13 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         try: 
             self.csvdoc[0].name1
-            self.fail("Attribute Error Failed to trigger")
+            self.fail("Attribute Error Failed to trigger: No attribute")
+        except AttributeError:
+            pass
+
+        try:
+            self.csvdoc[0].Name
+            self.fail("Attribute Error Failed to trigger: Bad row ref")
         except AttributeError:
             pass
 
@@ -87,6 +93,17 @@ class psv_selections_test(unittest.TestCase):
         try: 
             self.csvdoc[0].name1 = 1
             self.fail("Attribute Error Failed to trigger")
+        except AttributeError:
+            pass
+        try:
+            self.csvdoc[0].Name = 1
+            self.fail("Attribute Error Failed to trigger: Bad row ref")
+        except AttributeError:
+            pass
+
+        try:
+            self.csvdoc[0].keys = 1
+            self.fail("Attribute Error Failed to trigger: read only")
         except AttributeError:
             pass
 
@@ -98,11 +115,26 @@ class psv_selections_test(unittest.TestCase):
         except AttributeError:
             pass
 
+        try:
+            del self.csvdoc[0].Name
+            self.fail("Attribute Error Failed to trigger: Bad row ref")
+        except AttributeError:
+            pass
+
+        try:
+            del self.csvdoc[0].keys
+            self.fail("Attribute Error Failed to trigger: read only")
+        except AttributeError:
+            pass
+
+
     def test_tabulate(self):
         self.construct()
         try: 
             for x in self.csvdoc:
                 x.tabulate()
+                x.tabulate(only_ascii=False)
+
         except Exception as err:
             self.fail(err)
 
@@ -153,4 +185,23 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(KeyError) as cm:
             for x in self.csvdoc:
                 x.getcolumn(column)
-            
+
+    def test_outputrow_typerror(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc[0].outputrow("THIS SHOULD ERROR OUT")
+
+    def test__str__(self):
+        self.construct()
+        try:
+            for x in self.csvdoc:
+                str(x)
+        except Exception as err:
+            self.fail(err)
+
+
+    def test__addcolumn(self):
+        self.construct()
+        for x in self.csvdoc:
+            self.addcolumn("TEST")
+            self.addcolumn("TEST2", "DATA")
