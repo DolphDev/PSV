@@ -22,14 +22,14 @@ class psv_selections_test(unittest.TestCase):
     def test_delete_rows(self):
         self.construct()
         try:
-            del self.rows[0]
+            del self.csvdoc.rows[0]
         except Exception as err:
             self.fail(err)
 
     def test_delete_rows_getitem(self):
         self.construct()
         try:
-            del self[0]
+            del self.csvdoc[0]
         except Exception as err:
             self.fail(err)
 
@@ -179,8 +179,9 @@ class psv_selections_test(unittest.TestCase):
 
     
     def test_addrow_kw(self):
+        import random
         self.construct()
-        row = self.csvdoc.addrow({x:random.randint(1,100)} for x in self.csvdoc.columns)
+        row = self.csvdoc.addrow(**{x:random.randint(1,100)} for x in self.csvdoc.columns)
         self.assertEqual(row, self.csvdoc[-1])
 
 
