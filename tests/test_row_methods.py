@@ -203,5 +203,5 @@ class psv_selections_test(unittest.TestCase):
     def test__addcolumn(self):
         self.construct()
         for x in self.csvdoc:
-            self.addcolumn("TEST")
-            self.addcolumn("TEST2", "DATA")
+            x.addcolumn("TEST")
+            x.addcolumn("TEST2", "DATA")

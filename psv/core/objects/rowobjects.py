@@ -172,7 +172,7 @@ class BaseRow(dict):
                 super(BaseRow, self).__setattr__(attr, v)
             elif attr in self.__dirstore__:
                 raise AttributeError(
-                    msg.attribute_readonly.format(self.__class__, attr))
+                    msg.attribute_readonly.format(classname=self.__class__, attr=attr))
             else:
                 raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
@@ -198,7 +198,7 @@ class BaseRow(dict):
                 super(BaseRow, self).__delattr__(attr)
             elif attr in self.__dirstore__:
                 raise AttributeError(
-                    msg.attribute_readonly.format(self.__class__, attr))
+                    msg.attribute_readonly.format(classname=self.__class__, attr=attr))
             else:
                 raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
