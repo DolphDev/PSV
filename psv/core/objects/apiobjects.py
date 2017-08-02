@@ -42,7 +42,7 @@ class MainSelection(Selection):
 
     @columns.setter
     def columns(self, v):
-        self.__columns__ = v
+        return self.__columns__
 
 
     def addrow(self, columns=None, cls=BaseRow, **kwargs):
