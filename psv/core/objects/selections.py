@@ -104,7 +104,7 @@ class Selection(object):
 
     @columns.setter
     def columns(self, v):
-        self.__apimother__.rebuildcolumnsmap(v)
+        self.__apimother__.__columns__ = v
 
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
