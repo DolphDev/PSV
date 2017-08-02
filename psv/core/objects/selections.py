@@ -16,9 +16,6 @@ class Selection(object):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
 
-        if not self.rows:
-            Exception("Selection Error")
-
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
@@ -190,6 +187,18 @@ class Selection(object):
         func = generate_func(selectionfirstarg_data, kwargs)
         return self[func]
 
+    def safe_select(self, selectionfirstarg_data=None, **kwargs):
+        """Method for selecting part of the csv document.
+            generates a function based of the parameters given.
+
+            This instantly processes the select instead of lazy loading.
+                Preventing race conditions under most uses cases.
+        """
+        if not selectionfirstarg_data and not kwargs:
+            return Selection(self.__rows__, self.__apimother__)
+        func = generate_func(selectionfirstarg_data, kwargs)
+        return self._safe_select(func)
+
     def grab(self, *args):
         """Grabs specified columns from every row
 
@@ -249,6 +258,10 @@ class Selection(object):
             return Selection(_index_function_gen(self, v), self.__apimother__)
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
+
+    def _safe_select(self, func):
+        return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)
+
 
     def addcolumn(self, columnname, columndata="", add_to_columns=True):
         """Adds a column
