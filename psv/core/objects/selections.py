@@ -27,7 +27,7 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-    def merge(self, *args, safe_merge=False, quick_merge=True, force_saftey=True):
+    def merge(self, *args, force_saftey=True):
         """Merges selctions
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
@@ -44,24 +44,17 @@ class Selection(object):
         try:
             if (not all(self.__apimother__ is x.__apimother__ for x in args)) and force_saftey:
                 raise TypeError("Merge by default only accepts rows from same origin")
-
-            if safe_merge:
-                out = self
-                for x in args:
-                    out = out + x
-                return out
-            elif quick_merge:
-                return Selection(tuple(self._merge(args)), self.__apimother__)
-
-            else:
-                return self.merge(*args, safe_merge=True)
+            return Selection(tuple(self._merge(args)), self.__apimother__)
         except TypeError as exc:
             raise TypeError(
                 "{} - Use the non_hash_merge to merge rows with non-hashable datatypes.".format(exc))
 
     def safe_merge(self, *args):
         """This is much slower but is hashes rows as processed instead of preprocessing them"""
-        return self.merge(self, *args, safe_merge=True)
+        out = self
+        for x in args:
+            out = out + x
+        return out
 
     def non_hash_merge(self, *args):
         """This merge uses the exploits the __output__ flag of a row instead of it's hashed contents
@@ -88,7 +81,7 @@ class Selection(object):
         return result
 
     def __add__(self, sel):
-        return Selection(set(
+        return Selection((
             tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
 
     @property

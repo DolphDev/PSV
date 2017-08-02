@@ -29,14 +29,6 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc = psv.loads(csv)
         self.csv_repeat = psv.loads(csv_repeat)
 
-    def test_hash(self):
-        self.construct()
-        try:
-            for x in self.csvdoc:
-                hash(x)
-        except Exception as err:
-            self.fail(err)
-
     def test_hash_value(self):
         self.construct()
         try:
