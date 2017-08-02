@@ -29,13 +29,16 @@ class Selection(object):
 
     def merge(self, *args, safe_merge=False, quick_merge=True, force_saftey=True):
         """Merges selctions
-
+           
+           Note: This merge's algorithm relies on the uniqueness of the rows.
+            duplicate rows will be only represented by 1 row. 
 
            Note: This Merge relies on all data in a row being hashable, use non_hash_merge if you
-           can't guarantee this
+           can't guarantee this.
 
            Saftey Note: You will lose saftey on some of Selection's functionality 
-           (such as creating selections) or finding a row if all rows don't have the same exact columns)
+            (such as creating sub-selections) or finding a row 
+            if all rows don't have the same exact columns)
            
         """
         try:
@@ -65,8 +68,9 @@ class Selection(object):
            This allows merging of of rows that contain unhashable mutable data such as sets or dict.
            This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
 
-           Note: This function is effectively single-threaded and editing the outputflag during
-           while its running will effect results of the merge.
+           Note: This merge is effectively single-threaded and editing the outputflag during
+            running will effect results of the merge and may have unattended conquences the
+            state of this selection.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
             raise Exception("non_hash_merge only accepts rows from same origin")
