@@ -100,11 +100,11 @@ class Selection(object):
 
     @property
     def columns(self):
-        return self.__apimother__.__columns__
+        return self.__apimother__.columns
 
     @columns.setter
     def columns(self, v):
-        self.__apimother__.__columns__ = v
+        self.__apimother__.columns = v
 
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
