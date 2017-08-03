@@ -196,3 +196,7 @@ class psv_load_tests(unittest.TestCase):
             psv.new(columns=columns)
         except Exception as err:
             self.fail(str(err))
+
+    def test_api_new_invalid_columns(self, columns):
+        with self.assertRaises(ValueError) as cm:
+            psv.new(columns=["#$%^&*"])

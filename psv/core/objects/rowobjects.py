@@ -277,6 +277,8 @@ def cleanup_name(s):
     sresult = store_cleanup.get(s, False)
     if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
+    if not result:
+        raise ValueError(msg.non_valid.format(s))
     if result in non_accepted_key_names or result[0] in bad_first_char:
         result = "psv_" + result
     store_cleanup.update({s:result})
