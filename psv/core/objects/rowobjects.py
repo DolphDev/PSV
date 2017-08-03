@@ -22,6 +22,15 @@ class BaseRow(dict):
 
         self.construct(*args, **kwargs)
 
+    def __call__(self, column, setvalue=None, delete=False):
+        """Alais for .getcolumn() family of methods"""
+        if delete:
+            self.delcolumn(column)
+        elif setvalue is None:
+            return self.getcolumn(column)
+        else:
+            self.setcolumn(column, setvalue)
+
     def __hashvalue__(self):
         """raw data that can be hashed if all contents are hashable"""
         return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))

@@ -197,3 +197,12 @@ class psv_selections_test(unittest.TestCase):
         for x in self.csvdoc:
             x.addcolumn("TEST")
             x.addcolumn("TEST2", "DATA")
+
+    def test__call__(self):
+        self.construct()
+        row = self.csvdoc[0]
+        self.assertEqual(row("Name"), row.getcolumn("Name"))
+        row("Name", "Data")
+        self.assertEqual(row("Name"), "Data")
+        row("Name", delete=True)
+        self.assertEqual(row("Name"), "")
