@@ -199,4 +199,4 @@ class psv_load_tests(unittest.TestCase):
 
     def test_api_new_invalid_columns(self):
         with self.assertRaises(ValueError) as cm:
-            psv.new(columns=["#$%^&*"])
+            psv.new(columns=["#$%^&*"]).addrow()
