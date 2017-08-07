@@ -38,7 +38,7 @@ class BaseRow(dict):
 
     def __hashvalue__(self):
         """raw data that can be hashed if all contents are hashable"""
-        return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))
+        return (tuple((column, self[column][1]) for column in sorted(self.keys())))
 
     def __repr__(self):
         return "<'{rowname}':{columnamount}>".format(
@@ -69,7 +69,7 @@ class BaseRow(dict):
         if not super(BaseRow, self).get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
-            return self[attr]["value"]
+            return self[attr][1]
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
@@ -92,7 +92,7 @@ class BaseRow(dict):
             statement"""
         s = cleanup_name(attr)
         if attr in self.keys():
-            self[attr]["value"] = v
+            self[attr][1] = v
         elif s in self.keys():
             raise AttributeError((
                 "{}{}"
@@ -118,7 +118,7 @@ class BaseRow(dict):
         del statement"""
         s = cleanup_name(attr)
         if attr in self.keys():
-            self[attr]["value"] = ""
+            self[attr][1] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -214,7 +214,7 @@ class BaseRow(dict):
         short_cn = cleanup_name(columnname)
         if not self.get(short_cn):
             self[short_cn] = {
-                "org_name": columnname, "value": columndata}
+                0: columnname, 1: columndata}
         else:
             raise Exception("Column already exists.")
 
@@ -236,7 +236,7 @@ class BaseRow(dict):
                 if not (k in shortcolumns_check):
                     continue
             newdict.update(
-                {self[k]["org_name"]: self[k]["value"]})
+                {self[k][0]: self[k][1]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
