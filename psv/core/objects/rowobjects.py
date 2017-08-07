@@ -69,8 +69,7 @@ class BaseRow(dict):
         if not super(BaseRow, self).get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
-            result = (self[attr]["value"])
-            return result
+            return self[attr]["value"]
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
