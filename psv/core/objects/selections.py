@@ -16,6 +16,27 @@ class Selection(object):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
 
+    def __add__(self, sel):
+        return Selection((
+            tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
+
+    def __len__(self):
+        return len(self.rows)
+
+    def __getitem__(self, v):
+        if isinstance(v, slice):
+            return Selection(self.rows[v], self.__apimother__)
+        if isinstance(v, int):
+            return (self.rows[v])
+        elif isinstance(v, str):
+            return (x.getcolumn(v) for x in self.rows)
+        elif isinstance(v, tuple):
+            return (multiple_index(x, v) for x in self.rows)
+        elif isinstance(v, FunctionType):
+            return Selection(_index_function_gen(self, v), self.__apimother__)
+        else:
+            raise TypeError(msg.getitemmsg.format(type(v)))
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
@@ -79,10 +100,6 @@ class Selection(object):
             else:
                 -row
         return result
-
-    def __add__(self, sel):
-        return Selection((
-            tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
 
     @property
     def rows(self):
@@ -239,22 +256,6 @@ class Selection(object):
         """faster than __add__, but doesn't guarantee no repeats."""
         return Selection(tuple(self.rows) + tuple(sel.rows), self.__apimother__)
 
-    def __len__(self):
-        return len(self.rows)
-
-    def __getitem__(self, v):
-        if isinstance(v, slice):
-            return Selection(self.rows[v], self.__apimother__)
-        if isinstance(v, int):
-            return (self.rows[v])
-        elif isinstance(v, str):
-            return (x.getcolumn(v) for x in self.rows)
-        elif isinstance(v, tuple):
-            return (multiple_index(x, v) for x in self.rows)
-        elif isinstance(v, FunctionType):
-            return Selection(_index_function_gen(self, v), self.__apimother__)
-        else:
-            raise TypeError(msg.getitemmsg.format(type(v)))
 
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)

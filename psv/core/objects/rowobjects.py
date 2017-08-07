@@ -31,83 +31,14 @@ class BaseRow(dict):
         else:
             self.setcolumn(column, setvalue)
 
-    def __hashvalue__(self):
-        """raw data that can be hashed if all contents are hashable"""
-        return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))
-
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
-    def add_valid_attribute(self, attr, deletable=False):
-        "Used by classes that inherit to add attributes to the whitelists"
-        if self.__class__ is BaseRow:
-            raise TypeError(msg.inherited_rows)
-        super(BaseRow, self).__setattr__(
-            "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
-        if deletable:
-            super(BaseRow, self).__setattr__(
-                "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
-
-
-    def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
-        pass
-
-    @property
-    def outputrow(self):
-        """Returns a boolean of the current output flag for this row"""
-        return self.__output__
-
-    @outputrow.setter
-    def outputrow(self, v):
-        if not isinstance(v, bool):
-            raise TypeError(msg.outputrowmsg.format(bool, type(v)))
-        self.__output__ = v
-
-    def getcolumn(self, column):
-        """Get a cell by the orginal column name
-
-        :param column: The column name. Can be both long and short form.
-        :type column: :class:`str`
-
-        :returns: String of the data, or an int/float if a number/decimal.
-        :rtype: :class:`str`, :class:`int`, or :class:`float`
-        """
-        s = cleanup_name(column)
-        if s in self.keys():
-            return getattr(self, s)
-        else:
-            raise KeyError("{}".format(column))
-
-    def setcolumn(self, column, value):
-        """Set a cell by the orginal column name
-
-            :param column: The column name. Can be both long and short form.
-            :param value: The data to be set to the specified column
-            :type column: :class:`str`
-
-        """
-        s = cleanup_name(column)
-        if s in self.keys():
-            self.__setattr__(s, value)
-        else:
-            raise KeyError("{}".format(column))
-
-    def delcolumn(self, column):
-        """Delete a cell by the orginal column name
-
-        :param column: The column name. Can be both long and short form.
-        :type column: :class:`str`
-
-        """
-
-        s = cleanup_name(column)
-        if s in self.keys():
-            self.__delattr__(s)
-        else:
-            raise KeyError("{}".format(column))
+    def __hashvalue__(self):
+        """raw data that can be hashed if all contents are hashable"""
+        return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))
 
     def __repr__(self):
         return "<'{rowname}':{columnamount}>".format(
@@ -208,6 +139,76 @@ class BaseRow(dict):
             else:
                 raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
+
+    def add_valid_attribute(self, attr, deletable=False):
+        "Used by classes that inherit to add attributes to the whitelists"
+        if self.__class__ is BaseRow:
+            raise TypeError(msg.inherited_rows)
+        super(BaseRow, self).__setattr__(
+            "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
+        if deletable:
+            super(BaseRow, self).__setattr__(
+                "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
+
+
+    def construct(self, *args, **kwargs):
+        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
+        pass
+
+    @property
+    def outputrow(self):
+        """Returns a boolean of the current output flag for this row"""
+        return self.__output__
+
+    @outputrow.setter
+    def outputrow(self, v):
+        if not isinstance(v, bool):
+            raise TypeError(msg.outputrowmsg.format(bool, type(v)))
+        self.__output__ = v
+
+
+    def getcolumn(self, column):
+        """Get a cell by the orginal column name
+
+        :param column: The column name. Can be both long and short form.
+        :type column: :class:`str`
+
+        :returns: String of the data, or an int/float if a number/decimal.
+        :rtype: :class:`str`, :class:`int`, or :class:`float`
+        """
+        s = cleanup_name(column)
+        if s in self.keys():
+            return getattr(self, s)
+        else:
+            raise KeyError("{}".format(column))
+
+    def setcolumn(self, column, value):
+        """Set a cell by the orginal column name
+
+            :param column: The column name. Can be both long and short form.
+            :param value: The data to be set to the specified column
+            :type column: :class:`str`
+
+        """
+        s = cleanup_name(column)
+        if s in self.keys():
+            self.__setattr__(s, value)
+        else:
+            raise KeyError("{}".format(column))
+
+    def delcolumn(self, column):
+        """Delete a cell by the orginal column name
+
+        :param column: The column name. Can be both long and short form.
+        :type column: :class:`str`
+
+        """
+
+        s = cleanup_name(column)
+        if s in self.keys():
+            self.__delattr__(s)
+        else:
+            raise KeyError("{}".format(column))
 
     def addcolumn(self, columnname, columndata=""):
         """Adds a column for this row only"""
