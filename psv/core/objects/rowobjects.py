@@ -14,9 +14,12 @@ class BaseRow(dict):
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
     def __init__(self, data, *args, **kwargs):
-        super(BaseRow, self).__setattr__("__delwhitelist__", set())
-        super(BaseRow, self).__setattr__("__dirstore__", (set(dir(self))))
-        super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__", "outputrow")))
+        super(BaseRow, self).__setattr__("__delwhitelist__", 
+            BaseRowDefaults.__delwhitelist__)
+        super(BaseRow, self).__setattr__("__dirstore__",
+            BaseRowDefaults.__dirstore__)
+        super(BaseRow, self).__setattr__("__sawhitelist__",
+            BaseRowDefaults.__sawhitelist__)
         super(BaseRow, self).__init__(data)
         self.__output__ = True
 
@@ -262,6 +265,11 @@ class BaseRow(dict):
             return asciireplace(result)
         else:
             return result
+
+class BaseRowDefaults(object):
+    __delwhitelist__ = set()
+    __dirstore__ = set(dir(BaseRow))
+    __sawhitelist__ = set(("__output__", "outputrow"))
 
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
