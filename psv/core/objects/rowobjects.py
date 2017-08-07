@@ -1,7 +1,7 @@
 from ..utils import asciireplace, limit_text
 from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
-
+from functools import lru_cache
 from tabulate import tabulate
 from string import ascii_lowercase, digits
 
@@ -272,7 +272,7 @@ non_accepted_key_names = set(tuple(dir(
 bad_first_char = set(digits)
 store_cleanup = {}
 
-
+@lru_cache(256)
 def cleanup_name(s):
     sresult = store_cleanup.get(s, False)
     if sresult: return sresult
@@ -281,5 +281,4 @@ def cleanup_name(s):
         raise ValueError(msg.non_valid.format(s))
     if result in non_accepted_key_names or result[0] in bad_first_char:
         result = "psv_" + result
-    store_cleanup.update({s:result})
     return result
