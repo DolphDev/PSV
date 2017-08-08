@@ -1,5 +1,4 @@
 from ..utils import asciireplace, limit_text
-from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
 from functools import lru_cache
 from tabulate import tabulate
