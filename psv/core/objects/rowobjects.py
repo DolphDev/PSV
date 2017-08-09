@@ -12,7 +12,7 @@ class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, data, columns_map, args, **kwargs):
         super(BaseRow, self).__setattr__("__delwhitelist__", 
             BaseRowDefaults.__delwhitelist__)
         super(BaseRow, self).__setattr__("__dirstore__",
@@ -20,6 +20,7 @@ class BaseRow(dict):
         super(BaseRow, self).__setattr__("__sawhitelist__",
             BaseRowDefaults.__sawhitelist__)
         super(BaseRow, self).__init__(data)
+        self[BaseRowDefaults.__psvcolumns__] = columns_map
         self.__output__ = True
 
         self.construct(*args, **kwargs)
@@ -269,6 +270,8 @@ class BaseRowDefaults(object):
     __delwhitelist__ = set()
     __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))
+    __columnname__ = 2 #Uses int for performance and anti-collision protection
+                       # 2 because 1 and 0 are already used.
 
 #This block was in utils, 
 # but it relied on a circular reference that re-imported

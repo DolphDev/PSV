@@ -14,17 +14,20 @@ class MainSelection(Selection):
                  "__columns__", "__columnsmap__",
                  "__rows__", "__apimother__"]
 
-    def __init__(self, csvdict=None, columns=None, cls=BaseRow, parsing=parser, outputfile=None, typetranfer=True, *args, **kwargs):
+    def __init__(self, csvdict=None, columns=None, columnsmap=None, 
+                 cls=BaseRow, parsing=parser, outputfile=None,
+                 typetranfer=True, *args, **kwargs):
         # Since I close the file after this, the row must be placed into memory
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
+        self.__columnsmap__ = columnsmap if columnsmap else {}
 
         if csvdict is None:
             csvdict = {}
         if csvdict:
             self.__rows__ = list(
-                parser(csvdict, cls, typetranfer, *args, **kwargs))
+                parser(csvdict, cls, self.__columnsmap__, typetranfer, *args, **kwargs))
         else:
             self.__rows__ = list()
 
@@ -46,7 +49,7 @@ class MainSelection(Selection):
 
 
     def addrow(self, columns=None, cls=BaseRow, **kwargs):
-        r = parser_addrow(columns if columns else self.__columns__, cls)
+        r = parser_addrow(columns if columns else self.__columns__, cls, self.__columnsmap__)
         self.__rows__.append(r)
         if kwargs:
             for k, v in kwargs.items():
