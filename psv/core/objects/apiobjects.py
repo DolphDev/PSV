@@ -21,7 +21,7 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
-        self.__columnsmap__ = columnsmap if columnsmap else {}
+        self.__columnsmap__ = {"hello":"Hello!"}
 
         if csvdict is None:
             csvdict = {}
@@ -58,3 +58,28 @@ class MainSelection(Selection):
 
     def __delitem__(self, v):
         del self.__rows__[v]
+
+def _column_repeat_dict(columns, clean_ups):
+    master = {}
+    for x in clean_ups:
+        master[x] = None
+    for x in columns:
+        cl_name = cleanup_name(x, {})
+        if master[cl_name] is None:
+            master[cl_name] = (x,)
+        else:
+            master[cl_name] = master[cl_name] + (x,)
+    return master
+
+def column_crunch_repeat(columns):
+    rv = {}
+    clean_ups = set(cleanup_name(x, {}) for x in columns)
+    if len(clean_ups) == len(columns):
+        return {}
+    ref = _column_repeat_dict(columns, clean_ups)
+    for x in clean_ups:
+        if len(ref[x]) > 1:
+            counter = 0
+            for column in ref[x]:
+                rv.update({column:x+"_"+str(counter)})
+                counter += 1

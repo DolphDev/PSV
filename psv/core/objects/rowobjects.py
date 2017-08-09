@@ -12,7 +12,7 @@ class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
-    def __init__(self, data, columns_map, args, **kwargs):
+    def __init__(self, data, columns_map, *args, **kwargs):
         super(BaseRow, self).__setattr__("__delwhitelist__", 
             BaseRowDefaults.__delwhitelist__)
         super(BaseRow, self).__setattr__("__dirstore__",
@@ -28,11 +28,11 @@ class BaseRow(dict):
     def __call__(self, column, setvalue=None, delete=False):
         """Alais for .getcolumn() family of methods"""
         if delete:
-            self.delcolumn(column)
+            self.delcolumn(column, False)
         elif setvalue is None:
-            return self.getcolumn(column)
+            return self.getcolumn(column, False)
         else:
-            self.setcolumn(column, setvalue)
+            self.setcolumn(column, setvalue, False)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -69,10 +69,10 @@ class BaseRow(dict):
         return self
 
     def __getattribute__(self, attr):
-        if not super(BaseRow, self).get(attr, False):
+        if not self["__psvcolumnstracker__"].get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
-            return self[attr][1]
+            return self[self["__psvcolumnstracker__"][attr]]
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
@@ -94,8 +94,8 @@ class BaseRow(dict):
         """Allows setting of rows and attributes by using =
             statement"""
         s = cleanup_name(attr)
-        if attr in self.keys():
-            self[attr][1] = v
+        if attr in self["__psvcolumnstracker__"].keys():
+            self[self["__psvcolumnstracker__"][attr]] = v
         elif s in self.keys():
             raise AttributeError((
                 "{}{}"
@@ -120,8 +120,8 @@ class BaseRow(dict):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
         s = cleanup_name(attr)
-        if attr in self.keys():
-            self[attr][1] = ""
+        if attr in self["__psvcolumnstracker__"].keys():
+            self[self["__psvcolumnstracker__"][attr]] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -169,20 +169,27 @@ class BaseRow(dict):
         self.__output__ = v
 
 
-    def getcolumn(self, column):
+    def getcolumn(self, column, accept_small_names=True):
         """Get a cell by the orginal column name
 
-        :param column: The column name. Can only be long form
+        :param column: The column name. Can only be long form if accept_small_names == False
         :type column: :class:`str`
 
         :returns: String of the data, or an int/float if a number/decimal.
         :rtype: :class:`str`, :class:`int`, or :class:`float`
         """
-        s = cleanup_name(column)
-        if s in self.keys():
-            return getattr(self, s)
+        if column in self.keys():
+            return (self[column])
+        elif accept_small_names:
+            s = cleanup_name(column)
+            return getattr(s, self)
         else:
-            raise KeyError("{}".format(column))
+            if not accept_small_names:
+                raise KeyError("'{}'".format(column))
+            else:
+                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+
+
 
     def setcolumn(self, column, value):
         """Set a cell by the orginal column name
@@ -192,11 +199,17 @@ class BaseRow(dict):
             :type column: :class:`str`
 
         """
-        s = cleanup_name(column)
-        if s in self.keys():
+
+        if column in self.keys():
+            return (self[column])
+        elif accept_small_names:
+            s = cleanup_name(column)
             self.__setattr__(s, value)
         else:
-            raise KeyError("{}".format(column))
+            if not accept_small_names:
+                raise KeyError("'{}'".format(column))
+            else:
+                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def delcolumn(self, column):
         """Delete a cell by the orginal column name
@@ -205,19 +218,22 @@ class BaseRow(dict):
         :type column: :class:`str`
 
         """
-
-        s = cleanup_name(column)
-        if s in self.keys():
+        if column in self.keys():
+            return (self[column])
+        elif accept_small_names:
+            s = cleanup_name(column)
             self.__delattr__(s)
         else:
-            raise KeyError("{}".format(column))
+            if not accept_small_names:
+                raise KeyError("'{}'".format(column))
+            else:
+                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def addcolumn(self, columnname, columndata=""):
-        """Adds a column for this row only"""
-        short_cn = cleanup_name(columnname)
-        if not self.get(short_cn):
-            self[short_cn] = {
-                0: columnname, 1: columndata}
+        """Adds a column for this row only
+            doesn't add to column tracker"""
+        if not self.get(columnname):
+            self[columnname] = columndata
         else:
             raise Exception("Column already exists.")
 
@@ -232,14 +248,11 @@ class BaseRow(dict):
             :rtype: :class:`dict`
         """
         newdict = {}
-        if columns:
-            shortcolumns_check = [cleanup_name(x) for x in columns]
-        for k in self.keys():
-            if columns:
-                if not (k in shortcolumns_check):
-                    continue
-            newdict.update(
-                {self[k][0]: self[k][1]})
+        for k in columns or self.keys():
+            if k == "__psvcolumnstracker__":
+                continue
+            newdict.update({
+                k: self[k]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
@@ -270,7 +283,7 @@ class BaseRowDefaults(object):
     __delwhitelist__ = set()
     __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))
-    __columnname__ = '__psvcolumnstracker__'
+    __psvcolumns__ = '__psvcolumnstracker__'
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
