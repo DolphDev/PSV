@@ -172,7 +172,7 @@ class BaseRow(dict):
     def getcolumn(self, column):
         """Get a cell by the orginal column name
 
-        :param column: The column name. Can be both long and short form.
+        :param column: The column name. Can only be long form
         :type column: :class:`str`
 
         :returns: String of the data, or an int/float if a number/decimal.
@@ -270,9 +270,7 @@ class BaseRowDefaults(object):
     __delwhitelist__ = set()
     __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))
-    __columnname__ = 2 #Uses int for performance and anti-collision protection
-                       # 2 because 1 and 0 are already used.
-
+    __columnname__ = '__psvcolumnstracker__'
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
