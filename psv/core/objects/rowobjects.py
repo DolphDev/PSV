@@ -96,7 +96,7 @@ class BaseRow(dict):
             statement"""
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
-            self[self["__psvcolumnstracker__"][s]] = v
+            self[self["__psvcolumnstracker__"][attr]] = v
         elif s in self.keys():
             raise AttributeError((
                 "{}{}"
@@ -122,7 +122,7 @@ class BaseRow(dict):
         del statement"""
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
-            self[self["__psvcolumnstracker__"][s]] = ""
+            self[self["__psvcolumnstracker__"][attr]] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -183,12 +183,15 @@ class BaseRow(dict):
             return (self[column])
         elif accept_small_names:
             s = cleanup_name(column)
-            return getattr(self, s)
+            try:
+                return getattr(self, s)
+            except AttributeError:
+                #pass to below bode
+                pass 
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
         else:
-            if not accept_small_names:
-                raise KeyError("'{}'".format(column))
-            else:
-                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def setcolumn(self, column, value, accept_small_names=True):
         """Set a cell by the orginal column name
@@ -203,12 +206,15 @@ class BaseRow(dict):
             self[column] = value
         elif accept_small_names:
             s = cleanup_name(column)
-            self.__setattr__(s, value)
+            try:
+                self.__setattr__(s, value)
+            except AttributeError:
+                #pass to below code
+                pass
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
         else:
-            if not accept_small_names:
-                raise KeyError("'{}'".format(column))
-            else:
-                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def delcolumn(self, column, accept_small_names=True):
         """Delete a cell by the orginal column name
@@ -221,12 +227,15 @@ class BaseRow(dict):
             self[column] = ""
         elif accept_small_names:
             s = cleanup_name(column)
-            self.__delattr__(s)
+            try:
+                self.__delattr__(s)
+            except AttributeError:
+                #pass to below code
+                pass
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
         else:
-            if not accept_small_names:
-                raise KeyError("'{}'".format(column))
-            else:
-                raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def addcolumn(self, columnname, columndata=""):
         """Adds a column for this row only

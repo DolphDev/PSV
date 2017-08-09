@@ -14,22 +14,32 @@ class MainSelection(Selection):
                  "__columns__", "__columnsmap__",
                  "__rows__", "__apimother__"]
 
-    def __init__(self, csvdict=None, columns=None, columnsmap=None, 
+    def __init__(self, csvdict=None, columns=None, 
                  cls=BaseRow, parsing=parser, outputfile=None,
                  typetranfer=True, *args, **kwargs):
         # Since I close the file after this, the row must be placed into memory
+        rebuild_column_map = False
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
-        self.__columnsmap__ = column_crunch_repeat(self.__columns__)
+
+        if columns:
+            self.__columnsmap__ = column_crunch_repeat(self.__columns__)
+        else:
+            rebuild_column_map = True
 
         if csvdict is None:
             csvdict = {}
         if csvdict:
             self.__rows__ = list(
                 parser(csvdict, cls, self.__columnsmap__, typetranfer, *args, **kwargs))
+            if rebuild_column_map:
+                self.__columnsmap__ = column_crunch_repeat(self.__rows__[0].keys())
+                del self.columnsmap["__psvcolumnstracker__"]
         else:
             self.__rows__ = list()
+            self.__columnsmap__ = {}
+
 
     @property
     def rows(self):

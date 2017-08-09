@@ -136,7 +136,7 @@ class psv_selections_test(unittest.TestCase):
                 self.add_valid_attribute("Test1")
                 self.add_valid_attribute("Test2", True)
 
-        row = TestRow({"data":{"org_row":"DATA", "value":""}})
+        row = TestRow({"DATA": ""}, {"data":"DATA"})
         row.add_valid_attribute("Test3")
         row.add_valid_attribute("Test4", True)
 
