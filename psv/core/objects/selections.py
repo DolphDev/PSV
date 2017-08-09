@@ -37,6 +37,10 @@ class Selection(object):
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
 
+    @property
+    def __columnsmap__(self):
+        return self.__apimother__.__columnsmap__
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
@@ -259,22 +263,6 @@ class Selection(object):
 
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)
-
-
-    def addcolumn(self, columnname, columndata="", add_to_columns=True):
-        """Adds a column
-        :param columnname: Name of the column to add.
-        :param columndata: The default value of the new column.
-        :param add_to_columns: Determines whether this column should
-            be added to the internal tracker.
-        :type columnname: :class:`str`
-        :type add_to_columns: :class:`bool`
-        """
-        for row in self.rows:
-            row.addcolumn(columnname, columndata)
-        if add_to_columns:
-            self.columns += (columnname,)
-        return self
 
     @property
     def outputtedrows(self):

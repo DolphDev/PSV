@@ -21,7 +21,6 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
-        print(self.__columns__)
         self.__columnsmap__ = column_crunch_repeat(self.__columns__)
 
         if csvdict is None:
@@ -56,6 +55,27 @@ class MainSelection(Selection):
             for k, v in kwargs.items():
                 r.setcolumn(k, v)
         return r
+
+
+    def addcolumn(self, columnname, columndata="",
+                  add_to_columns=True, clear=True):
+        """Adds a column
+        :param columnname: Name of the column to add.
+        :param columndata: The default value of the new column.
+        :param add_to_columns: Determines whether this column should
+            be added to the internal tracker.
+        :type columnname: :class:`str`
+        :type add_to_columns: :class:`bool`
+        Note: Rows that are being accessed by another thread will error out if clear is True
+        Note:
+        """
+        for row in self.rows:
+            row.addcolumn(columnname, columndata)
+        if add_to_columns:
+            self.columns += (columnname,)
+            self.__columnsmap__.clear()
+            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+        return self
 
     def __delitem__(self, v):
         del self.__rows__[v]
