@@ -41,7 +41,8 @@ class BaseRow(dict):
 
     def __hashvalue__(self):
         """raw data that can be hashed if all contents are hashable"""
-        return (tuple((column, self[column]) for column in filter(lambda x: x != "__psvcolumnstracker__", sorted(self.keys()))))
+        return (tuple((column, self[column])
+            for column in filter(lambda x: x != "__psvcolumnstracker__", sorted(self.keys()))))
 
     def __repr__(self):
         return "<'{rowname}':{columnamount}>".format(
@@ -189,8 +190,6 @@ class BaseRow(dict):
             else:
                 raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
-
-
     def setcolumn(self, column, value, accept_small_names=True):
         """Set a cell by the orginal column name
 
@@ -201,7 +200,7 @@ class BaseRow(dict):
         """
 
         if column in self.keys():
-            return (self[column])
+            self[column] = value
         elif accept_small_names:
             s = cleanup_name(column)
             self.__setattr__(s, value)
@@ -219,7 +218,7 @@ class BaseRow(dict):
 
         """
         if column in self.keys():
-            return (self[column])
+            self[column] = ""
         elif accept_small_names:
             s = cleanup_name(column)
             self.__delattr__(s)
