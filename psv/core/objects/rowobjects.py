@@ -96,7 +96,7 @@ class BaseRow(dict):
             statement"""
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
-            self[self["__psvcolumnstracker__"][attr]] = v
+            self[self["__psvcolumnstracker__"][s]] = v
         elif s in self.keys():
             raise AttributeError((
                 "{}{}"
@@ -122,7 +122,7 @@ class BaseRow(dict):
         del statement"""
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
-            self[self["__psvcolumnstracker__"][attr]] = ""
+            self[self["__psvcolumnstracker__"][s]] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
