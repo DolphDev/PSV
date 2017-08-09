@@ -1,4 +1,4 @@
-from ..objects import BaseRow, Selection
+from ..objects import BaseRow, Selection, cleanup_name
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
 from ..utils import generate_func
@@ -21,7 +21,8 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
-        self.__columnsmap__ = {"hello":"Hello!"}
+        print(self.__columns__)
+        self.__columnsmap__ = column_crunch_repeat(self.__columns__)
 
         if csvdict is None:
             csvdict = {}
@@ -64,7 +65,7 @@ def _column_repeat_dict(columns, clean_ups):
     for x in clean_ups:
         master[x] = None
     for x in columns:
-        cl_name = cleanup_name(x, {})
+        cl_name = cleanup_name(x)
         if master[cl_name] is None:
             master[cl_name] = (x,)
         else:
@@ -73,13 +74,24 @@ def _column_repeat_dict(columns, clean_ups):
 
 def column_crunch_repeat(columns):
     rv = {}
-    clean_ups = set(cleanup_name(x, {}) for x in columns)
-    if len(clean_ups) == len(columns):
-        return {}
+    clean_ups = set(cleanup_name(x) for x in columns)
     ref = _column_repeat_dict(columns, clean_ups)
+    if len(clean_ups) == len(columns):
+        for x in clean_ups:
+            for column in ref[x]:
+                rv.update({x:column})
     for x in clean_ups:
         if len(ref[x]) > 1:
             counter = 0
             for column in ref[x]:
-                rv.update({column:x+"_"+str(counter)})
+                cln = x+"_"+str(counter)
+                while cln in clean_ups:
+                    counter += 1
+                    cln = x+"_"+str(counter)
+                rv.update({cln:column})
                 counter += 1
+        else:
+            for column in ref[x]:
+                rv.update({x:column})
+      
+    return rv

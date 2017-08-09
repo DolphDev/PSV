@@ -182,7 +182,7 @@ class BaseRow(dict):
             return (self[column])
         elif accept_small_names:
             s = cleanup_name(column)
-            return getattr(s, self)
+            return getattr(self, s)
         else:
             if not accept_small_names:
                 raise KeyError("'{}'".format(column))
