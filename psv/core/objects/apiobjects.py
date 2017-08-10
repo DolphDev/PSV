@@ -80,6 +80,10 @@ class MainSelection(Selection):
         Note: Rows that are being accessed by another thread will error out if clear is True
         Note:
         """
+        if columnname in self.columns:
+            raise ValueError(
+                "'{}' column already exists"
+                .format(columnname))
         for row in self.rows:
             row.addcolumn(columnname, columndata)
         if add_to_columns:
