@@ -297,7 +297,7 @@ class BaseRowDefaults(object):
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
 non_accepted_key_names = set(tuple(dir(
-    BaseRow)) + ("row_obj",) + tuple(keyword.kwlist))
+    BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
 store_cleanup = {}
 
