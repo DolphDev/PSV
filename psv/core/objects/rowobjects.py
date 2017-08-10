@@ -204,6 +204,7 @@ class BaseRow(dict):
 
         if column in self.keys():
             self[column] = value
+            return #Exit
         elif accept_small_names:
             s = cleanup_name(column)
             try:
@@ -225,6 +226,7 @@ class BaseRow(dict):
         """
         if column in self.keys():
             self[column] = ""
+            return #exit
         elif accept_small_names:
             s = cleanup_name(column)
             try:
