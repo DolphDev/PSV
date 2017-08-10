@@ -39,7 +39,8 @@ class MainSelection(Selection):
         else:
             self.__rows__ = list()
             self.__columnsmap__ = {}
-
+        if not self.__columns__:
+            self.__columns__ = tuple()
 
     @property
     def rows(self):
