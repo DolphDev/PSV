@@ -27,7 +27,8 @@ class MainSelection(Selection):
                 parser(csvdict, cls, typetranfer, *args, **kwargs))
         else:
             self.__rows__ = list()
-
+        if not self.__columns__:
+            self.__columns__ = tuple()
     @property
     def rows(self):
         return self.__rows__
