@@ -22,9 +22,11 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
+        self.__columnsmap__ = {}
 
         if columns:
-            self.__columnsmap__ = column_crunch_repeat(self.__columns__)
+            self.__columnsmap__.update(
+                column_crunch_repeat(self.__columns__))
         else:
             rebuild_column_map = True
 
@@ -34,7 +36,8 @@ class MainSelection(Selection):
             self.__rows__ = list(
                 parser(csvdict, cls, self.__columnsmap__, typetranfer, *args, **kwargs))
             if rebuild_column_map:
-                self.__columnsmap__ = column_crunch_repeat(self.__rows__[0].keys())
+                self.__columnsmap__.update(
+                    column_crunch_repeat(self.__rows__[0].keys()))
         else:
             self.__rows__ = list()
         if not self.__columns__:
