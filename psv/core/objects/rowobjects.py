@@ -245,7 +245,7 @@ class BaseRow(dict):
         if not self.get(columnname):
             self[columnname] = columndata
         else:
-            raise Exception("Column already exists.")
+            raise ValueError("Column already exists.")
 
     def longcolumn(self, columns=None):
         """
