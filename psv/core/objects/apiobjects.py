@@ -35,10 +35,8 @@ class MainSelection(Selection):
                 parser(csvdict, cls, self.__columnsmap__, typetranfer, *args, **kwargs))
             if rebuild_column_map:
                 self.__columnsmap__ = column_crunch_repeat(self.__rows__[0].keys())
-                del self.columnsmap["__psvcolumnstracker__"]
         else:
             self.__rows__ = list()
-            self.__columnsmap__ = {}
         if not self.__columns__:
             self.__columns__ = tuple()
 
