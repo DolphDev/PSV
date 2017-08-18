@@ -77,7 +77,7 @@ class BaseRow(dict):
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
-        if s in super(BaseRow, self).keys():
+        if s in self["__psvcolumnstracker__"].keys():
             raise AttributeError((
                 "{}{}"
                 .format(
