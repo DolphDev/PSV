@@ -201,14 +201,14 @@ class BaseRow(dict):
             :type column: :class:`str`
 
         """
-
         if column in self.keys():
             self[column] = value
-            return #Exit
+            return
         elif accept_small_names:
             s = cleanup_name(column)
             try:
                 self.__setattr__(s, value)
+                return
             except AttributeError:
                 #pass to below code
                 pass
@@ -226,11 +226,12 @@ class BaseRow(dict):
         """
         if column in self.keys():
             self[column] = ""
-            return #exit
+            return
         elif accept_small_names:
             s = cleanup_name(column)
             try:
                 self.__delattr__(s)
+                return
             except AttributeError:
                 #pass to below code
                 pass
