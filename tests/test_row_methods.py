@@ -213,7 +213,7 @@ class psv_selections_test(unittest.TestCase):
             with self.assertRaises(Attribute) as cm:
                 self.Price = None
 
-      def test__delattr__attribute_error(self):
+    def test__delattr__attribute_error(self):
         self.construct()
         for row in self.csvdoc:
             with self.assertRaises(Attribute) as cm:
@@ -224,7 +224,7 @@ class psv_selections_test(unittest.TestCase):
         for row in self.csvdoc:
             self.price = None
 
-      def test__delattr__no_error(self):
+    def test__delattr__no_error(self):
         self.construct()
         for row in self.csvdoc:
             del self.price
