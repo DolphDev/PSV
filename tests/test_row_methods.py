@@ -210,13 +210,13 @@ class psv_selections_test(unittest.TestCase):
     def test__setattr__attribute_error(self):
         self.construct()
         for row in self.csvdoc:
-            with self.assertRaises(Attribute) as cm:
+            with self.assertRaises(AttributeError) as cm:
                 self.Price = None
 
     def test__delattr__attribute_error(self):
         self.construct()
         for row in self.csvdoc:
-            with self.assertRaises(Attribute) as cm:
+            with self.assertRaises(AttributeError) as cm:
                 del self.Price
 
     def test__setattr__no_error(self):
