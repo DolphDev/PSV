@@ -15,3 +15,6 @@ class ApiObjectMsg:
     outputmsg = "A ordered list of columns must be supplied to output the file"
     badgrab = "Empty Grab. Lack of arguments were supplied to grab method."
 
+class LoadingMsg:
+
+    forbidden_column = "'{}' is a forbidden column name, due to it being reserved by psv internally"

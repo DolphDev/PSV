@@ -299,8 +299,10 @@ class BaseRowDefaults(object):
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
+banned_columns = {BaseRowDefaults.__psvcolumns__,}
 non_accepted_key_names = set(tuple(dir(
-    BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
+    BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__, 
+    BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
 store_cleanup = {}
 

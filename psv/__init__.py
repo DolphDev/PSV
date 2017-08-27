@@ -1,5 +1,6 @@
 from .core.objects.apiobjects import MainSelection
-from .core.objects import BaseRow
+from .core.objects import BaseRow, banned_columns
+from .core.exceptions.messages import LoadingMsg as msg
 
 
 import csv
@@ -62,14 +63,17 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
                   encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
             data = data + list(csv.DictReader(csvfile,
                                               delimiter=delimiter, quotechar=quotechar))
+    forbidden_columns(columns)
     return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
 
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"',
           typetranfer=True, csv_size_max=None, newline="\n"):
+    was_str = False
     if csv_size_max:
         csv_size_limit(csv_size_max)
     if isinstance(csvdoc, str):
+        was_str = True
         data = csv.DictReader(csvdoc.split(newline),
                               delimiter=delimiter, quotechar=quotechar)
         if not columns:
@@ -77,6 +81,10 @@ def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quo
                 newline), delimiter=delimiter, quotechar=quotechar)))
     else:
         data = csvdoc
+    if columns:
+        forbidden_columns(columns)
+    elif (not columns) and isinstance(csvdoc, dict):
+        forbidden_columns(csvdoc.keys())
     api = MainSelection(data, columns=(
         columns), outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
     return api
@@ -86,15 +94,24 @@ def new(cls=BaseRow, columns=None, outputfile=None,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
+    if columns:
+        self.forbidden_columns(columns)
     return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
 
 
 def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                  errors=None, newline=None, closefd=True, opener=None,
-                 csv_size_max=None):
+                 csv_size_max=None, check_columns=True):
     if csv_size_max:
         csv_size_limit(csv_size_max)
     with open(f, mode=mode, buffering=buffering,
               encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
+    if check_columns:
+        self.forbidden_columns(columns)
     return tuple(columns)
+
+def forbidden_columns(columns):
+    for x in columns:
+        if x in banned_columns:
+            raise ValueError(msg.forbidden_column(x))
