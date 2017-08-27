@@ -95,7 +95,7 @@ def new(cls=BaseRow, columns=None, outputfile=None,
     if csv_size_max:
         csv_size_limit(csv_size_max)
     if columns:
-        self.forbidden_columns(columns)
+        forbidden_columns(columns)
     return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
 
 
@@ -108,7 +108,7 @@ def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', bufferi
               encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
         columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
     if check_columns:
-        self.forbidden_columns(columns)
+        forbidden_columns(columns)
     return tuple(columns)
 
 def forbidden_columns(columns):
