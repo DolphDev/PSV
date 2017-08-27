@@ -206,3 +206,25 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(row("Name"), "Data")
         row("Name", delete=True)
         self.assertEqual(row("Name"), "")
+
+    def test__setattr__attribute_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            with self.assertRaises(Attribute) as cm:
+                self.Price = None
+
+      def test__delattr__attribute_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            with self.assertRaises(Attribute) as cm:
+                del self.Price
+
+    def test__setattr__no_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            self.price = None
+
+      def test__delattr__no_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            del self.price
