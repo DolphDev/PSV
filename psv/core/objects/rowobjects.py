@@ -304,12 +304,9 @@ non_accepted_key_names = set(tuple(dir(
     BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__, 
     BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
-store_cleanup = {}
 
 @lru_cache(256)
 def cleanup_name(s):
-    sresult = store_cleanup.get(s, False)
-    if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if not result:
         raise ValueError(msg.non_valid.format(s))
