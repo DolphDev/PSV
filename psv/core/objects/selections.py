@@ -60,10 +60,6 @@ class Selection(object):
 
            Note: This Merge relies on all data in a row being hashable, use non_hash_merge if you
            can't guarantee this.
-
-           Saftey Note: You will lose saftey on some of Selection's functionality 
-            (such as creating sub-selections) or finding a row 
-            if all rows don't have the same exact columns)
            
         """
         try:
@@ -87,7 +83,7 @@ class Selection(object):
            This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
 
            Note: This merge is effectively single-threaded and editing the outputflag during
-            running will effect results of the merge and may have unattended conquences the
+            running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
@@ -199,6 +195,8 @@ class Selection(object):
     def select(self, selectionfirstarg_data=None, **kwargs):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
+
+            Uses Lazy Loading, doesn't process till needed.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -209,8 +207,11 @@ class Selection(object):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
 
-            This instantly processes the select instead of lazy loading.
+            This instantly processes the select instead of 
+                lazily loading it at a later time.
                 Preventing race conditions under most uses cases.
+                if the same select is being worked on in multiple 
+                threads.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
