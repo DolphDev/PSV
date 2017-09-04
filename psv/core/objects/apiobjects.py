@@ -19,6 +19,8 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__outputname__ = outputfile
         self.__columns__ = columns
+        if self.columns is None:
+            self.columns = tuple()
 
         if csvdict is None:
             csvdict = {}
