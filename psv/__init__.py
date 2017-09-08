@@ -18,7 +18,7 @@ def csv_size_limit(size):
 
 
 def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
-         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetranfer=True,
+         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=True,
          csv_size_max=None, csv_max_row=None):
     """Loads a file into psv
 
@@ -49,7 +49,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
 
 
 def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
-            encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetranfer=True,
+            encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=True,
             csv_size_max=None):
     """Loads a directory of .csv files"""
     if csv_size_max:
@@ -68,7 +68,7 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
 
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"',
-          typetranfer=True, csv_size_max=None, newline="\n"):
+          typetransfer=True, csv_size_max=None, newline="\n"):
     was_str = False
     if csv_size_max:
         csv_size_limit(csv_size_max)
