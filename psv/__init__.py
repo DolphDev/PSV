@@ -36,7 +36,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
                 csvfile, delimiter=delimiter, quotechar=quotechar)
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
                                                            mode, buffering, encoding, errors, newline, closefd, opener),
-                                outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
     else:
         with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
                                                           encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
@@ -44,7 +44,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
                 csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
                                                            mode, buffering, encoding, errors, newline, closefd, opener),
-                                outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
     return api
 
 
@@ -64,7 +64,7 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
             data = data + list(csv.DictReader(csvfile,
                                               delimiter=delimiter, quotechar=quotechar))
     forbidden_columns(columns)
-    return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+    return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
 
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"',
@@ -86,7 +86,7 @@ def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quo
     elif (not columns) and isinstance(csvdoc, dict):
         forbidden_columns(csvdoc.keys())
     api = MainSelection(data, columns=(
-        columns), outputfiled=outputfile, cls=cls, typetranfer=typetranfer)
+        columns), outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
     return api
 
 
