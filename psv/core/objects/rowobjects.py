@@ -186,7 +186,7 @@ class BaseRow(dict):
             try:
                 return getattr(self, s)
             except AttributeError:
-                #pass to below bode
+                #pass to below code
                 pass 
         if not accept_small_names:
             raise KeyError("'{}'".format(column))
@@ -305,7 +305,7 @@ non_accepted_key_names = set(tuple(dir(
     BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
 
-@lru_cache(256)
+@lru_cache(1024)
 def cleanup_name(s):
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if not result:
