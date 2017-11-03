@@ -53,7 +53,7 @@ class Selection(object):
             yield master[key]
 
     def merge(self, *args, force_saftey=True):
-        """Merges selctions
+        """Merges selections
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
             duplicate rows will be only represented by 1 row. 
