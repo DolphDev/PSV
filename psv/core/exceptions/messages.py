@@ -6,6 +6,7 @@ class RowObjectMsg:
     attribute_readonly = "'{classname}' object attribute '{attr}' is read-only. Note: '{attr}' is likely method/class attribute and not part of this row's data"
     attribute_missing = "'{}' has no attribute '{}'"
     inherited_rows = "Only inherited Rows can use add_valid_attribute"
+    non_valid = "'{}' cannot be shorten to a python valid attribute, and therefore is an invalid column name"
 
 class ApiObjectMsg:
 
@@ -14,3 +15,6 @@ class ApiObjectMsg:
     outputmsg = "A ordered list of columns must be supplied to output the file"
     badgrab = "Empty Grab. Lack of arguments were supplied to grab method."
 
+class LoadingMsg:
+
+    forbidden_column = "'{}' is a forbidden column name, due to it being reserved by psv internally"

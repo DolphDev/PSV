@@ -16,6 +16,31 @@ class Selection(object):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
 
+    def __add__(self, sel):
+        return Selection((
+            tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
+
+    def __len__(self):
+        return len(self.rows)
+
+    def __getitem__(self, v):
+        if isinstance(v, slice):
+            return Selection(self.rows[v], self.__apimother__)
+        if isinstance(v, int):
+            return (self.rows[v])
+        elif isinstance(v, str):
+            return (x.getcolumn(v) for x in self.rows)
+        elif isinstance(v, tuple):
+            return (multiple_index(x, v) for x in self.rows)
+        elif isinstance(v, FunctionType):
+            return Selection(_index_function_gen(self, v), self.__apimother__)
+        else:
+            raise TypeError(msg.getitemmsg.format(type(v)))
+
+    @property
+    def __columnsmap__(self):
+        return self.__apimother__.__columnsmap__
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
@@ -28,17 +53,13 @@ class Selection(object):
             yield master[key]
 
     def merge(self, *args, force_saftey=True):
-        """Merges selctions
+        """Merges selections
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
             duplicate rows will be only represented by 1 row. 
 
            Note: This Merge relies on all data in a row being hashable, use non_hash_merge if you
            can't guarantee this.
-
-           Saftey Note: You will lose saftey on some of Selection's functionality 
-            (such as creating sub-selections) or finding a row 
-            if all rows don't have the same exact columns)
            
         """
         try:
@@ -62,7 +83,7 @@ class Selection(object):
            This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
 
            Note: This merge is effectively single-threaded and editing the outputflag during
-            running will effect results of the merge and may have unattended conquences the
+            running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
@@ -79,10 +100,6 @@ class Selection(object):
             else:
                 -row
         return result
-
-    def __add__(self, sel):
-        return Selection((
-            tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
 
     @property
     def rows(self):
@@ -178,6 +195,8 @@ class Selection(object):
     def select(self, selectionfirstarg_data=None, **kwargs):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
+
+            Uses Lazy Loading, doesn't process till needed.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -188,8 +207,11 @@ class Selection(object):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
 
-            This instantly processes the select instead of lazy loading.
+            This instantly processes the select instead of 
+                lazily loading it at a later time.
                 Preventing race conditions under most uses cases.
+                if the same select is being worked on in multiple 
+                threads.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -239,41 +261,9 @@ class Selection(object):
         """faster than __add__, but doesn't guarantee no repeats."""
         return Selection(tuple(self.rows) + tuple(sel.rows), self.__apimother__)
 
-    def __len__(self):
-        return len(self.rows)
-
-    def __getitem__(self, v):
-        if isinstance(v, slice):
-            return Selection(self.rows[v], self.__apimother__)
-        if isinstance(v, int):
-            return (self.rows[v])
-        elif isinstance(v, str):
-            return (x.getcolumn(v) for x in self.rows)
-        elif isinstance(v, tuple):
-            return (multiple_index(x, v) for x in self.rows)
-        elif isinstance(v, FunctionType):
-            return Selection(_index_function_gen(self, v), self.__apimother__)
-        else:
-            raise TypeError(msg.getitemmsg.format(type(v)))
 
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)
-
-
-    def addcolumn(self, columnname, columndata="", add_to_columns=True):
-        """Adds a column
-        :param columnname: Name of the column to add.
-        :param columndata: The default value of the new column.
-        :param add_to_columns: Determines whether this column should
-            be added to the internal tracker.
-        :type columnname: :class:`str`
-        :type add_to_columns: :class:`bool`
-        """
-        for row in self.rows:
-            row.addcolumn(columnname, columndata)
-        if add_to_columns:
-            self.columns += (columnname,)
-        return self
 
     @property
     def outputtedrows(self):

@@ -1,7 +1,6 @@
 from ..utils import asciireplace, limit_text
-from ..exceptions import RowError, FlagError
 from ..exceptions.messages import RowObjectMsg as msg
-
+from functools import lru_cache
 from tabulate import tabulate
 from string import ascii_lowercase, digits
 
@@ -13,92 +12,37 @@ class BaseRow(dict):
     """This Base Class represents a row in a spreadsheet"""
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
-    def __init__(self, data, *args, **kwargs):
-        super(BaseRow, self).__setattr__("__delwhitelist__", set())
-        super(BaseRow, self).__setattr__("__dirstore__", (set(dir(self))))
-        super(BaseRow, self).__setattr__("__sawhitelist__", set(("__output__", "outputrow")))
+    def __init__(self, data, columns_map, *args, **kwargs):
+        super(BaseRow, self).__setattr__("__delwhitelist__", 
+            BaseRowDefaults.__delwhitelist__)
+        super(BaseRow, self).__setattr__("__dirstore__",
+            BaseRowDefaults.__dirstore__)
+        super(BaseRow, self).__setattr__("__sawhitelist__",
+            BaseRowDefaults.__sawhitelist__)
         super(BaseRow, self).__init__(data)
+        self[BaseRowDefaults.__psvcolumns__] = columns_map
         self.__output__ = True
 
         self.construct(*args, **kwargs)
 
-    def __hashvalue__(self):
-        """raw data that can be hashed if all contents are hashable"""
-        return (tuple((column, self[column]["value"]) for column in sorted(self.keys())))
+    def __call__(self, column, setvalue=None, delete=False):
+        """Alais for .getcolumn() family of methods"""
+        if delete:
+            self.delcolumn(column, False)
+        elif setvalue is None:
+            return self.getcolumn(column, False)
+        else:
+            self.setcolumn(column, setvalue, False)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
-    def add_valid_attribute(self, attr, deletable=False):
-        "Used by classes that inherit to add attributes to the whitelists"
-        if self.__class__ is BaseRow:
-            raise TypeError(msg.inherited_rows)
-        super(BaseRow, self).__setattr__(
-            "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
-        if deletable:
-            super(BaseRow, self).__setattr__(
-                "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
-
-
-    def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
-        pass
-
-    @property
-    def outputrow(self):
-        """Returns a boolean of the current output flag for this row"""
-        return self.__output__
-
-    @outputrow.setter
-    def outputrow(self, v):
-        if not isinstance(v, bool):
-            raise TypeError(msg.outputrowmsg.format(bool, type(v)))
-        self.__output__ = v
-
-    def getcolumn(self, column):
-        """Get a cell by the orginal column name
-
-        :param column: The column name. Can be both long and short form.
-        :type column: :class:`str`
-
-        :returns: String of the data, or an int/float if a number/decimal.
-        :rtype: :class:`str`, :class:`int`, or :class:`float`
-        """
-        s = cleanup_name(column)
-        if s in self.keys():
-            return getattr(self, s)
-        else:
-            raise KeyError("{}".format(column))
-
-    def setcolumn(self, column, value):
-        """Set a cell by the orginal column name
-
-            :param column: The column name. Can be both long and short form.
-            :param value: The data to be set to the specified column
-            :type column: :class:`str`
-
-        """
-        s = cleanup_name(column)
-        if s in self.keys():
-            self.__setattr__(s, value)
-        else:
-            raise KeyError("{}".format(column))
-
-    def delcolumn(self, column):
-        """Delete a cell by the orginal column name
-
-        :param column: The column name. Can be both long and short form.
-        :type column: :class:`str`
-
-        """
-
-        s = cleanup_name(column)
-        if s in self.keys():
-            self.__delattr__(s)
-        else:
-            raise KeyError("{}".format(column))
+    def __hashvalue__(self):
+        """raw data that can be hashed if all contents are hashable"""
+        return (tuple((column, self[column])
+            for column in filter(lambda x: x != "__psvcolumnstracker__", sorted(self.keys()))))
 
     def __repr__(self):
         return "<'{rowname}':{columnamount}>".format(
@@ -126,15 +70,14 @@ class BaseRow(dict):
         return self
 
     def __getattribute__(self, attr):
-        if not super(BaseRow, self).get(attr, False):
+        if not self["__psvcolumnstracker__"].get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
-            result = (self[attr]["value"])
-            return result
+            return self[self["__psvcolumnstracker__"][attr]]
 
     def __getattr__(self, attr):
         s = cleanup_name(attr)
-        if s in super(BaseRow, self).keys():
+        if s in self["__psvcolumnstracker__"].keys():
             raise AttributeError((
                 "{}{}"
                 .format(
@@ -152,8 +95,8 @@ class BaseRow(dict):
         """Allows setting of rows and attributes by using =
             statement"""
         s = cleanup_name(attr)
-        if attr in self.keys():
-            self[attr]["value"] = v
+        if attr in self["__psvcolumnstracker__"].keys():
+            self[self["__psvcolumnstracker__"][attr]] = v
         elif s in self.keys():
             raise AttributeError((
                 "{}{}"
@@ -178,8 +121,8 @@ class BaseRow(dict):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
         s = cleanup_name(attr)
-        if attr in self.keys():
-            self[attr]["value"] = ""
+        if attr in self["__psvcolumnstracker__"].keys():
+            self[self["__psvcolumnstracker__"][attr]] = ""
         elif s in super(BaseRow, self).keys():
             raise AttributeError((
                 "{}{}"
@@ -200,14 +143,110 @@ class BaseRow(dict):
                 raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
 
-    def addcolumn(self, columnname, columndata=""):
-        """Adds a column for this row only"""
-        short_cn = cleanup_name(columnname)
-        if not self.get(short_cn):
-            self[short_cn] = {
-                "org_name": columnname, "value": columndata}
+    def add_valid_attribute(self, attr, deletable=False):
+        "Used by classes that inherit to add attributes to the whitelists"
+        if self.__class__ is BaseRow:
+            raise TypeError(msg.inherited_rows)
+        super(BaseRow, self).__setattr__(
+            "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
+        if deletable:
+            super(BaseRow, self).__setattr__(
+                "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
+
+
+    def construct(self, *args, **kwargs):
+        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
+        pass
+
+    @property
+    def outputrow(self):
+        """Returns a boolean of the current output flag for this row"""
+        return self.__output__
+
+    @outputrow.setter
+    def outputrow(self, v):
+        if not isinstance(v, bool):
+            raise TypeError(msg.outputrowmsg.format(bool, type(v)))
+        self.__output__ = v
+
+
+    def getcolumn(self, column, accept_small_names=True):
+        """Get a cell by the orginal column name
+
+        :param column: The column name. Can only be long form if accept_small_names == False
+        :type column: :class:`str`
+
+        :returns: String of the data, or an int/float if a number/decimal.
+        :rtype: :class:`str`, :class:`int`, or :class:`float`
+        """
+        if column in self.keys():
+            return (self[column])
+        elif accept_small_names:
+            s = cleanup_name(column)
+            try:
+                return getattr(self, s)
+            except AttributeError:
+                #pass to below code
+                pass 
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
         else:
-            raise Exception("Column already exists.")
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+
+    def setcolumn(self, column, value, accept_small_names=True):
+        """Set a cell by the orginal column name
+
+            :param column: The column name. Can be both long and short form.
+            :param value: The data to be set to the specified column
+            :type column: :class:`str`
+
+        """
+        if column in self.keys():
+            self[column] = value
+            return
+        elif accept_small_names:
+            s = cleanup_name(column)
+            try:
+                self.__setattr__(s, value)
+                return
+            except AttributeError:
+                #pass to below code
+                pass
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
+        else:
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+
+    def delcolumn(self, column, accept_small_names=True):
+        """Delete a cell by the orginal column name
+
+        :param column: The column name. Can be both long and short form.
+        :type column: :class:`str`
+
+        """
+        if column in self.keys():
+            self[column] = ""
+            return
+        elif accept_small_names:
+            s = cleanup_name(column)
+            try:
+                self.__delattr__(s)
+                return
+            except AttributeError:
+                #pass to below code
+                pass
+        if not accept_small_names:
+            raise KeyError("'{}'".format(column))
+        else:
+            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+
+    def addcolumn(self, columnname, columndata=""):
+        """Adds a column for this row only
+            doesn't add to column tracker"""
+        if not self.get(columnname):
+            self[columnname] = columndata
+        else:
+            raise ValueError("Column already exists.")
 
     def longcolumn(self, columns=None):
         """
@@ -220,14 +259,11 @@ class BaseRow(dict):
             :rtype: :class:`dict`
         """
         newdict = {}
-        if columns:
-            shortcolumns_check = [cleanup_name(x) for x in columns]
-        for k in self.keys():
-            if columns:
-                if not (k in shortcolumns_check):
-                    continue
-            newdict.update(
-                {self[k]["org_name"]: self[k]["value"]})
+        for k in columns or self.keys():
+            if k == "__psvcolumnstracker__":
+                continue
+            newdict.update({
+                k: self[k]})
         return newdict
 
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
@@ -254,21 +290,26 @@ class BaseRow(dict):
         else:
             return result
 
+class BaseRowDefaults(object):
+    __delwhitelist__ = set()
+    __dirstore__ = set(dir(BaseRow))
+    __sawhitelist__ = set(("__output__", "outputrow"))
+    __psvcolumns__ = '__psvcolumnstracker__'
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
+banned_columns = {BaseRowDefaults.__psvcolumns__,}
 non_accepted_key_names = set(tuple(dir(
-    BaseRow)) + ("row_obj",) + tuple(keyword.kwlist))
+    BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__, 
+    BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
-store_cleanup = {}
 
-
+@lru_cache(1024)
 def cleanup_name(s):
-    sresult = store_cleanup.get(s, False)
-    if sresult: return sresult
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
+    if not result:
+        raise ValueError(msg.non_valid.format(s))
     if result in non_accepted_key_names or result[0] in bad_first_char:
         result = "psv_" + result
-    store_cleanup.update({s:result})
     return result

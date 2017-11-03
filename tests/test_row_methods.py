@@ -136,7 +136,7 @@ class psv_selections_test(unittest.TestCase):
                 self.add_valid_attribute("Test1")
                 self.add_valid_attribute("Test2", True)
 
-        row = TestRow({"data":{"org_row":"DATA", "value":""}})
+        row = TestRow({"DATA": ""}, {"data":"DATA"})
         row.add_valid_attribute("Test3")
         row.add_valid_attribute("Test4", True)
 
@@ -197,3 +197,34 @@ class psv_selections_test(unittest.TestCase):
         for x in self.csvdoc:
             x.addcolumn("TEST")
             x.addcolumn("TEST2", "DATA")
+
+    def test__call__(self):
+        self.construct()
+        row = self.csvdoc[0]
+        self.assertEqual(row("Name"), row.getcolumn("Name"))
+        row("Name", "Data")
+        self.assertEqual(row("Name"), "Data")
+        row("Name", delete=True)
+        self.assertEqual(row("Name"), "")
+
+    def test__setattr__attribute_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            with self.assertRaises(AttributeError) as cm:
+                row.Price = None
+
+    def test__delattr__attribute_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            with self.assertRaises(AttributeError) as cm:
+                del row.Price
+
+    def test__setattr__no_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            row.price = None
+
+    def test__delattr__no_error(self):
+        self.construct()
+        for row in self.csvdoc:
+            del row.price
