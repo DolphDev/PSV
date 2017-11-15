@@ -35,6 +35,7 @@ class BaseRow(dict):
             self.setcolumn(column, setvalue, False)
 
     def __eq__(self, other):
+        #Returns True if content is the same as the
         if isinstance(other, self.__class__):
             return self.__hashvalue__() == other.__hashvalue__()
         return False
@@ -97,7 +98,7 @@ class BaseRow(dict):
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
             self[self["__psvcolumnstracker__"][attr]] = v
-        elif s in self.keys():
+        elif s in self["__psvcolumnstracker__"].keys():
             raise AttributeError((
                 "{}{}"
                 .format(
@@ -123,7 +124,7 @@ class BaseRow(dict):
         s = cleanup_name(attr)
         if attr in self["__psvcolumnstracker__"].keys():
             self[self["__psvcolumnstracker__"][attr]] = ""
-        elif s in super(BaseRow, self).keys():
+        elif s in self["__psvcolumnstracker__"].keys():
             raise AttributeError((
                 "{}{}"
                 .format(

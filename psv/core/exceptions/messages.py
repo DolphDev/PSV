@@ -5,7 +5,7 @@ class RowObjectMsg:
     flagmessage = "Missing Flag"
     attribute_readonly = "'{classname}' object attribute '{attr}' is read-only. Note: '{attr}' is likely method/class attribute and not part of this row's data"
     attribute_missing = "'{}' has no attribute '{}'"
-    inherited_rows = "Only inherited Rows can use add_valid_attribute"
+    inherited_rows = "Only inherited Objects can use add_valid_attribute"
     non_valid = "'{}' cannot be shorten to a python valid attribute, and therefore is an invalid column name"
 
 class ApiObjectMsg:
