@@ -1,6 +1,6 @@
 from ..output import outputfile, outputstr
 from ..utils import multiple_index, limit_text
-from ..utils import _index_function_gen, generate_func, asciireplace
+from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any
 from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg
 
@@ -195,7 +195,7 @@ class Selection(object):
     def select(self, selectionfirstarg_data=None, **kwargs):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
-
+            All conditions must be true for a row to be selected
             Uses Lazy Loading, doesn't process till needed.
         """
         if not selectionfirstarg_data and not kwargs:
@@ -203,19 +203,49 @@ class Selection(object):
         func = generate_func(selectionfirstarg_data, kwargs)
         return self[func]
 
-    def safe_select(self, selectionfirstarg_data=None, **kwargs):
+    def any(self, selectionfirstarg_data=None, **kwargs):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
+            only one condition must be True for the row to be
+             selected.
+
+
+            Uses Lazy Loading, doesn't process till needed.
+        """
+        if not selectionfirstarg_data and not kwargs:
+            return Selection(self.__rows__, self.__apimother__)
+        func = generate_func_any(selectionfirstarg_data, kwargs)
+        return self[func]
+
+    def safe_select(self, selectionfirstarg_data=None, **kwargs):
+        """Method for selecting part of the csv document.
+            generates a function based off the parameters given.
 
             This instantly processes the select instead of 
                 lazily loading it at a later time.
                 Preventing race conditions under most uses cases.
                 if the same select is being worked on in multiple 
-                threads.
+                threads or other cases.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
         func = generate_func(selectionfirstarg_data, kwargs)
+        return self._safe_select(func)
+
+    def safe_any(self, selectionfirstarg_data=None, **kwargs):
+        """Method for selecting part of the csv document.
+            generates a function based off the parameters given.
+            only one condition must be True for the row to be selected.
+
+            This instantly processes the select instead of 
+                lazily loading it at a later time.
+                Preventing race conditions under most uses cases.
+                if the same select is being worked on in multiple 
+                threads or other cases.
+        """
+        if not selectionfirstarg_data and not kwargs:
+            return Selection(self.__rows__, self.__apimother__)
+        func = generate_func_any(selectionfirstarg_data, kwargs)
         return self._safe_select(func)
 
     def grab(self, *args):

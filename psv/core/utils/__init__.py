@@ -58,6 +58,35 @@ def generate_func(name, kwargs):
             "'f' cannot not be {}, must be str, function, or NoneType".format(
                 type(name)))  
 
+def generate_func_any(name, kwargs):
+    "Note: Currently a Hack based off generate_func, rewrite necessary"
+    if isinstance(name, FunctionType) and not kwargs:
+        return name
+    elif isinstance(name, str) or kwargs or name is None:
+        def select_func(row):
+            if kwargs:
+                for k,v in kwargs.items():
+                    if isinstance(v, FunctionType):
+                        if v(row.getcolumn(k)):
+                            return True
+                    else:
+                        if row.getcolumn(k) == v:
+                            return True
+            if name:
+                if isinstance(name, FunctionType):
+                    if name(row):
+                        return True
+                else:
+                    if bool(row.getcolumn(name)):
+                        return True
+            return False
+        return select_func
+    else:
+        raise TypeError(
+            "'f' cannot not be {}, must be str, function, or NoneType".format(
+                type(name)))  
+
+
 
 def asciireplace(string, rw='?'):
     def _gen(string):
