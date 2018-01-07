@@ -51,6 +51,17 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+    def test_any_select_function_generation(self):
+        self.construct()
+        try:
+            self.csvdoc.any("name")
+            self.csvdoc.any(name="Product 1")
+            self.csvdoc.any("name", price=10)
+            self.csvdoc.any("name", price=lambda p: p > 10)
+            self.csvdoc.any("name", price=10, company="Yahoo", available=1)
+        except Exception as err:
+            self.fail(str(err))
+
     def test_select_function_generation_results(self):
         self.construct()
         self.assertEqual(len(self.csvdoc.select("name")), 7)
@@ -61,6 +72,18 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(self.csvdoc.select("name", price=lambda p: p > 10)), 4)
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name, price=lambda p: p > 10)), 4)
         self.assertEqual(len(self.csvdoc.select("name", price=10, company="Yahoo", available=1)), 1)
+    
+    def test_any_select_function_generation_results(self):
+        self.construct()
+        self.assertEqual(len(self.csvdoc.any("name")), 7)
+        self.assertEqual(len(self.csvdoc.any(lambda x: x.name)), 7)
+        self.assertEqual(len(self.csvdoc.any(name="Product 1")), 1)
+        self.assertEqual(len(self.csvdoc.any("name", price=10)), 7)
+        self.assertEqual(len(self.csvdoc.any(lambda x: x.name, price=10)), 7)
+        self.assertEqual(len(self.csvdoc.any("name", price=lambda p: p > 10)), 7)
+        self.assertEqual(len(self.csvdoc.any(lambda x: x.name, price=lambda p: p > 10)), 7)
+        self.assertEqual(len(self.csvdoc.any("name", price=10, company="Yahoo", available=1)), 7)
+
 
     def test_safe_select_accepts_func(self):
         self.construct()
@@ -80,6 +103,18 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+    def test_any_safe_select_function_generation(self):
+        self.construct()
+        try:
+            self.csvdoc.safe_any("name")
+            self.csvdoc.safe_any(name="Product 1")
+            self.csvdoc.safe_any("name", price=10)
+            self.csvdoc.safe_any("name", price=lambda p: p > 10)
+            self.csvdoc.safe_any("name", price=10, company="Yahoo", available=1)
+        except Exception as err:
+            self.fail(str(err))
+
+
     def test_safe_select_function_generation_results(self):
         self.construct()
         self.assertEqual(len(self.csvdoc.safe_select("name")), 7)
@@ -89,7 +124,19 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(self.csvdoc.safe_select(lambda x: x.name, price=10)), 2)
         self.assertEqual(len(self.csvdoc.safe_select("name", price=lambda p: p > 10)), 4)
         self.assertEqual(len(self.csvdoc.safe_select(lambda x: x.name, price=lambda p: p > 10)), 4)
-        self.assertEqual(len(self.csvdoc.safe_select("name", price=10, company="Yahoo", available=1)), 1)
+        self.assertEqual(len(self.csvdoc.safe_select("name", price=10, company="Yahoo", available=1)), 1)        
+
+
+    def test_any_safe_select_function_generation_results(self):
+        self.construct()
+        self.assertEqual(len(self.csvdoc.safe_any("name")), 7)
+        self.assertEqual(len(self.csvdoc.safe_any(lambda x: x.name)), 7)
+        self.assertEqual(len(self.csvdoc.safe_any(name="Product 1")), 1)
+        self.assertEqual(len(self.csvdoc.safe_any("name", price=10)), 7)
+        self.assertEqual(len(self.csvdoc.safe_any(lambda x: x.name, price=10)), 7)
+        self.assertEqual(len(self.csvdoc.safe_any("name", price=lambda p: p > 10)), 7)
+        self.assertEqual(len(self.csvdoc.safe_any(lambda x: x.name, price=lambda p: p > 10)), 7)
+        self.assertEqual(len(self.csvdoc.safe_any("name", price=10, company="Yahoo", available=1)), 7)
 
     def test_no_output(self):
         self.construct()
