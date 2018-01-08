@@ -253,7 +253,12 @@ class psv_selections_test(unittest.TestCase):
         row = self.csvdoc.addrow()
         self.assertEqual(row, self.csvdoc[-1])
 
-    
+    def test_addcolumn(self):
+        self.construct()
+        self.csvdoc.addcolumn("Test-Row-1")
+        print(self.csvdoc.columns)
+        self.assertTrue("Test-Row-1" in self.csvdoc.columns)
+
     def test_addrow_kw(self):
         import random
         self.construct()
