@@ -37,20 +37,21 @@ def generate_func(name, kwargs):
         return name
     elif isinstance(name, str) or kwargs or name is None:
         def select_func(row):
-            try:
-                if kwargs:
-                    for k,v in kwargs.items():
-                        if isinstance(v, FunctionType):
-                            assert v(row.getcolumn(k))
-                        else:
-                            assert row.getcolumn(k) == v
-                if name:
-                    if isinstance(name, FunctionType):
-                        assert name(row)
+            if kwargs:
+                for k,v in kwargs.items():
+                    if isinstance(v, FunctionType):
+                        if not v(row.getcolumn(k)):
+                            return False
                     else:
-                        assert bool(row.getcolumn(name))
-            except AssertionError:
-                return False
+                        if not row.getcolumn(k) == v:
+                            return False
+            if name:
+                if isinstance(name, FunctionType):
+                    if not name(row):
+                        return False
+                else:
+                    if not bool(row.getcolumn(name)):
+                        return False
             return True
         return select_func
     else:
