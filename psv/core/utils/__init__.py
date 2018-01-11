@@ -32,10 +32,10 @@ def translate_type(string):
         return string
 
 
-def generate_func(name, kwargs):
-    if isinstance(name, FunctionType) and not kwargs:
-        return name
-    elif isinstance(name, str) or kwargs or name is None:
+def generate_func(arg, kwargs):
+    if isinstance(arg, FunctionType) and not kwargs:
+        return arg
+    elif isinstance(arg, str) or kwargs or arg is None:
         def select_func(row):
             if kwargs:
                 for k,v in kwargs.items():
@@ -45,25 +45,25 @@ def generate_func(name, kwargs):
                     else:
                         if not row.getcolumn(k) == v:
                             return False
-            if name:
-                if isinstance(name, FunctionType):
-                    if not name(row):
+            if arg:
+                if isinstance(arg, FunctionType):
+                    if not arg(row):
                         return False
                 else:
-                    if not bool(row.getcolumn(name)):
+                    if not bool(row.getcolupytmn(arg)):
                         return False
             return True
         return select_func
     else:
         raise TypeError(
             "'f' cannot not be {}, must be str, function, or NoneType".format(
-                type(name)))  
+                type(arg)))  
 
-def generate_func_any(name, kwargs):
+def generate_func_any(arg, kwargs):
     "Note: Currently a Hack based off generate_func, rewrite necessary"
-    if isinstance(name, FunctionType) and not kwargs:
-        return name
-    elif isinstance(name, str) or kwargs or name is None:
+    if isinstance(arg, FunctionType) and not kwargs:
+        return arg
+    elif isinstance(arg, str) or kwargs or arg is None:
         def select_func(row):
             if kwargs:
                 for k,v in kwargs.items():
@@ -73,19 +73,19 @@ def generate_func_any(name, kwargs):
                     else:
                         if row.getcolumn(k) == v:
                             return True
-            if name:
-                if isinstance(name, FunctionType):
-                    if name(row):
+            if arg:
+                if isinstance(arg, FunctionType):
+                    if arg(row):
                         return True
                 else:
-                    if bool(row.getcolumn(name)):
+                    if bool(row.getcolumn(arg)):
                         return True
             return False
         return select_func
     else:
         raise TypeError(
             "'f' cannot not be {}, must be str, function, or NoneType".format(
-                type(name)))  
+                type(arg)))  
 
 
 
