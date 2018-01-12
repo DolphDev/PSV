@@ -50,7 +50,7 @@ def generate_func(arg, kwargs):
                     if not arg(row):
                         return False
                 else:
-                    if not bool(row.getcolupytmn(arg)):
+                    if not bool(row.getcolumn(arg)):
                         return False
             return True
         return select_func
