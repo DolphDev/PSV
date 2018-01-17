@@ -94,6 +94,8 @@ def new(cls=BaseRow, columns=None, outputfile=None,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
+    if isinstance(columns, str):
+        columns = [columns]
     if columns:
         forbidden_columns(columns)
     return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
