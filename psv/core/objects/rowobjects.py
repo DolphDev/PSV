@@ -52,11 +52,10 @@ class BaseRow(dict):
         )
 
     def __str__(self):
-        rv = "<'{rowname}':{columnamount}>".format(
+        return "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
             columnamount=len(self.keys())
         )
-        return rv
 
     def __pos__(self):
         self.outputrow = True
