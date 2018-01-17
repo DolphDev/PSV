@@ -63,8 +63,9 @@ class Selection(object):
            
         """
         try:
-            if (not all(self.__apimother__ is x.__apimother__ for x in args)) and force_saftey:
-                raise TypeError("Merge by default only accepts rows from same origin")
+            if force_saftey:
+                if (not all(self.__apimother__ is x.__apimother__ for x in args)):
+                    raise ValueError("Merge by default only accepts rows from same origin")
             return Selection(tuple(self._merge(args)), self.__apimother__)
         except TypeError as exc:
             raise TypeError(
@@ -87,7 +88,7 @@ class Selection(object):
             state of this selection.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise Exception("non_hash_merge only accepts rows from same origin")
+            raise ValueError("non_hash_merge only accepts rows from same origin")
         outputstore = tuple(x.__output__ for x in self.__apimother__)
         self.__apimother__.no_output() 
         for x in ((self,) + args):
