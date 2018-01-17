@@ -1,7 +1,6 @@
 from ..output import outputfile, outputstr
 from ..utils import multiple_index, limit_text
 from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any
-from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -261,7 +260,7 @@ class Selection(object):
         elif len(arg) == 1:
             return tuple(self[arg[0]])
         else:
-            raise SelectionError(msg.badgrab)
+            raise ValueError(msg.badgrab)
 
     def remove_duplicates(self, soft=True):
         """Removes duplicates.
