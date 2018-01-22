@@ -90,7 +90,7 @@ def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quo
     return api
 
 
-def new(cls=BaseRow, columns=None, outputfile=None,
+def new(columns=None, cls=BaseRow, outputfile=None,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
