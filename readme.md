@@ -11,3 +11,5 @@ PSV
 | latest | [![Build Status](https://travis-ci.org/DolphDev/PSV.svg?branch=latest)](https://travis-ci.org/DolphDev/PSV) | [![Documentation Status](https://readthedocs.org/projects/psv/badge/?version=latest)](http://psv.readthedocs.io/en/latest/?badge=latest) | [![Coverage Status](https://coveralls.io/repos/github/DolphDev/PSV/badge.svg?branch=latest)](https://coveralls.io/github/DolphDev/PSV?branch=latest) | Latest branch. Latest revision of the library, very unstable. |
 
 PSV is a library that allows rapid script development for csv files. Assistance/Pull requests are both welcomed and encouraged.
+
+Installation: `pip install psv`
