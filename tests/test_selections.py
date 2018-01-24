@@ -163,6 +163,26 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.flip_output()
         self.assertEqual(self.csvdoc.lenoutput(), 3)
 
+    def test_lenoutput(self):
+        self.construct()
+        try:
+            self.csvdoc.lenoutput()
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_len_no_output(self):
+        self.construct()
+        try:
+            self.csvdoc.lenoutput()
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_columns(self):
+        self.construct()
+        try:
+            self.csvdoc.columns
+        except Exception as err:
+            self.fail(str(err))
 
     def test_enable(self):
         self.construct()
@@ -236,6 +256,12 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_merge_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.merge(psv.new())
+
+
     def test_safe_merge(self):
         self.construct()
         try:
@@ -296,6 +322,12 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         with self.assertRaises(TypeError) as cm:
             self.csvdoc.select()[None]
+
+
+    def test_addcolumn_failure(self):
+        TEST = psv.new("TEST")
+        with self.assertRaises(ValueError) as cm:
+            TEST.addcolumn("TEST")      
 
             
             
