@@ -134,7 +134,10 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.load("tests/dataset-only-one/test.csv")
+            api = psv.load("tests/dataset-only-one/test.csv", typetransfer=False)
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"))
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), typetransfer=False)
+
         except Exception as err:
             self.fail(str(err))
 

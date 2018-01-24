@@ -11,6 +11,17 @@ Product 6,30,1,Google
 Product 7,10,0,Yahoo
 """
 
+csv_repeat = """Name,Price,Available,Company
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+"""
+
+
 special = "TEST,test,TEst"
     
 csv_row_obj = """ROW_OBJ,TEST
@@ -105,6 +116,7 @@ class psv_selections_test(unittest.TestCase):
     def test_safe_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.safe_select()
             self.csvdoc.safe_select("name")
             self.csvdoc.safe_select(name="Product 1")
             self.csvdoc.safe_select("name", price=10)
@@ -116,6 +128,7 @@ class psv_selections_test(unittest.TestCase):
     def test_any_safe_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.safe_any()
             self.csvdoc.safe_any("name")
             self.csvdoc.safe_any(name="Product 1")
             self.csvdoc.safe_any("name", price=10)
@@ -349,8 +362,26 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(TypeError) as cm:
             self.csvdoc.grab(None, None)
 
+    def test_badgrab_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.grab(*tuple())
 
+    def test_remove_duplicates(self):
+        test = psv.loads(csv_repeat)
+        try:
+            test = test.remove_duplicates()
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
 
+    def test_remove_duplicates_hard(self):
+        test = psv.loads(csv_repeat)
+        try:
+            test.remove_duplicates(soft=False)
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
 
 
 
