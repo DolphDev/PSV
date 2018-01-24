@@ -116,4 +116,5 @@ def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', bufferi
 def forbidden_columns(columns):
     for x in columns:
         if x in banned_columns:
-            raise ValueError(msg.forbidden_column(x))
+            raise ValueError(
+                msg.forbidden_column.format(x))
