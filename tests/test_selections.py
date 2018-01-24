@@ -21,6 +21,16 @@ Product 1,10,1,Yahoo
 Product 1,10,1,Yahoo
 """
 
+csv_empty = """Name,Price,Available,Company
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+"""
+
 
 special = "TEST,test,TEst"
     
@@ -360,7 +370,7 @@ class psv_selections_test(unittest.TestCase):
     def test_multiindex_typeerror(self):
         self.construct()
         with self.assertRaises(TypeError) as cm:
-            self.csvdoc.grab(None, None)
+            self.csvdoc.grab(False, None)
 
     def test_badgrab_valueerror(self):
         self.construct()
@@ -384,5 +394,19 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(test), 1)
 
 
+    def test_arg_select(self):
+        test = psv.loads(csv_empty)
+        try:
+            self.assertEqual(len(test.select("Name")),0)
+        except Exception as exc:
+            self.fail(str(exc))
 
+    # def test_select_typeerror(self):
+    #     self.construct()
+    #     with self.assertRaises(TypeError) as cm:
+    #         self.csvdoc.select(tuple())
 
+    # def test_anyselect_typeerror(self):
+    #     self.construct()
+    #     with self.assertRaises(TypeError) as cm:
+    #         self.csvdoc.any(tuple())
