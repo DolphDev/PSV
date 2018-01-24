@@ -51,7 +51,7 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-    def merge(self, *args, force_saftey=True):
+    def merge(self, *args, force_safety=True):
         """Merges selections
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
@@ -62,7 +62,7 @@ class Selection(object):
            
         """
         try:
-            if force_saftey:
+            if force_safety:
                 if (not all(self.__apimother__ is x.__apimother__ for x in args)):
                     raise ValueError("Merge by default only accepts rows from same origin")
             return Selection(tuple(self._merge(args)), self.__apimother__)
