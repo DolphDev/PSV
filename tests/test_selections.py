@@ -11,6 +11,7 @@ Product 6,30,1,Google
 Product 7,10,0,Yahoo
 """
 
+special = "TEST,test,TEst"
     
 
 
@@ -23,6 +24,13 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         try:
             del self.csvdoc.rows[0]
+        except Exception as err:
+            self.fail(err)
+
+    def test_delete_rows_deleter(self):
+        self.construct()
+        try:
+            del self.csvdoc[0]
         except Exception as err:
             self.fail(err)
 
@@ -265,9 +273,33 @@ class psv_selections_test(unittest.TestCase):
         row = self.csvdoc.addrow(**({x:random.randint(1,100) for x in self.csvdoc.columns} ))
         self.assertEqual(row, self.csvdoc[-1])
 
+    def test__columnsmap__(self):
+        self.construct()
+        try:
+            self.csvdoc.__columnsmap__
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_repeat_columns(self):
+        try:
+            api = psv.loads(special)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_badgetitem_main(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc[None]
 
 
+    def test_badgetitem_select(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.select()[None]
 
+            
+            
+  
 
 
 

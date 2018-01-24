@@ -138,6 +138,15 @@ class psv_load_tests(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+    def test_load_maxrow(self):
+        self.populate_folders()
+        try:
+            api = psv.load("tests/dataset-only-one/test.csv", csv_max_row=100)
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), csv_max_row=100)
+        except Exception as err:
+            self.fail(str(err))
+
+
     def test_output_methods(self):
         self.generate_data_str()
         api = psv.loads(self.csvloads_str)
@@ -200,3 +209,13 @@ class psv_load_tests(unittest.TestCase):
     def test_api_new_invalid_columns(self):
         with self.assertRaises(ValueError) as cm:
             psv.new(columns=["#$%^&*"]).addrow()
+
+    def test_csv_size_limit(self):
+        try:
+            psv.csv_size_limit(2**24)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_forbidden_columns(self):
+        with self.assertRaises(ValueError) as cm:
+            psv.new(columns=["__psvcolumnstracker__"]).addrow()
