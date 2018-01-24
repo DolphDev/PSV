@@ -277,7 +277,7 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
-    def test_columns(self):
+    def test_columns_setterworks(self):
         self.construct()
         self.csvdoc.columns
         self.csvdoc.columns = ["Hello 5"]
