@@ -22,7 +22,6 @@ Product 1,10,1,Yahoo
 """
 
 
-
 class psv_selections_test(unittest.TestCase):
 
     def construct(self):

@@ -1,7 +1,6 @@
 from ..output import outputfile, outputstr
 from ..utils import multiple_index, limit_text
 from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any
-from ..exceptions import SelectionError
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -52,7 +51,7 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-    def merge(self, *args, force_saftey=True):
+    def merge(self, *args, force_safety=True):
         """Merges selections
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
@@ -63,8 +62,9 @@ class Selection(object):
            
         """
         try:
-            if (not all(self.__apimother__ is x.__apimother__ for x in args)) and force_saftey:
-                raise TypeError("Merge by default only accepts rows from same origin")
+            if force_safety:
+                if (not all(self.__apimother__ is x.__apimother__ for x in args)):
+                    raise ValueError("Merge by default only accepts rows from same origin")
             return Selection(tuple(self._merge(args)), self.__apimother__)
         except TypeError as exc:
             raise TypeError(
@@ -87,7 +87,7 @@ class Selection(object):
             state of this selection.
         """
         if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise Exception("non_hash_merge only accepts rows from same origin")
+            raise ValueError("non_hash_merge only accepts rows from same origin")
         outputstore = tuple(x.__output__ for x in self.__apimother__)
         self.__apimother__.no_output() 
         for x in ((self,) + args):
@@ -260,7 +260,7 @@ class Selection(object):
         elif len(arg) == 1:
             return tuple(self[arg[0]])
         else:
-            raise SelectionError(msg.badgrab)
+            raise ValueError(msg.badgrab)
 
     def remove_duplicates(self, soft=True):
         """Removes duplicates.

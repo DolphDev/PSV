@@ -52,11 +52,10 @@ class BaseRow(dict):
         )
 
     def __str__(self):
-        rv = "<'{rowname}':{columnamount}>".format(
+        return "<'{rowname}':{columnamount}>".format(
             rowname=self.__class__.__name__,
             columnamount=len(self.keys())
         )
-        return rv
 
     def __pos__(self):
         self.outputrow = True
@@ -96,9 +95,10 @@ class BaseRow(dict):
         """Allows setting of rows and attributes by using =
             statement"""
         s = cleanup_name(attr)
-        if attr in self["__psvcolumnstracker__"].keys():
+        keys = self["__psvcolumnstracker__"].keys() 
+        if attr in keys:
             self[self["__psvcolumnstracker__"][attr]] = v
-        elif s in self["__psvcolumnstracker__"].keys():
+        elif s in keys:
             raise AttributeError((
                 "{}{}"
                 .format(
@@ -122,9 +122,10 @@ class BaseRow(dict):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
         s = cleanup_name(attr)
-        if attr in self["__psvcolumnstracker__"].keys():
+        keys = self["__psvcolumnstracker__"].keys()
+        if attr in keys:
             self[self["__psvcolumnstracker__"][attr]] = ""
-        elif s in self["__psvcolumnstracker__"].keys():
+        elif s in keys:
             raise AttributeError((
                 "{}{}"
                 .format(

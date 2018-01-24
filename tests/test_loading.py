@@ -18,6 +18,16 @@ for filename in filenames:
 del os
 
 
+small_static_csv = """Name,Price,Available,Company
+Product 1,10,1,Yahoo
+Product 2,15,0,Microsoft
+Product 3,1,1,Google
+Product 4,20,0,Yahoo
+Product 5,25,1,Yahoo
+Product 6,30,1,Google
+Product 7,10,0,Yahoo
+"""
+
 class psv_load_tests(unittest.TestCase):
 
 
@@ -111,6 +121,7 @@ class psv_load_tests(unittest.TestCase):
         self.generate_data_str()
         try:
             api = psv.loads(self.csvloads_str)
+            api = psv.loads(self.csvloads_str, csv_size_max=2**24)
         except Exception as err:
             self.fail(str(err))
         self.assertTrue(bool(api.__columns__))
@@ -119,6 +130,7 @@ class psv_load_tests(unittest.TestCase):
         self.generate_data_str()
         try:
             api = psv.loads(self.csvloads_dict_tuple)
+            api = psv.loads(self.csvloads_dict_tuple, csv_size_max=2**24)
         except Exception as err:
             self.fail(str(err))
         self.assertFalse(bool(api.__columns__))
@@ -127,6 +139,8 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.loaddir("tests/dataset-folder/")
+            api = psv.loaddir("tests/dataset-folder/",  )
+
         except Exception as err:
             self.fail(str(err))
 
@@ -134,9 +148,24 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.load("tests/dataset-only-one/test.csv")
+            api = psv.load("tests/dataset-only-one/test.csv", typetransfer=False)
+            api = psv.load("tests/dataset-only-one/test.csv", csv_size_max=2**24)
+
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"))
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), typetransfer=False)
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+
         except Exception as err:
             self.fail(str(err))
+
+    def test_load_maxrow(self):
+        self.populate_folders()
+        try:
+            api = psv.load("tests/dataset-only-one/test.csv", csv_max_row=100)
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), csv_max_row=100)
+        except Exception as err:
+            self.fail(str(err))
+
 
     def test_output_methods(self):
         self.generate_data_str()
@@ -151,11 +180,17 @@ class psv_load_tests(unittest.TestCase):
 
         try:
             api.outputs(columns={"NOT SUPPORTED TYPE",})
-            api.output("NAME.csv", columns={"NOT SUPPORTED TYPE",})
-            self.fail("Output Method failed to catch unsupported type")
         except ValueError:
             #TEST Passed
             pass
+
+        try:
+            api.output("NAME.csv", columns={"NOT SUPPORTED TYPE",})
+            self.fail("Output Method failed to catch unsupported type")
+        except ValueError:
+            #Test Passed
+            pass
+
 
 
     def test_getcolumn_random_data(self):
@@ -200,3 +235,13 @@ class psv_load_tests(unittest.TestCase):
     def test_api_new_invalid_columns(self):
         with self.assertRaises(ValueError) as cm:
             psv.new(columns=["#$%^&*"]).addrow()
+
+    def test_csv_size_max(self):
+        try:
+            psv.csv_size_limit(2**24)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_forbidden_columns(self):
+        with self.assertRaises(ValueError) as cm:
+            psv.new(columns=["__psvcolumnstracker__"]).addrow()

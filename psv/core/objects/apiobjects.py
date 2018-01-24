@@ -60,8 +60,8 @@ class MainSelection(Selection):
         self.__columns__ = v
 
 
-    def addrow(self, columns=None, cls=BaseRow, **kwargs):
-        r = parser_addrow(columns if columns else self.__columns__, cls, self.__columnsmap__)
+    def addrow(self, cls=BaseRow, **kwargs):
+        r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
         self.__rows__.append(r)
         if kwargs:
             for k, v in kwargs.items():

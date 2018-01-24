@@ -11,7 +11,31 @@ Product 6,30,1,Google
 Product 7,10,0,Yahoo
 """
 
+csv_repeat = """Name,Price,Available,Company
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+"""
+
+csv_empty = """Name,Price,Available,Company
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+"""
+
+
+special = "TEST,test,TEst"
     
+csv_row_obj = """ROW_OBJ,TEST
+TEST,TEST"""
 
 
 class psv_selections_test(unittest.TestCase):
@@ -23,6 +47,13 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         try:
             del self.csvdoc.rows[0]
+        except Exception as err:
+            self.fail(err)
+
+    def test_delete_rows_deleter(self):
+        self.construct()
+        try:
+            del self.csvdoc[0]
         except Exception as err:
             self.fail(err)
 
@@ -95,6 +126,7 @@ class psv_selections_test(unittest.TestCase):
     def test_safe_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.safe_select()
             self.csvdoc.safe_select("name")
             self.csvdoc.safe_select(name="Product 1")
             self.csvdoc.safe_select("name", price=10)
@@ -106,6 +138,7 @@ class psv_selections_test(unittest.TestCase):
     def test_any_safe_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.safe_any()
             self.csvdoc.safe_any("name")
             self.csvdoc.safe_any(name="Product 1")
             self.csvdoc.safe_any("name", price=10)
@@ -155,6 +188,26 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.flip_output()
         self.assertEqual(self.csvdoc.lenoutput(), 3)
 
+    def test_lenoutput(self):
+        self.construct()
+        try:
+            self.csvdoc.lenoutput()
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_len_no_output(self):
+        self.construct()
+        try:
+            self.csvdoc.lenoutput()
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_columns(self):
+        self.construct()
+        try:
+            self.csvdoc.columns
+        except Exception as err:
+            self.fail(str(err))
 
     def test_enable(self):
         self.construct()
@@ -228,6 +281,12 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_merge_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.merge(psv.new())
+
+
     def test_safe_merge(self):
         self.construct()
         try:
@@ -243,7 +302,7 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
-    def test_columns(self):
+    def test_columns_setterworks(self):
         self.construct()
         self.csvdoc.columns
         self.csvdoc.columns = ["Hello 5"]
@@ -265,13 +324,89 @@ class psv_selections_test(unittest.TestCase):
         row = self.csvdoc.addrow(**({x:random.randint(1,100) for x in self.csvdoc.columns} ))
         self.assertEqual(row, self.csvdoc[-1])
 
+    def test__columnsmap__(self):
+        self.construct()
+        try:
+            self.csvdoc.__columnsmap__
+        except Exception as err:
+            self.fail(str(err))
+
+    def test__columnsmap___select(self):
+        self.construct()
+        try:
+            self.csvdoc.select().__columnsmap__
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_repeat_columns(self):
+        try:
+            api = psv.loads(special)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_badgetitem_main(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc[None]
 
 
+    def test_badgetitem_select(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.select()[None]
 
 
+    def test_addcolumn_failure(self):
+        TEST = psv.new("TEST")
+        with self.assertRaises(ValueError) as cm:
+            TEST.addcolumn("TEST")      
+
+    def test_utils_multiindex(self):
+        test = psv.loads(csv_row_obj)
+        value = test.grab("|ROW_OBJ|", "ROW_OBJ")
+        self.assertTrue(isinstance(value[0][0], str))
+        self.assertTrue(isinstance(value[0][1], psv.core.objects.rowobjects.BaseRow))
+
+    def test_multiindex_typeerror(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.grab(False, None)
+
+    def test_badgrab_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.grab(*tuple())
+
+    def test_remove_duplicates(self):
+        test = psv.loads(csv_repeat)
+        try:
+            test = test.remove_duplicates()
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
+
+    def test_remove_duplicates_hard(self):
+        test = psv.loads(csv_repeat)
+        try:
+            test.remove_duplicates(soft=False)
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
 
 
+    def test_arg_select(self):
+        test = psv.loads(csv_empty)
+        try:
+            self.assertEqual(len(test.select("Name")),0)
+        except Exception as exc:
+            self.fail(str(exc))
 
+    # def test_select_typeerror(self):
+    #     self.construct()
+    #     with self.assertRaises(TypeError) as cm:
+    #         self.csvdoc.select(tuple())
 
-
-
+    # def test_anyselect_typeerror(self):
+    #     self.construct()
+    #     with self.assertRaises(TypeError) as cm:
+    #         self.csvdoc.any(tuple())
