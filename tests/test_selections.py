@@ -13,6 +13,8 @@ Product 7,10,0,Yahoo
 
 special = "TEST,test,TEst"
     
+csv_row_obj = """ROW_OBJ,TEST
+TEST,TEST"""
 
 
 class psv_selections_test(unittest.TestCase):
@@ -306,6 +308,13 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+    def test__columnsmap___select(self):
+        self.construct()
+        try:
+            self.csvdoc.select().__columnsmap__
+        except Exception as err:
+            self.fail(str(err))
+
     def test_repeat_columns(self):
         try:
             api = psv.loads(special)
@@ -329,9 +338,16 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             TEST.addcolumn("TEST")      
 
-            
-            
-  
+    def test_utils_multiindex(self):
+        test = psv.loads(csv_row_obj)
+        value = test.grab("|ROW_OBJ|", "ROW_OBJ")
+        self.assertTrue(isinstance(value[0][0], str))
+        self.assertTrue(isinstance(value[0][1], psv.core.objects.rowobjects.BaseRow))
+
+    def test_multiindex_typeerror(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.grab(None, None)
 
 
 
