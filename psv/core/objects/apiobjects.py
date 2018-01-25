@@ -16,7 +16,7 @@ class MainSelection(Selection):
 
     def __init__(self, csvdict=None, columns=None, 
                  cls=BaseRow, parsing=parser, outputfile=None,
-                 typetransfer=True, *args, **kwargs):
+                 typetransfer=True, custom_columns=False, *args, **kwargs):
         # Since I close the file after this, the row must be placed into memory
         rebuild_column_map = False
         self.__apimother__ = self
@@ -33,8 +33,12 @@ class MainSelection(Selection):
         if csvdict is None:
             csvdict = {}
         if csvdict:
-            self.__rows__ = list(
-                parser(csvdict, cls, self.__columnsmap__, typetransfer, *args, **kwargs))
+            if custom_columns:
+                self.__rows__ = list(
+                    parser(csvdict, cls, self.__columnsmap__, typetransfer, columns, *args, **kwargs))
+            else:
+                self.__rows__ = list(
+                    parser(csvdict, cls, self.__columnsmap__, typetransfer, None, *args, **kwargs))
             if rebuild_column_map:
                 self.__columnsmap__.update(
                     column_crunch_repeat(self.__rows__[0].keys()))

@@ -19,7 +19,7 @@ def csv_size_limit(size):
 
 def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=True,
-         csv_size_max=None, csv_max_row=None):
+         csv_size_max=None, csv_max_row=None, custom_columns=None):
     """Loads a file into psv
 
         :param cls: The class that will be used for csv data.
@@ -35,16 +35,17 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
             data = csv.DictReader(
                 csvfile, delimiter=delimiter, quotechar=quotechar)
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
-                                                           mode, buffering, encoding, errors, newline, closefd, opener),
-                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
+                                                           mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
+                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
     else:
         with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
                                                           encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
             data = itertools.islice(csv.DictReader(
                 csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
-                                                           mode, buffering, encoding, errors, newline, closefd, opener),
-                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
+                                                           mode, buffering, encoding, errors, newline, closefd, opener,
+                                                           custom_columns=custom_columns),
+                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
     return api
 
 
@@ -103,7 +104,11 @@ def new(columns=None, cls=BaseRow, outputfile=None,
 
 def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                  errors=None, newline=None, closefd=True, opener=None,
-                 csv_size_max=None, check_columns=True):
+                 csv_size_max=None, check_columns=True, custom_columns=None):
+    if custom_columns:
+        if check_columns:
+            forbidden_columns(custom_columns)
+        return custom_columns
     if csv_size_max:
         csv_size_limit(csv_size_max)
     with open(f, mode=mode, buffering=buffering,
