@@ -242,13 +242,22 @@ class BaseRow(dict):
         else:
             raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
-    def addcolumn(self, columnname, columndata=""):
+    def _addcolumns(self, columnname, columndata=""):
+        """Adds a column for this row only doesn't add to column tracker
+
+        Warning: Internal Method, API/Behavior may change without notice"""
+        self[columnname] = columndata
+
+
+    def _delcolumns(self, columnname, columndata=""):
         """Adds a column for this row only
-            doesn't add to column tracker"""
-        if not self.get(columnname):
-            self[columnname] = columndata
-        else:
-            raise ValueError("Column already exists.")
+            doesn't add to column tracker
+
+        Warning: Internal Method, API/Behavior may change without notice"""
+
+        del self[columnname]
+
+
 
     def longcolumn(self, columns=None):
         """

@@ -69,8 +69,7 @@ class MainSelection(Selection):
         return r
 
 
-    def addcolumn(self, columnname, columndata="",
-                  add_to_columns=True, clear=True):
+    def addcolumn(self, columnname, columndata="", clear=True):
         """Adds a column
         :param columnname: Name of the column to add.
         :param columndata: The default value of the new column.
@@ -78,20 +77,33 @@ class MainSelection(Selection):
             be added to the internal tracker.
         :type columnname: :class:`str`
         :type add_to_columns: :class:`bool`
-        Note: Rows that are being accessed by another thread will error out if clear is True
-        Note:
+        Note: Rows that are being accessed by another thread will error out
+            if accessed during the brief time addcolumn is updating.
         """
         if columnname in self.columns:
             raise ValueError(
                 "'{}' column already exists"
                 .format(columnname))
         for row in self.rows:
-            row.addcolumn(columnname, columndata)
-        if add_to_columns:
-            self.columns += (columnname,)
-            self.__columnsmap__.clear()
-            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+            row._addcolumns(columnname, columndata)
+        self.columns += (columnname,)
+        self.__columnsmap__.clear()
+        self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
         return self
+
+    def delcolumn(self, columnname):
+        if not (columnname in self.columns):
+            raise ValueError(
+                "'{}' column doesn't exist"
+                .format(columnname))
+
+        for row in self.rows:
+            row._delcolumns(columnname)
+
+        self.columns = tuple(
+            column  for column in self.columns if column != columnname)
+        self.__columnsmap__.clear()
+        self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 
     def __delitem__(self, v):
         del self.__rows__[v]

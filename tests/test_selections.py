@@ -317,6 +317,15 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.addcolumn("Test-Row-1")
         print(self.csvdoc.columns)
         self.assertTrue("Test-Row-1" in self.csvdoc.columns)
+        self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
+
+ 
+    def test_delcolumn(self):
+        self.construct()
+        self.csvdoc.addcolumn("Test-Row-1") #This is covered in seperate test
+        self.csvdoc.delcolumn("Test-Row-1")
+        self.assertFalse("Test-Row-1" in self.csvdoc.columns)
+        self.assertFalse("testrow1" in self.csvdoc.__columnsmap__.keys())
 
     def test_addrow_kw(self):
         import random
