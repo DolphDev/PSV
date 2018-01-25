@@ -148,11 +148,16 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.load("tests/dataset-only-one/test.csv")
+            api = psv.load("tests/dataset-only-one/test.csv", custom_columns=api.columns[:2])
             api = psv.load("tests/dataset-only-one/test.csv", typetransfer=False)
+            api = psv.load("tests/dataset-only-one/test.csv", custom_columns=api.columns[:2], typetransfer=False)
+
             api = psv.load("tests/dataset-only-one/test.csv", csv_size_max=2**24)
 
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"))
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), typetransfer=False)
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=False)
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
 
         except Exception as err:
@@ -245,3 +250,4 @@ class psv_load_tests(unittest.TestCase):
     def test_forbidden_columns(self):
         with self.assertRaises(ValueError) as cm:
             psv.new(columns=["__psvcolumnstracker__"]).addrow()
+
