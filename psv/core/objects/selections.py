@@ -37,8 +37,45 @@ class Selection(object):
             raise TypeError(msg.getitemmsg.format(type(v)))
 
     @property
+    def rows(self):
+        if not isinstance(self.__rows__, tuple):
+            self.__rows__ = tuple(self.__rows__)
+            return self.__rows__
+        else:
+            return self.__rows__
+
+    @property
+    def columns(self):
+        return self.__apimother__.columns
+
+    @property
     def __columnsmap__(self):
         return self.__apimother__.__columnsmap__
+
+    @property
+    def columns_mapping(self):
+        rv = {}
+        for k, v in self.__columnsmap__.items():
+            cv = rv.get(v)
+            if isinstance(cv, str):
+                rv[v] = [rv[v], k]
+            elif isinstance(cv, list):
+                rv[v] = rv[v] + [k]
+            else:
+                rv[v] = k
+        return rv
+
+    @property
+    def columns_attributes(self):
+        rv = []
+        mapping = self.columns_mapping
+        for column in self.columns:
+            item = mapping[column]
+            if isinstance(item, list):
+                rv.append(item.pop(0))
+            else:
+                rv.append(item)
+        return rv
 
     def _merge(self, args):
         maps = []
@@ -100,18 +137,6 @@ class Selection(object):
             else:
                 -row
         return result
-
-    @property
-    def rows(self):
-        if not isinstance(self.__rows__, tuple):
-            self.__rows__ = tuple(self.__rows__)
-            return self.__rows__
-        else:
-            return self.__rows__
-
-    @property
-    def columns(self):
-        return self.__apimother__.columns
 
     @columns.setter
     def columns(self, v):
