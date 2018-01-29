@@ -9,7 +9,13 @@ accepted_chars = (ascii_lowercase + "_" + digits)
 
 
 class BaseRow(dict):
-    """This Base Class represents a row in a spreadsheet"""
+    """This Base Class represents a row in a spreadsheet
+        This object is a highly specialized dict, meant to allow
+        extremely quick and easy access/manipulation to row data
+        at an acceptable memory cost. 
+
+    """
+
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
     def __init__(self, data, columns_map, *args, **kwargs):
@@ -146,7 +152,10 @@ class BaseRow(dict):
                 type(self), attr))
 
     def add_valid_attribute(self, attr, deletable=False):
-        "Used by classes that inherit to add attributes to the whitelists"
+        """Used by classes that inherit to add attributes to the whitelists
+            Note: BaseRow should only be inherited if no other option is available.
+            These attributes being accessed will be notably slower due to the implementation.
+        """
         if self.__class__ is BaseRow:
             raise TypeError(msg.inherited_rows)
         super(BaseRow, self).__setattr__(
@@ -157,7 +166,11 @@ class BaseRow(dict):
 
 
     def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__"""
+        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__
+           Note: BaseRow should only be inherited if no other option is available. It cause
+            memory bloat issues and be notably slower.
+
+        """
         pass
 
     @property
