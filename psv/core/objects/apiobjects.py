@@ -40,8 +40,18 @@ class MainSelection(Selection):
                 self.__rows__ = list(
                     parser(csvdict, cls, self.__columnsmap__, typetransfer, None, *args, **kwargs))
             if rebuild_column_map:
-                self.__columnsmap__.update(
-                    column_crunch_repeat(self.__rows__[0].keys()))
+                #This is a temporary fix, waiting the implemention of safe_load() and opencsv()
+                try:
+                    self.__columnsmap__.update(
+                        column_crunch_repeat(self.__rows__[0].keys()))
+                except IndexError:
+                    #Empty Input File
+                    pass
+                except AttributeError:
+                    #Errornous Headers - Usually caused by single column
+                    #Spreadsheets that don't have a header
+                    raise ValueError("Bad CSV - File contains a single column with no header")
+
         else:
             self.__rows__ = list()
         if not self.__columns__:

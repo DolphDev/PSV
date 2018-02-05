@@ -24,7 +24,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
 
         :param cls: The class that will be used for csv data.
         :type cls: :class:`BaseRow` (or class that inherits it)
-
+        
     """
     if csv_size_max:
         csv_size_limit(csv_size_max)
@@ -52,7 +52,12 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
 def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
             encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=True,
             csv_size_max=None, filetype="*.csv"):
-    """Loads a directory of .csv files"""
+    """Loads a directory of .csv files
+
+        Note: Due to way python's internal csv library works,
+            identical headers will overwrite and only the last header will available.
+
+    """
     if csv_size_max:
         csv_size_limit(csv_size_max)
     data = []
@@ -70,6 +75,10 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
 
 def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"',
           typetransfer=True, csv_size_max=None, newline="\n"):
+    """Loads csv, but as a python string
+
+        Note: Due to way python's internal csv library works, identical headers will overwrite each other.
+    """
     was_str = False
     if csv_size_max:
         csv_size_limit(csv_size_max)
