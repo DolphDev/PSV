@@ -290,6 +290,34 @@ class BaseRow(dict):
                 k: self[k]})
         return newdict
 
+    def update_values(self, *arg, **kwargs):
+        """Safe way to use .update() on rows, checks header columns
+
+        """
+        keys = set(self.keys())
+        if arg:
+           for x in arg:
+               xkeys = set(x.keys())
+               if xkeys.issubset(keys):
+                   self.update(x)
+               else:
+                   raise ValueError(
+                       "'{}' contains columns not in this row currently"
+                       .format(x)
+                       )
+        if kwargs:
+            kwkeys = set(kwargs.keys())
+            if kwkeys.issubset(keys):
+                self.update(kwargs)
+            else:
+                raise ValueError(
+                    "'{}' contains columns not in this row currently"
+                    .format(kwargs)
+                    )
+
+
+
+
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
         """Integrates tabulate library with psv
 
