@@ -69,7 +69,8 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
                   encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
             data = data + list(csv.DictReader(csvfile,
                                               delimiter=delimiter, quotechar=quotechar))
-    forbidden_columns(columns)
+    if columns != None:
+        forbidden_columns(columns)
     return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
 
 

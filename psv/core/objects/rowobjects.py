@@ -19,6 +19,7 @@ class BaseRow(dict):
     __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
 
     def __init__(self, data, columns_map, *args, **kwargs):
+        # These are used to 
         super(BaseRow, self).__setattr__("__delwhitelist__", 
             BaseRowDefaults.__delwhitelist__)
         super(BaseRow, self).__setattr__("__dirstore__",
@@ -99,7 +100,11 @@ class BaseRow(dict):
 
     def __setattr__(self, attr, v):
         """Allows setting of rows and attributes by using =
-            statement"""
+            statement
+
+            Note: Setting Attributes is not optimized, this dict has specialized around
+                dynamic attribute access. Regular Attribute Access
+            """
         s = cleanup_name(attr)
         keys = self["__psvcolumnstracker__"].keys() 
         if attr in keys:
@@ -115,6 +120,9 @@ class BaseRow(dict):
                     .format(s=s)
                 )))
         else:
+            # A somewhat hacky implementation of Dict's restriction of editing it's
+            # Attributes.
+            # This protects
             if attr in self.__sawhitelist__:
                 super(BaseRow, self).__setattr__(attr, v)
             elif attr in self.__dirstore__:
@@ -168,7 +176,7 @@ class BaseRow(dict):
     def construct(self, *args, **kwargs):
         """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__
            Note: BaseRow should only be inherited if no other option is available. It cause
-            memory bloat issues and be notably slower.
+            memory bloat issues and can be notably slower.
 
         """
         pass
@@ -343,6 +351,9 @@ class BaseRow(dict):
             return result
 
 class BaseRowDefaults(object):
+    """Contains Static Variables the BaseRow uses
+        to prevent rampant memory waste.
+    """
     __delwhitelist__ = set()
     __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))

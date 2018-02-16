@@ -17,7 +17,8 @@ class MainSelection(Selection):
     def __init__(self, csvdict=None, columns=None, 
                  cls=BaseRow, parsing=parser, outputfile=None,
                  typetransfer=True, custom_columns=False, *args, **kwargs):
-        # Since I close the file after this, the row must be placed into memory
+
+        # Local Flag to detirmine 
         rebuild_column_map = False
         self.__apimother__ = self
         self.__outputname__ = outputfile
@@ -40,16 +41,16 @@ class MainSelection(Selection):
                 self.__rows__ = list(
                     parser(csvdict, cls, self.__columnsmap__, typetransfer, None, *args, **kwargs))
             if rebuild_column_map:
-                #This is a temporary fix, waiting the implemention of safe_load() and opencsv()
+                #This is a temporary fix, waiting on the implemention of safe_load() and opencsv()
                 try:
                     self.__columnsmap__.update(
                         column_crunch_repeat(self.__rows__[0].keys()))
                 except IndexError:
-                    #Empty Input File
+                    # Empty Input File, Basically Creates the equivalent of psv.new()
                     pass
                 except AttributeError:
-                    #Errornous Headers - Usually caused by single column
-                    #Spreadsheets that don't have a header
+                    # Errornous Headers - Usually caused by single column
+                    # Spreadsheets that don't have a header
                     raise ValueError("Bad CSV - File contains a single column with no header")
 
         else:
