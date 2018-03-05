@@ -3,6 +3,8 @@ from ..exceptions.messages import RowObjectMsg as msg
 from functools import lru_cache
 from tabulate import tabulate
 from string import ascii_lowercase, digits
+from types import FunctionType
+
 
 import keyword
 accepted_chars = (ascii_lowercase + "_" + digits)
@@ -163,6 +165,8 @@ class BaseRow(dict):
         """Used by classes that inherit to add attributes to the whitelists
             Note: BaseRow should only be inherited if no other option is available.
             These attributes being accessed will be notably slower due to the implementation.
+            Memory Usage may also be much higher, as the whitelists will no longer be a 
+             static variable.
         """
         if self.__class__ is BaseRow:
             raise TypeError(msg.inherited_rows)
@@ -269,6 +273,9 @@ class BaseRow(dict):
         Warning: Internal Method, API/Behavior may change without notice"""
         self[columnname] = columndata
 
+    def _addcolumns_func(self, columnname, columnfunc):
+        self[columnname] = columnfunc(self)
+
 
     def _delcolumns(self, columnname, columndata=""):
         """Adds a column for this row only
@@ -277,8 +284,6 @@ class BaseRow(dict):
         Warning: Internal Method, API/Behavior may change without notice"""
 
         del self[columnname]
-
-
 
     def longcolumn(self, columns=None):
         """

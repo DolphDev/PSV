@@ -41,7 +41,7 @@ class MainSelection(Selection):
                 self.__rows__ = list(
                     parser(csvdict, cls, self.__columnsmap__, typetransfer, None, *args, **kwargs))
             if rebuild_column_map:
-                #This is a temporary fix, waiting on the implemention of safe_load() and opencsv()
+                # This is a temporary fix, waiting on the implemention of safe_load() and opencsv()
                 try:
                     self.__columnsmap__.update(
                         column_crunch_repeat(self.__rows__[0].keys()))
@@ -99,8 +99,12 @@ class MainSelection(Selection):
             raise ValueError(
                 "'{}' column already exists"
                 .format(columnname))
-        for row in self.rows:
-            row._addcolumns(columnname, columndata)
+        if isinstance(columndata, FunctionType):
+            for row in self.rows:
+                row._addcolumns_func(columnname, columndata)
+        else:
+            for row in self.rows:
+                row._addcolumns(columnname, columndata)
         self.columns += (columnname,)
         self.__columnsmap__.clear()
         self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
