@@ -77,6 +77,24 @@ class Selection(object):
                 rv.append(item)
         return rv
 
+    @property
+    def addcolumn(self):
+        """Adds a column
+        :param columnname: Name of the column to add.
+        :param columndata: The default value of the new column.
+        :param add_to_columns: Determines whether this column should
+            be added to the internal tracker.
+        :type columnname: :class:`str`
+        :type add_to_columns: :class:`bool`
+        Note: Rows that are being accessed by another thread will error out
+            if accessed during the brief time addcolumn is updating.
+
+        Note: This will affect the entire MainSelection, not just this
+         selection
+
+        """    
+        return self.__apimother__.addcolumn
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
