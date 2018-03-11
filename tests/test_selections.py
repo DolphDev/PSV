@@ -41,7 +41,7 @@ TEST,TEST"""
 class psv_selections_test(unittest.TestCase):
 
     def construct(self):
-        self.csvdoc = psv.loads(csv)
+        self.csvdoc = psv.loads(csv, typetransfer=True)
 
     def test_delete_rows(self):
         self.construct()
