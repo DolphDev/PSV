@@ -22,7 +22,7 @@ class MainSelection(Selection):
         rebuild_column_map = False
         self.__apimother__ = self
         self.__outputname__ = outputfile
-        self.__columns__ = list(columns)
+        self.__columns__ = columns
         self.__columnsmap__ = {}
         
         if columns:
@@ -56,7 +56,9 @@ class MainSelection(Selection):
         else:
             self.__rows__ = list()
         if not self.__columns__:
-            self.__columns__ = tuple()
+            self.__columns__ = list()
+        elif not isinstance(self.columns, list):
+            self.__columns__ = list(self.__columns__) 
 
     @property
     def rows(self):
