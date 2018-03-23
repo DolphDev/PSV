@@ -22,7 +22,7 @@ class MainSelection(Selection):
         rebuild_column_map = False
         self.__apimother__ = self
         self.__outputname__ = outputfile
-        self.__columns__ = columns
+        self.__columns__ = list(columns)
         self.__columnsmap__ = {}
         
         if columns:
