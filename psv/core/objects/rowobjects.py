@@ -55,9 +55,10 @@ class BaseRow(dict):
             for column in filter(lambda x: x != "__psvcolumnstracker__", sorted(self.keys()))))
 
     def __repr__(self):
-        return "<'{rowname}':{columnamount}>".format(
+        return "<{rowname}:{columnamount} object at {hexloc}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self.keys())
+            columnamount=len(self.keys()),
+            hexloc=hex(id(self)).upper().replace("X", "x")
         )
 
     def __str__(self):
@@ -104,8 +105,8 @@ class BaseRow(dict):
         """Allows setting of rows and attributes by using =
             statement
 
-            Note: Setting Attributes is not optimized, this dict has specialized around
-                dynamic attribute access. Regular Attribute Access
+            Note: Setting class Attributes is not optimized, this dict has specialized around
+                dynamic attribute (from row data) access. Regular Attribute Access may be slower.
             """
         s = cleanup_name(attr)
         keys = self["__psvcolumnstracker__"].keys() 
@@ -362,6 +363,7 @@ class BaseRowDefaults(object):
     __delwhitelist__ = set()
     __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))
+    
     __psvcolumns__ = '__psvcolumnstracker__'
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
