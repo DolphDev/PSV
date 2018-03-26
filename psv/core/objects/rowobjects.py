@@ -217,9 +217,9 @@ class BaseRow(dict):
                 #pass to below code
                 pass 
         if not accept_small_names:
-            raise KeyError("'{}'".format(column))
+            raise ValueError("'{}'".format(column))
         else:
-            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def setcolumn(self, column, value, accept_small_names=True):
         """Set a cell by the orginal column name
@@ -241,9 +241,9 @@ class BaseRow(dict):
                 #pass to below code
                 pass
         if not accept_small_names:
-            raise KeyError("'{}'".format(column))
+            raise ValueError("'{}'".format(column))
         else:
-            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def delcolumn(self, column, accept_small_names=True):
         """Delete a cell by the orginal column name
@@ -264,9 +264,9 @@ class BaseRow(dict):
                 #pass to below code
                 pass
         if not accept_small_names:
-            raise KeyError("'{}'".format(column))
+            raise ValueError("'{}'".format(column))
         else:
-            raise KeyError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
+            raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
     def _addcolumns(self, columnname, columndata=""):
         """Adds a column for this row only doesn't add to column tracker
