@@ -190,6 +190,13 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test__repr__(self):
+        self.construct()
+        try:
+            for x in self.csvdoc:
+                repr(x)
+        except Exception as err:
+            self.fail(err) 
 
     def test__addcolumn(self):
         self.construct()

@@ -62,9 +62,10 @@ class BaseRow(dict):
         )
 
     def __str__(self):
-        return "<'{rowname}':{columnamount}>".format(
+        return "<{rowname}:{columnamount} object at {hexloc}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self.keys())
+            columnamount=len(self.keys()),
+            hexloc=hex(id(self)).upper().replace("X", "x")
         )
 
     def __pos__(self):
