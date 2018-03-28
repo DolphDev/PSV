@@ -154,7 +154,7 @@ class psv_selections_test(unittest.TestCase):
         import random
         import string
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
-        with self.assertRaises(KeyError) as cm:
+        with self.assertRaises(ValueError) as cm:
             for x in self.csvdoc:
                 x.setcolumn(column, "test")
             
@@ -164,7 +164,7 @@ class psv_selections_test(unittest.TestCase):
         import string
 
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
-        with self.assertRaises(KeyError) as cm:
+        with self.assertRaises(ValueError) as cm:
             for x in self.csvdoc:
                 x.delcolumn(column)
 
@@ -173,7 +173,7 @@ class psv_selections_test(unittest.TestCase):
         import random
         import string
         column = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
-        with self.assertRaises(KeyError) as cm:
+        with self.assertRaises(ValueError) as cm:
             for x in self.csvdoc:
                 x.getcolumn(column)
 
