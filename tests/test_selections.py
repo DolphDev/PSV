@@ -410,6 +410,19 @@ class psv_selections_test(unittest.TestCase):
         except Exception as exc:
             self.fail(str(exc))
 
+    def test_column_attributes(self):
+        self.construct()
+        try:
+            self.csvdoc.columns_attributes
+        except Exception as err:
+            self.fail(err)
+
+    def test_columns_mapping(self):
+        self.construct()
+        try:
+            self.csvdoc.columns_mapping
+        except Exception as err:
+            self.fail(err)
     # def test_select_typeerror(self):
     #     self.construct()
     #     with self.assertRaises(TypeError) as cm:
