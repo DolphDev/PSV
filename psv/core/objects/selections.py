@@ -328,7 +328,7 @@ class Selection(object):
         elif len(arg) == 1:
             return set(self[arg[0]])
         else:
-            raise Exception("Empty Grab")
+            raise ValueError(msg.badgrab)
 
     def fast_add(self, sel):
         """faster than __add__, but doesn't guarantee no repeats."""
