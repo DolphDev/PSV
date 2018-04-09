@@ -18,14 +18,12 @@ class BaseRow(dict):
 
     """
 
-    __slots__ = ["__delwhitelist__", "__dirstore__", "__output__", "__sawhitelist__"]
+    __slots__ = ["__delwhitelist__", "__output__", "__sawhitelist__"]
 
     def __init__(self, data, columns_map, *args, **kwargs):
         # These are used to 
         super(BaseRow, self).__setattr__("__delwhitelist__", 
             BaseRowDefaults.__delwhitelist__)
-        super(BaseRow, self).__setattr__("__dirstore__",
-            BaseRowDefaults.__dirstore__)
         super(BaseRow, self).__setattr__("__sawhitelist__",
             BaseRowDefaults.__sawhitelist__)
         super(BaseRow, self).__init__(data)
@@ -129,7 +127,7 @@ class BaseRow(dict):
             # This protects
             if attr in self.__sawhitelist__:
                 super(BaseRow, self).__setattr__(attr, v)
-            elif attr in self.__dirstore__:
+            elif attr in dir(self):
                 raise AttributeError(
                     msg.attribute_readonly.format(classname=self.__class__, attr=attr))
             else:
@@ -156,7 +154,7 @@ class BaseRow(dict):
         else:
             if attr in self.__delwhitelist__:
                 super(BaseRow, self).__delattr__(attr)
-            elif attr in self.__dirstore__:
+            elif attr in dir(self):
                 raise AttributeError(
                     msg.attribute_readonly.format(classname=self.__class__, attr=attr))
             else:
@@ -331,8 +329,6 @@ class BaseRow(dict):
                     )
 
 
-
-
     def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
         """Integrates tabulate library with psv
 
@@ -362,10 +358,10 @@ class BaseRowDefaults(object):
         to prevent rampant memory waste.
     """
     __delwhitelist__ = set()
-    __dirstore__ = set(dir(BaseRow))
     __sawhitelist__ = set(("__output__", "outputrow"))
     
     __psvcolumns__ = '__psvcolumnstracker__'
+    
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
