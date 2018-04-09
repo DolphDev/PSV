@@ -160,6 +160,11 @@ class Selection(object):
     def columns(self, v):
         self.__apimother__.columns = v
 
+    def _find_all(self, func):
+        for x in self.rows:
+            if func(x):
+                yield x
+
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
             will raise error if returns more than one result"""
@@ -172,7 +177,21 @@ class Selection(object):
             raise Exception(msg.singlefindmsg)
         except StopIteration:
             return result
-
+    
+    def single_find_any(self, selectionfirstarg_data=None, **kwargs):
+        """Find a single row based off search criteria given.
+            Only condition needs to be Trues.
+            will raise error if returns more than one result"""
+        try:
+            result = None
+            func = generate_func_any(selectionfirstarg_data, kwargs)
+            g = self._find_all(func)
+            result = next(g)
+            next(g)
+            raise Exception(msg.singlefindmsg)
+        except StopIteration:
+            return result
+    
     def find(self, selectionfirstarg_data=None, **kwargs):
         try:
             func = generate_func(selectionfirstarg_data, kwargs)
@@ -181,13 +200,20 @@ class Selection(object):
         except StopIteration:
             return None
 
-    def _find_all(self, func):
-        for x in self.rows:
-            if func(x):
-                yield x
+    def find_any(self, selectionfirstarg_data=None, **kwargs):
+        try:
+            func = generate_func_any(selectionfirstarg_data, kwargs)
+            g = self._find_all(func)
+            return next(g)
+        except StopIteration:
+            return None
 
     def find_all(self, selectionfirstarg_data=None, **kwargs):
         func = generate_func(selectionfirstarg_data, kwargs)
+        return tuple(self._find_all(func))
+
+    def find_all_any(self, selectionfirstarg_data=None, **kwargs):
+        func = generate_func_any(selectionfirstarg_data, kwargs)
         return tuple(self._find_all(func))
 
     def flip_output(self):
