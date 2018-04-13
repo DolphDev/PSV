@@ -195,7 +195,7 @@ class BaseRow(dict):
     def outputrow(self, v):
         if not isinstance(v, bool):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
-        self.__output__ = v
+        super(BaseRow, self).__setattr__("__output__", v)
 
 
     def getcolumn(self, column, accept_small_names=True):
