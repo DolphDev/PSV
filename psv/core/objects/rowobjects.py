@@ -105,61 +105,62 @@ class BaseRow(dict):
             statement
 
             Note: Setting class Attributes is not optimized, this dict has specialized around
-                dynamic attribute (from row data) access. Regular Attribute Access may be slower.
+                dynamic attribute (from row data) access. Regular Attribute Access may be much slower.
             """
         s = cleanup_name(attr)
-        keys = self["__psvcolumnstracker__"].keys() 
-        if attr in keys:
+        try:
             self[self["__psvcolumnstracker__"][attr]] = v
-        elif s in keys:
-            raise AttributeError((
-                "{}{}"
-                .format(
-                    '\'{}\' has no attribute \'{}\''.format(
-                        type(self), attr),
-                    ". However, '{s}' is an existing condensed ".format(s=s) +
-                    "column name. Only the condensed version is supported."
-                    .format(s=s)
-                )))
-        else:
-            # A somewhat hacky implementation of Dict's restriction of editing it's
-            # Attributes.
-            # This protects
-            if attr in self.__sawhitelist__:
-                super(BaseRow, self).__setattr__(attr, v)
-            elif attr in dir(self):
-                raise AttributeError(
-                    msg.attribute_readonly.format(classname=self.__class__, attr=attr))
+        except KeyError:
+            keys = self["__psvcolumnstracker__"].keys() 
+            if s in keys:
+                raise AttributeError((
+                    "{}{}"
+                    .format(
+                        '\'{}\' has no attribute \'{}\''.format(
+                            type(self), attr),
+                        ". However, '{s}' is an existing condensed ".format(s=s) +
+                        "column name. Only the condensed version is supported."
+                        .format(s=s)
+                    )))
             else:
-                raise AttributeError(msg.attribute_missing.format(
-                type(self), attr))
+                # A somewhat hacky implementation of Dict's restriction of editing it's
+                # Attributes.
+                if attr in self.__sawhitelist__:
+                    super(BaseRow, self).__setattr__(attr, v)
+                elif attr in dir(self):
+                    raise AttributeError(
+                        msg.attribute_readonly.format(classname=self.__class__, attr=attr))
+                else:
+                    raise AttributeError(msg.attribute_missing.format(
+                    type(self), attr))
 
     def __delattr__(self, attr):
         """Allows deletion of rows and attributes (Makes a row empty) by using
         del statement"""
         s = cleanup_name(attr)
-        keys = self["__psvcolumnstracker__"].keys()
-        if attr in keys:
+        try:
             self[self["__psvcolumnstracker__"][attr]] = ""
-        elif s in keys:
-            raise AttributeError((
-                "{}{}"
-                .format(
-                    '\'{}\' has no attribute \'{}\''.format(
-                        type(self), attr),
-                    ". However, '{s}' is an existing condensed ".format(s=s) +
-                    "column name. Only the condensed version is supported."
-                    .format(s=s)
-                )))
-        else:
-            if attr in self.__delwhitelist__:
-                super(BaseRow, self).__delattr__(attr)
-            elif attr in dir(self):
-                raise AttributeError(
-                    msg.attribute_readonly.format(classname=self.__class__, attr=attr))
+        except KeyError:
+            keys = self["__psvcolumnstracker__"].keys()
+            if s in keys:
+                raise AttributeError((
+                    "{}{}"
+                    .format(
+                        '\'{}\' has no attribute \'{}\''.format(
+                            type(self), attr),
+                        ". However, '{s}' is an existing condensed ".format(s=s) +
+                        "column name. Only the condensed version is supported."
+                        .format(s=s)
+                    )))
             else:
-                raise AttributeError(msg.attribute_missing.format(
-                type(self), attr))
+                if attr in self.__delwhitelist__:
+                    super(BaseRow, self).__delattr__(attr)
+                elif attr in dir(self):
+                    raise AttributeError(
+                        msg.attribute_readonly.format(classname=self.__class__, attr=attr))
+                else:
+                    raise AttributeError(msg.attribute_missing.format(
+                    type(self), attr))
 
     def add_valid_attribute(self, attr, deletable=False):
         """Used by classes that inherit to add attributes to the whitelists
