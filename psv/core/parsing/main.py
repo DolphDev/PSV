@@ -6,7 +6,7 @@ from ..objects import cleanup_name
 def parser(csvfile, cls, columns_map, typetransfer=True, custom_columns=False ,*args, **kwargs):
     """This generates row objects for csv, and sets them up 
     for dynamic access"""
-    #To prevent reduntant and wasteful checks, we check for each condition only once
+    # To prevent reduntant and wasteful checks, we check for each condition only once
     if custom_columns:
         if typetransfer:
             for row in csvfile:

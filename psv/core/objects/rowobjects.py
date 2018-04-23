@@ -85,6 +85,7 @@ class BaseRow(dict):
             return self[self["__psvcolumnstracker__"][attr]]
 
     def __getattr__(self, attr):
+        """Handles all exception handeling when __getattribute__ fails"""
         s = cleanup_name(attr)
         if s in self["__psvcolumnstracker__"].keys():
             raise AttributeError((

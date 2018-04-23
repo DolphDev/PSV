@@ -391,10 +391,10 @@ class Selection(object):
             return asciireplace(result)
         return result
 
-    def output(self, loc=None, columns=None, quote_all=None, encoding="utf-8"):
+    def output(self, f=None, columns=None, quote_all=None, encoding="utf-8"):
         if not columns:
             columns = self.columns
-        outputfile(loc, self.rows, columns,
+        outputfile(f, self.rows, columns,
                    quote_all=quote_all, encoding=encoding)
 
     def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
