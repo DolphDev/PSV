@@ -95,6 +95,10 @@ class Selection(object):
         """    
         return self.__apimother__.addcolumn
 
+    @property
+    def delcolumn(self):
+        return self.__apimother__.delcolumn
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
