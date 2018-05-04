@@ -125,7 +125,10 @@ def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', bufferi
         csv_size_limit(csv_size_max)
     with open(f, mode=mode, buffering=buffering,
               encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
-        columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
+        try:
+            columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
+        except StopIteration:
+            columns = []
     if check_columns:
         forbidden_columns(columns)
     return tuple(columns)
