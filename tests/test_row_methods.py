@@ -210,13 +210,16 @@ class psv_selections_test(unittest.TestCase):
             x._addcolumns("TEST")
             x._delcolumns("Name")
             with self.assertRaises(AttributeError) as cm:
+                # Since _addcolumns doesn't add to the trackers
+                # This would raise an AttributeError
                 x.test
-            with self.assertRaises(AttributeError) as cm:
+            with self.assertRaises(KeyError) as cm:
+                # This is improper API user, this should raise
+                # KeyError as the column trackers are not aware
+                # That this method was called
                 x.name
 
-
-
-    def test_addcolumn_func_error():
+    def test_addcolumn_func_error(self):
         self.construct
         with self.assertRaises(TypeError) as cm:
             for x in self.csvdoc:
@@ -270,7 +273,7 @@ class psv_selections_test(unittest.TestCase):
         for row in self.csvdoc:
             row.update_values(**row.longcolumn())
         self.construct()
-        for row in self.csv:
+        for row in self.csvdoc:
             kwargs = row.longcolumn()
             argspack = random.choice(tuple(kwargs.keys()))
             argsvalue = kwargs.pop(argspack)
