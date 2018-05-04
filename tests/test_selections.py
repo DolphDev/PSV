@@ -79,7 +79,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.select("name", price=10)
             self.csvdoc.select("name", price=lambda p: p > 10)
             self.csvdoc.select("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.select(lambda x: False)
+            self.csvdoc.select(lambda x: False, price=None)
 
         except Exception as err:
             self.fail(str(err))
@@ -92,7 +92,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.any("name", price=10)
             self.csvdoc.any("name", price=lambda p: p > 10)
             self.csvdoc.any("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.any(lambda x: False)
+            self.csvdoc.any(lambda x: False, price=None)
         except Exception as err:
             self.fail(str(err))
 
@@ -135,7 +135,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_select("name", price=10)
             self.csvdoc.safe_select("name", price=lambda p: p > 10)
             self.csvdoc.safe_select("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.safe_select(lambda x: False)
+            self.csvdoc.safe_select(lambda x: False, price=None)
         except Exception as err:
             self.fail(str(err))
 
@@ -148,7 +148,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_any("name", price=10)
             self.csvdoc.safe_any("name", price=lambda p: p > 10)
             self.csvdoc.safe_any("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.safe_any(lambda x: False)
+            self.csvdoc.safe_any(lambda x: False, price=None)
 
         except Exception as err:
             self.fail(str(err))
@@ -274,6 +274,26 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         self.assertTrue(bool(self.csvdoc.single_find(name="Product 1")))
         self.assertFalse(bool(self.csvdoc.single_find(name="INVALID NAME")))
+        try:
+            self.csvdoc.find(company="Yahoo")
+            self.fail("Single Find did not raise exception for duplicates")
+        except Exception:
+            pass
+
+    def test_find_any(self):
+        self.construct()
+        self.assertTrue(bool(self.csvdoc.find_any(name="Product 1", price=lambda x: None)))
+        self.assertFalse(bool(self.csvdoc.find_any(name="INVALID NAME")))
+
+    def test_findall_any(self):
+        self.construct()
+        self.assertEqual(len(self.csvdoc.find_all_any(company="Yahoo", price=lambda x: None)), 4)
+        self.assertFalse(bool(self.csvdoc.find_all_any(company="INVALID COMPANY")))
+
+    def test_single_find_any(self):
+        self.construct()
+        self.assertTrue(bool(self.csvdoc.single_find_any(name="Product 1", price=lambda x: None)))
+        self.assertFalse(bool(self.csvdoc.single_find_any(name="INVALID NAME")))
         try:
             self.csvdoc.find(company="Yahoo")
             self.fail("Single Find did not raise exception for duplicates")
