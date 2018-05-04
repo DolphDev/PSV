@@ -311,15 +311,15 @@ class BaseRow(dict):
         """
         keys = set(self.keys())
         if arg:
-           for x in arg:
-               xkeys = set(x.keys())
-               if xkeys.issubset(keys):
-                   self.update(x)
-               else:
-                   raise ValueError(
-                       "'{}' contains columns not in this row currently"
-                       .format(x)
-                       )
+            for x in arg:
+                xkeys = set(x.keys())
+                if xkeys.issubset(keys):
+                    self.update(x)
+                else:
+                    raise ValueError(
+                        "'{}' contains columns not in this row currently"
+                        .format(x)
+                        )
         if kwargs:
             kwkeys = set(kwargs.keys())
             if kwkeys.issubset(keys):
