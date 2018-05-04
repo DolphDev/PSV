@@ -208,7 +208,7 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         for x in self.csvdoc:
             x._addcolumns("TEST")
-            x._delcolumns("NAME")
+            x._delcolumns("Name")
             with self.assertRaises(AttributeError) as cm:
                 x.test
             with self.assertRaises(AttributeError) as cm:
@@ -265,14 +265,14 @@ class psv_selections_test(unittest.TestCase):
         import random
         self.construct()
         for row in self.csvdoc:
-            self.update_values({"Name": random.random()})
+            row.update_values({"Name": random.random()})
         self.construct()
         for row in self.csvdoc:
-            self.update_values(**row.longcolumn())
+            row.update_values(**row.longcolumn())
         self.construct()
         for row in self.csv:
             kwargs = row.longcolumn()
             argspack = random.choice(tuple(kwargs.keys()))
             argsvalue = kwargs.pop(argspack)
-            self.update_values(*argspack, **kwargs)
+            row.update_values(*argspack, **kwargs)
 
