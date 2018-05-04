@@ -220,7 +220,7 @@ class psv_selections_test(unittest.TestCase):
                 x.name
 
     def test_addcolumn_func_error(self):
-        self.construct
+        self.construct()
         with self.assertRaises(TypeError) as cm:
             for x in self.csvdoc:
                 self._addcolumns_func("TEST2")
@@ -277,5 +277,5 @@ class psv_selections_test(unittest.TestCase):
             kwargs = row.longcolumn()
             argspack = random.choice(tuple(kwargs.keys()))
             argsvalue = kwargs.pop(argspack)
-            row.update_values(*argspack, **kwargs)
+            row.update_values(*{argspack:argsvalue}, **kwargs)
 
