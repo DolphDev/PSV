@@ -306,7 +306,7 @@ class BaseRow(dict):
         return newdict
 
     def update_values(self, *arg, **kwargs):
-        """Safe way to use .update() on rows, checks header columns
+        """Safe way to use a .update() like method on rows, checks header columns
 
         """
         keys = set(self.keys())

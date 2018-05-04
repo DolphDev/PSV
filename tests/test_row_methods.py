@@ -204,6 +204,32 @@ class psv_selections_test(unittest.TestCase):
             x._addcolumns("TEST")
             x._addcolumns("TEST2", "DATA")
 
+    def test__delcolumn(self):
+        self.construct()
+        for x in self.csvdoc:
+            x._addcolumns("TEST")
+            x._delcolumns("NAME")
+            with self.assertRaises(AttributeError) as cm:
+                x.test
+            with self.assertRaises(AttributeError) as cm:
+                x.name
+
+
+
+    def test_addcolumn_func_error():
+        self.construct
+        with self.assertRaises(TypeError) as cm:
+            for x in self.csvdoc:
+                self._addcolumns_func("TEST2")
+
+    def test__addcolumn_func(self):
+        import random
+        self.construct()
+        for x in self.csvdoc:
+            a, b = (random.random(), random.random())
+            x._addcolumns_func("TEST2", lambda x: (100*a)**(5*b))
+            self.assertEqual((100*a)**(5*b), x["TEST2"])
+
     def test__call__(self):
         self.construct()
         row = self.csvdoc[0]
@@ -234,3 +260,19 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         for row in self.csvdoc:
             del row.price
+
+    def test_update_values(self):
+        import random
+        self.construct()
+        for row in self.csvdoc:
+            self.update_values({"Name": random.random()})
+        self.construct()
+        for row in self.csvdoc:
+            self.update_values(**row.longcolumn())
+        self.construct()
+        for row in self.csv:
+            kwargs = row.longcolumn()
+            argspack = random.choice(tuple(kwargs.keys()))
+            argsvalue = kwargs.pop(argspack)
+            self.update_values(*argspack, **kwargs)
+
