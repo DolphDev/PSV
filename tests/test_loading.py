@@ -17,7 +17,6 @@ for filename in filenames:
                 raise
 del os
 
-
 small_static_csv = """Name,Price,Available,Company
 Product 1,10,1,Yahoo
 Product 2,15,0,Microsoft
@@ -139,7 +138,7 @@ class psv_load_tests(unittest.TestCase):
         self.populate_folders()
         try:
             api = psv.loaddir("tests/dataset-folder/")
-            api = psv.loaddir("tests/dataset-folder/",  )
+            api = psv.loaddir("tests/dataset-folder/", csv_size_max=2**24 )
 
         except Exception as err:
             self.fail(str(err))
@@ -231,7 +230,13 @@ class psv_load_tests(unittest.TestCase):
     def test_api_new(self, columns):
         try:
             psv.new()
+            psv.new(csv_size_max=2**24)
             psv.new(columns=columns)
+            psv.new(columns=columns, csv_size_max=2**24)
+
+            psv.new("TEST")
+            psv.new("TEST", csv_size_max=2**24)
+
         except Exception as err:
             self.fail(str(err))
 
@@ -248,4 +253,13 @@ class psv_load_tests(unittest.TestCase):
     def test_forbidden_columns(self):
         with self.assertRaises(ValueError) as cm:
             psv.new(columns=["__psvcolumnstracker__"]).addrow()
+
+    def test_loading_valueerror_emptyfile(self):
+        self.populate_folders()
+        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+            f.write(" \nDATA")
+
+        with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
+            with self.assertRaises(ValueError) as cm:
+                psv.load(f)
 

@@ -139,6 +139,26 @@ class psv_selections_test(unittest.TestCase):
         row.add_valid_attribute("Test3")
         row.add_valid_attribute("Test4", True)
 
+
+    def test_add_valid_attribute_test_behavior(self):
+        class TestRow(psv.core.objects.rowobjects.BaseRow):
+            def construct(self, *args, **kwargs):
+                self.add_valid_attribute("Test1")
+                self.add_valid_attribute("Test2", True)
+
+        row = TestRow({"DATA": ""}, {"data":"DATA"})
+        row.add_valid_attribute("Test3")
+        row.add_valid_attribute("Test4", True)
+
+        row.Test3 = None
+        with self.assertRaises(AttributeError):
+            #TEST 3 was not givin delete rights
+            del row.Test3
+        row.Test4 = int()
+        del row.Test4
+        row.Test4 = str()
+
+
     def test_add_valid_attribute_fail(self):
         with self.assertRaises(TypeError) as cm:
             psv.core.objects.rowobjects.BaseRow({"data":{"org_row":"DATA", "value":""}}).add_valid_attribute("name")

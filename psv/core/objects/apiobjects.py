@@ -45,9 +45,7 @@ class MainSelection(Selection):
                 try:
                     self.__columnsmap__.update(
                         column_crunch_repeat(self.__rows__[0].keys()))
-                except IndexError:
-                    # Empty Input File, Basically Creates the equivalent of psv.new()
-                    pass
+
                 except AttributeError:
                     # Errornous Headers - Usually caused by single column
                     # Spreadsheets that don't have a header

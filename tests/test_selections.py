@@ -79,6 +79,8 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.select("name", price=10)
             self.csvdoc.select("name", price=lambda p: p > 10)
             self.csvdoc.select("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.select(lambda x: False)
+
         except Exception as err:
             self.fail(str(err))
 
@@ -90,6 +92,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.any("name", price=10)
             self.csvdoc.any("name", price=lambda p: p > 10)
             self.csvdoc.any("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.any(lambda x: False)
         except Exception as err:
             self.fail(str(err))
 
@@ -132,6 +135,7 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_select("name", price=10)
             self.csvdoc.safe_select("name", price=lambda p: p > 10)
             self.csvdoc.safe_select("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.safe_select(lambda x: False)
         except Exception as err:
             self.fail(str(err))
 
@@ -144,6 +148,8 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_any("name", price=10)
             self.csvdoc.safe_any("name", price=lambda p: p > 10)
             self.csvdoc.safe_any("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.safe_any(lambda x: False)
+
         except Exception as err:
             self.fail(str(err))
 
@@ -421,12 +427,39 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.columns_mapping
         except Exception as err:
             self.fail(err)
+
+
+    def test_columns(self):
+        self.construct()
+        self.csvdoc.columns
+    
     # def test_select_typeerror(self):
     #     self.construct()
     #     with self.assertRaises(TypeError) as cm:
     #         self.csvdoc.select(tuple())
 
-    # def test_anyselect_typeerror(self):
-    #     self.construct()
-    #     with self.assertRaises(TypeError) as cm:
-    #         self.csvdoc.any(tuple())
+
+    def test_loading_valueerror_emptyfile(self):
+        import io
+        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+            f.write(" \nDATA")
+
+
+        with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
+            with self.assertRaises(ValueError) as cm:
+                psv.load(f)
+
+
+    def test_typeerror_any(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.any(1)
+
+    def test_typeerror_select(self):
+        self.construct()
+        with self.assertRaises(TypeError) as cm:
+            self.csvdoc.select(1)
+
+    def test_translate_type_attributeError_works(self):
+        from psv.core.utils import translate_type
+        self.assertEquals(translate_type(None), None)
