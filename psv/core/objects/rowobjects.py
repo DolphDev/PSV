@@ -10,7 +10,7 @@ import keyword
 accepted_chars = (ascii_lowercase + "_" + digits)
 
 
-class BaseRow(dict):
+class Row(dict):
     """This Base Class represents a row in a spreadsheet
         This object is a highly specialized dict, meant to allow
         extremely quick and easy access/manipulation to row data
@@ -55,14 +55,14 @@ class BaseRow(dict):
     def __repr__(self):
         return "<{rowname}:{columnamount} object at {hexloc}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self.keys()),
+            columnamount=len(self.keys())-1,
             hexloc=hex(id(self)).upper().replace("X", "x")
         )
 
     def __str__(self):
         return "<{rowname}:{columnamount} object at {hexloc}>".format(
             rowname=self.__class__.__name__,
-            columnamount=len(self.keys()),
+            columnamount=len(self.keys())-1,
             hexloc=hex(id(self)).upper().replace("X", "x")
         )
 
@@ -360,9 +360,14 @@ class BaseRowDefaults(object):
         to prevent rampant memory waste.
     """
     __delwhitelist__ = set()
-    __sawhitelist__ = set(("__output__", "outputrow"))
+    __sawhitelist__ = {"__output__", "outputrow"}
     
     __psvcolumns__ = '__psvcolumnstracker__'
+
+# For backwards compability, will be removed in the future
+# Refering Row as BaseRow is considered Depreciated
+BaseRow = Row
+
     
 #This block was in utils, 
 # but it relied on a circular reference that re-imported
