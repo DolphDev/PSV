@@ -87,14 +87,10 @@ def generate_func_any(arg, kwargs):
             "'f' cannot not be {}, must be str, function, or NoneType".format(
                 type(arg)))  
 
-
-
 def asciireplace(string, rw='?'):
     def _gen(string):
         for x in string:
-            if x not in printable:
-                yield rw
-            else:
+            if x in printable:
                 yield x
     return "".join(_gen(string))
 
