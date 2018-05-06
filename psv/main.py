@@ -1,5 +1,5 @@
 from .core.objects.apiobjects import MainSelection
-from .core.objects import BaseRow, banned_columns
+from .core.objects import Row, banned_columns
 from .core.exceptions.messages import LoadingMsg as msg
 
 
@@ -17,7 +17,7 @@ def csv_size_limit(size):
     csv.field_size_limit(size)
 
 
-def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
+def load(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
          csv_size_max=None, csv_max_row=None, custom_columns=None):
     """Loads a file into psv
@@ -53,7 +53,7 @@ def load(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r'
     return api
 
 
-def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
+def loaddir(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
             encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
             csv_size_max=None, filetype="*.csv"):
     """Loads a directory of .csv files
@@ -78,7 +78,7 @@ def loaddir(f, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"', mode=
     return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
 
 
-def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quotechar='"',
+def loads(csvdoc, columns=None, cls=Row, outputfile=None, delimiter=",", quotechar='"',
           typetransfer=False, csv_size_max=None, newline="\n"):
     """Loads csv, but as a python string
 
@@ -103,7 +103,7 @@ def loads(csvdoc, columns=None, cls=BaseRow, outputfile=None, delimiter=",", quo
     return api
 
 
-def new(columns=None, cls=BaseRow, outputfile=None,
+def new(columns=None, cls=Row, outputfile=None,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
@@ -114,7 +114,7 @@ def new(columns=None, cls=BaseRow, outputfile=None,
     return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
 
 
-def column_names(f, cls=BaseRow, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
+def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                  errors=None, newline=None, closefd=True, opener=None,
                  csv_size_max=None, check_columns=True, custom_columns=None):
     if custom_columns:

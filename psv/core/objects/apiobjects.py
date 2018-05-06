@@ -140,6 +140,10 @@ def _column_repeat_dict(columns, clean_ups):
     return master
 
 def column_crunch_repeat(columns):
+    """Takes a order list of columns.
+       Returns a dictionary of any corrections needed
+       Ment for internal use by the library
+       """
     rv = {}
     clean_ups = set(cleanup_name(x) for x in columns)
     ref = _column_repeat_dict(columns, clean_ups)

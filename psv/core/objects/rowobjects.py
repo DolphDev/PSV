@@ -106,7 +106,7 @@ class Row(dict):
             statement
 
             Note: Setting class Attributes is not optimized, this dict has specialized around
-                dynamic attribute (from row data) access. Regular Attribute Access may be much slower.
+                dynamic attribute (from row data) access. Regular Attribute Setting may be much slower.
             """
         s = cleanup_name(attr)
         try:
