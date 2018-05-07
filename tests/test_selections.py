@@ -520,6 +520,11 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         del self.csvdoc[0]
 
+    def test_delrow_attr(self):
+        self.construct()
+        del self.csvdoc.rows[0]
+
+
     def test_psv_column_crunch(self):
         api = psv.loads(csv_matching_short)
         api.addcolumn("name_3")

@@ -161,15 +161,14 @@ class psv_selections_test(unittest.TestCase):
 
     def test_add_valid_attribute_fail(self):
         with self.assertRaises(TypeError) as cm:
-            psv.core.objects.rowobjects.BaseRow({"data":{"org_row":"DATA", "value":""}}).add_valid_attribute("name")
-
+            psv.core.objects.rowobjects.BaseRow({"DATA": ""}, {"data":"DATA"}).add_valid_attribute("name")
 
     def test_outputrow_catches_non_bool(self):
         self.construct()
         with self.assertRaises(TypeError) as cm:
             self.csvdoc[0].outputrow("TEST")
 
-    def test_setcolumn_keyerror(self):
+    def test_setcolumn_valueerror(self):
         self.construct()
         import random
         import string
@@ -177,8 +176,26 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             for x in self.csvdoc:
                 x.setcolumn(column, "test")
-            
-    def test_delcolumn_keyerror(self):
+
+    def test_setcolumn_accept_small_names(self):
+        import random
+        self.construct()
+        for row in self.csvdoc:
+            v = random.random()
+            row.setcolumn("name", v)
+            self.assertEqual(row.getcolumn("name"), v)
+    
+    def test_setcolumn_accept_small_names_valueerror(self):
+        import random
+        self.construct()
+        for row in self.csvdoc:
+            v = random.random()
+            with self.assertRaises(ValueError):
+                row.setcolumn("name", v, accept_small_names=False)
+
+
+        
+    def test_delcolumn_valueerror(self):
         self.construct()
         import random
         import string
@@ -188,7 +205,19 @@ class psv_selections_test(unittest.TestCase):
             for x in self.csvdoc:
                 x.delcolumn(column)
 
-    def test_getcolumn_keyerror(self):
+    def test_delcolumn_accept_small_names_valueerror(self):
+        self.construct()
+        for row in self.csvdoc:
+            with self.assertRaises(ValueError):
+                row.delcolumn("name", accept_small_names=False)
+
+    def test_delcolumn_accept_small_names(self):
+        self.construct()
+        for row in self.csvdoc:
+            row.delcolumn("name")
+            self.assertEqual(row.getcolumn("name"), "")
+
+    def test_getcolumn_valueerror(self):
         self.construct()
         import random
         import string
@@ -196,6 +225,12 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             for x in self.csvdoc:
                 x.getcolumn(column)
+
+    def test_getcolumn_accept_small_names(self):
+        self.construct()
+        for x in self.csvdoc:
+            with self.assertRaises(ValueError):
+                x.getcolumn("name", accept_small_names=False)
 
     def test_outputrow_typerror(self):
         self.construct()
@@ -301,3 +336,20 @@ class psv_selections_test(unittest.TestCase):
 
             row.update_values(*args, **kwargs)
 
+    def test_update_values_args_valueerror(self):
+        self.construct()
+        for x in self.csvdoc:
+            with self.assertRaises(ValueError):
+                x.update_values({"NOT EXISTING COLUMN": None})
+
+    def test_update_values_kwargs_valueerror(self):
+        self.construct()
+        for x in self.csvdoc:
+            with self.assertRaises(ValueError):
+                x.update_values(**{"NOT EXISTING COLUMN": None})
+
+
+    def test_outputrow_typeerror(self):
+        self.construct()
+        with self.assertRaises(TypeError):
+            self.csvdoc[0].outputrow = "BAD ARG"
