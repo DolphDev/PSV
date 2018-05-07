@@ -31,6 +31,15 @@ csv_empty = """Name,Price,Available,Company
 ,,,
 """
 
+csv_matching_short = """Name,name,na-me,nAmE
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+"""
 
 special = "TEST,test,TEst"
     
@@ -343,6 +352,13 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.addcolumn("Test-Row-1")
         self.assertTrue("Test-Row-1" in self.csvdoc.columns)
         self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
+
+    def test_addcolumn_func(self):
+        self.construct()
+        self.csvdoc.addcolumn("Test-Row-1", lambda x: 1+2)
+        self.assertTrue("Test-Row-1" in self.csvdoc.columns)
+        self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
+        self.assertTrue(all(x.testrow1 == 3 for x in self.csvdoc))
  
     def test_delcolumn(self):
         self.construct()
@@ -350,6 +366,12 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc.delcolumn("Test-Row-1")
         self.assertFalse("Test-Row-1" in self.csvdoc.columns)
         self.assertFalse("testrow1" in self.csvdoc.__columnsmap__.keys())
+
+    def test_delcolumn_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.delcolumn("Test-Row-1")
+
 
     def test_addrow_kw(self):
         import random
@@ -459,10 +481,20 @@ class psv_selections_test(unittest.TestCase):
     #         self.csvdoc.select(tuple())
 
 
-    def test_loading_valueerror_emptyfile(self):
+    def test_loading_valueerror_emptyfile_cleanupname(self):
         import io
         with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
             f.write(" \nDATA")
+
+
+        with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
+            with self.assertRaises(ValueError) as cm:
+                psv.load(f)
+
+    def test_loading_valueerror_emptyfile(self):
+        import io
+        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+            f.write("\nDATA")
 
 
         with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
@@ -483,3 +515,13 @@ class psv_selections_test(unittest.TestCase):
     def test_translate_type_attributeError_works(self):
         from psv.core.utils import translate_type
         self.assertEquals(translate_type(None), None)
+
+    def test_delrow(self):
+        self.construct()
+        del self.csvdoc[0]
+
+    def test_psv_column_crunch(self):
+        api = psv.loads(csv_matching_short)
+        api.addcolumn("name_3")
+        with self.assertRaises(ValueError):
+            api[0].getcolumn("NAME")
