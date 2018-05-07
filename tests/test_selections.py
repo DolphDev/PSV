@@ -353,15 +353,40 @@ class psv_selections_test(unittest.TestCase):
         self.assertTrue("Test-Row-1" in self.csvdoc.columns)
         self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
 
+    def test_addcolumn_sel(self):
+        self.construct()
+        sel = self.csvdoc.select()
+        sel.addcolumn("Test-Row-1")
+        self.assertTrue("Test-Row-1" in sel.columns)
+        self.assertTrue("testrow1" in sel.__columnsmap__.keys())
+
+
     def test_addcolumn_func(self):
         self.construct()
         self.csvdoc.addcolumn("Test-Row-1", lambda x: 1+2)
         self.assertTrue("Test-Row-1" in self.csvdoc.columns)
         self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
         self.assertTrue(all(x.testrow1 == 3 for x in self.csvdoc))
+
+    def test_addcolumn_func_sel(self):
+        self.construct()
+        self.csvdoc = self.csvdoc.select()
+        self.csvdoc.addcolumn("Test-Row-1", lambda x: 1+2)
+        self.assertTrue("Test-Row-1" in self.csvdoc.columns)
+        self.assertTrue("testrow1" in self.csvdoc.__columnsmap__.keys())
+        self.assertTrue(all(x.testrow1 == 3 for x in self.csvdoc))
+
  
     def test_delcolumn(self):
         self.construct()
+        self.csvdoc.addcolumn("Test-Row-1") #This is covered in seperate test
+        self.csvdoc.delcolumn("Test-Row-1")
+        self.assertFalse("Test-Row-1" in self.csvdoc.columns)
+        self.assertFalse("testrow1" in self.csvdoc.__columnsmap__.keys())
+
+    def test_delcolumn_sel(self):
+        self.construct()
+        self.csvdoc = self.csvdoc.select()
         self.csvdoc.addcolumn("Test-Row-1") #This is covered in seperate test
         self.csvdoc.delcolumn("Test-Row-1")
         self.assertFalse("Test-Row-1" in self.csvdoc.columns)
@@ -529,3 +554,63 @@ class psv_selections_test(unittest.TestCase):
         api.addcolumn("name_3")
         with self.assertRaises(ValueError):
             api[0].getcolumn("NAME")
+
+    def test_psv_column_crunch_columns_mapping(self):
+        api = psv.loads(csv_matching_short)
+        api.addcolumn("name_3")
+        api.columns_mapping
+
+    def test_columns_sel(self):
+        self.construct()
+        self.csvdoc.select().columns
+
+    def test_merge_results(self):
+        test1 = psv.new(columns=["TEST"])
+        # test2 = psv.new(columns=["TEST"])
+
+
+        # test1.non_hash_merge(test2)
+
+
+        for i in range(1000):
+            test1.addrow(test=i)
+
+
+        sel1, sel2 = test1[:250], test1[750:]
+
+        print(len(sel1), len(sel2))
+
+        self.assertEqual(len(sel1.merge(sel2)), 500)
+
+
+    def test_merge_results(self):
+        test1 = psv.new(columns=["TEST"])
+        # test2 = psv.new(columns=["TEST"])
+
+
+        # test1.non_hash_merge(test2)
+
+
+        for i in range(1000):
+            test1.addrow(test=i)
+
+
+        sel1, sel2 = test1[:250], test1[750:]
+
+        self.assertEqual(len(sel1.safe_merge(sel2)), 500)
+
+    def test_merge_results(self):
+        test1 = psv.new(columns=["TEST"])
+        # test2 = psv.new(columns=["TEST"])
+
+
+        # test1.non_hash_merge(test2)
+
+
+        for i in range(1000):
+            test1.addrow(test=i)
+
+
+        sel1, sel2 = test1[:250], test1[750:]
+
+        self.assertEqual(len(sel1.non_hash_merge(sel2)), 500)

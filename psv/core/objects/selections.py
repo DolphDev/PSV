@@ -153,6 +153,7 @@ class Selection(object):
             for row in x:
                 +row
         result = self.__apimother__.outputtedrows
+
         for x, row in zip(outputstore, self.__apimother__.rows):
             if x:
                 +row
@@ -178,7 +179,7 @@ class Selection(object):
             g = self._find_all(func)
             result = next(g)
             next(g)
-            raise Exception(msg.singlefindmsg)
+            raise ValueError(msg.singlefindmsg)
         except StopIteration:
             return result
     
@@ -192,7 +193,7 @@ class Selection(object):
             g = self._find_all(func)
             result = next(g)
             next(g)
-            raise Exception(msg.singlefindmsg)
+            raise ValueError(msg.singlefindmsg)
         except StopIteration:
             return result
     
@@ -370,11 +371,13 @@ class Selection(object):
 
     @property
     def outputtedrows(self):
-        return Selection(filter(lambda x: x.outputrow, self.rows), self.__apimother__)
+        return self.safe_select(lambda x: x.outputrow)
+
 
     @property
     def nonoutputtedrows(self):
-        return Selection(filter(lambda x: not x.outputrow, self.rows), self.__apimother__)
+        return self.safe_select(lambda x: not x.outputrow)
+
 
     def tabulate(self, limit=100, format="grid", only_ascii=True,
                  columns=None, text_limit=None, remove_newline=True):
