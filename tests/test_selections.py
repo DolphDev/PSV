@@ -522,8 +522,7 @@ class psv_selections_test(unittest.TestCase):
 
     def test_delrow_attr(self):
         self.construct()
-        del self.csvdoc.rows[0]
-
+        del self.csvdoc.rows[1]
 
     def test_psv_column_crunch(self):
         api = psv.loads(csv_matching_short)

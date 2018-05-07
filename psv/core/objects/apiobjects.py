@@ -62,10 +62,6 @@ class MainSelection(Selection):
     def rows(self):
         return self.__rows__
 
-    @rows.deleter
-    def rows(self, v):
-        del self.__rows__[v]
-
     @property
     def columns(self):
         return self.__columns__
