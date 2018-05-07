@@ -96,8 +96,8 @@ def loads(csvdoc, columns=None, cls=Row, outputfile=None, delimiter=",", quotech
         data = csvdoc
     if columns:
         forbidden_columns(columns)
-    elif (not columns) and isinstance(csvdoc, dict):
-        forbidden_columns(csvdoc.keys())
+    elif (not columns) and isinstance(csvdoc, tuple):
+        forbidden_columns(csvdoc[0].keys())
     api = MainSelection(data, columns=(
         columns), outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
     return api

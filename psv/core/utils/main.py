@@ -52,6 +52,7 @@ def generate_func(arg, kwargs):
                 else:
                     if not bool(row.getcolumn(arg)):
                         return False
+
             return True
         return select_func
     else:

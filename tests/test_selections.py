@@ -88,7 +88,8 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.select("name", price=10)
             self.csvdoc.select("name", price=lambda p: p > 10)
             self.csvdoc.select("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.select(lambda x: False, price=None)
+            self.csvdoc.select(lambda x: False, price=10)
+            self.csvdoc.select(lambda x: True, price=None)
 
         except Exception as err:
             self.fail(str(err))
@@ -101,7 +102,9 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.any("name", price=10)
             self.csvdoc.any("name", price=lambda p: p > 10)
             self.csvdoc.any("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.any(lambda x: False, price=None)
+            self.csvdoc.any(lambda x: False, price=10)
+            self.csvdoc.any(lambda x: True, price=None)
+
         except Exception as err:
             self.fail(str(err))
 
@@ -144,7 +147,8 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_select("name", price=10)
             self.csvdoc.safe_select("name", price=lambda p: p > 10)
             self.csvdoc.safe_select("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.safe_select(lambda x: False, price=None)
+            self.csvdoc.safe_select(lambda x: False, price=10)
+            self.csvdoc.safe_select(lambda x: True, price=None)
         except Exception as err:
             self.fail(str(err))
 
@@ -157,7 +161,9 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.safe_any("name", price=10)
             self.csvdoc.safe_any("name", price=lambda p: p > 10)
             self.csvdoc.safe_any("name", price=10, company="Yahoo", available=1)
-            self.csvdoc.safe_any(lambda x: False, price=None)
+            self.csvdoc.safe_any(lambda x: False, price=10)
+            self.csvdoc.safe_any(lambda x: True, price=None)
+
 
         except Exception as err:
             self.fail(str(err))
@@ -566,11 +572,6 @@ class psv_selections_test(unittest.TestCase):
 
     def test_merge_results(self):
         test1 = psv.new(columns=["TEST"])
-        # test2 = psv.new(columns=["TEST"])
-
-
-        # test1.non_hash_merge(test2)
-
 
         for i in range(1000):
             test1.addrow(test=i)
@@ -585,10 +586,6 @@ class psv_selections_test(unittest.TestCase):
 
     def test_merge_results(self):
         test1 = psv.new(columns=["TEST"])
-        # test2 = psv.new(columns=["TEST"])
-
-
-        # test1.non_hash_merge(test2)
 
 
         for i in range(1000):
@@ -601,11 +598,6 @@ class psv_selections_test(unittest.TestCase):
 
     def test_merge_results(self):
         test1 = psv.new(columns=["TEST"])
-        # test2 = psv.new(columns=["TEST"])
-
-
-        # test1.non_hash_merge(test2)
-
 
         for i in range(1000):
             test1.addrow(test=i)
@@ -614,3 +606,14 @@ class psv_selections_test(unittest.TestCase):
         sel1, sel2 = test1[:250], test1[750:]
 
         self.assertEqual(len(sel1.non_hash_merge(sel2)), 500)
+
+    def test_loads(self):
+        small_static_csv = """Name,Price,Available,Company
+        Product 1,10,1,Yahoo
+        Product 2,15,0,Microsoft
+        Product 3,1,1,Google
+        Product 4,20,0,Yahoo
+        Product 5,25,1,Yahoo
+        Product 6,30,1,Google
+        Product 7,10,0,Yahoo
+        """

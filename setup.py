@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Copyright (c) 2016 Joshua Walters
+Copyright (c) 2016, 2017, 2018 Joshua Walters
 """
 
 
