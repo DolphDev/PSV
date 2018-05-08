@@ -54,28 +54,11 @@ class Selection(object):
 
     @property
     def columns_mapping(self):
-        rv = {}
-        for k, v in self.__columnsmap__.items():
-            cv = rv.get(v)
-            if isinstance(cv, str):
-                rv[v] = [rv[v], k]
-            elif isinstance(cv, list):
-                rv[v] = rv[v] + [k]
-            else:
-                rv[v] = k
-        return rv
+        return {v:k for k,v in self.__columnsmap__.items()}
 
     @property
     def columns_attributes(self):
-        rv = []
-        mapping = self.columns_mapping
-        for column in self.columns:
-            item = mapping[column]
-            if isinstance(item, list):
-                rv.append(item.pop(0))
-            else:
-                rv.append(item)
-        return rv
+        return list(self.__columnsmap__.keys())
 
     @property
     def addcolumn(self):

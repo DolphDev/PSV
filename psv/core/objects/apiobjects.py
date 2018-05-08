@@ -10,18 +10,17 @@ class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
     to delete/add rows in a supported way"""
 
-    __slots__ = ["__outputname__", "__canrefrencecolumn__",
+    __slots__ = ["__canrefrencecolumn__",
                  "__columns__", "__columnsmap__",
                  "__rows__", "__apimother__"]
 
     def __init__(self, csvdict=None, columns=None, 
-                 cls=BaseRow, parsing=parser, outputfile=None,
-                 typetransfer=True, custom_columns=False, *args, **kwargs):
+                 cls=BaseRow, parsing=parser,typetransfer=True, 
+                 custom_columns=False, *args, **kwargs):
 
         # Local Flag to detirmine 
         rebuild_column_map = False
         self.__apimother__ = self
-        self.__outputname__ = outputfile
         self.__columns__ = columns
         self.__columnsmap__ = {}
         

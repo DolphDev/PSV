@@ -17,7 +17,7 @@ def csv_size_limit(size):
     csv.field_size_limit(size)
 
 
-def load(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
+def load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
          csv_size_max=None, csv_max_row=None, custom_columns=None):
     """Loads a file into psv
@@ -40,7 +40,7 @@ def load(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', bu
                 csvfile, delimiter=delimiter, quotechar=quotechar)
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
                                                            mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
-                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
+                                 cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
     else:
         with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
                                                           encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
@@ -49,11 +49,11 @@ def load(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', bu
             api = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
                                                            mode, buffering, encoding, errors, newline, closefd, opener,
                                                            custom_columns=custom_columns),
-                                outputfiled=outputfile, cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
+                                 cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
     return api
 
 
-def loaddir(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r', buffering=-1,
+def loaddir(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
             encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
             csv_size_max=None, filetype="*.csv"):
     """Loads a directory of .csv files
@@ -75,10 +75,10 @@ def loaddir(f, cls=Row, outputfile=None, delimiter=",", quotechar='"', mode='r',
                                               delimiter=delimiter, quotechar=quotechar))
     if columns != None:
         forbidden_columns(columns)
-    return MainSelection(data, columns=columns, outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
+    return MainSelection(data, columns=columns,  cls=cls, typetransfer=typetransfer)
 
 
-def loads(csvdoc, columns=None, cls=Row, outputfile=None, delimiter=",", quotechar='"',
+def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
           typetransfer=False, csv_size_max=None, newline="\n"):
     """Loads csv, but as a python string
 
@@ -99,11 +99,11 @@ def loads(csvdoc, columns=None, cls=Row, outputfile=None, delimiter=",", quotech
     elif (not columns) and isinstance(csvdoc, tuple):
         forbidden_columns(csvdoc[0].keys())
     api = MainSelection(data, columns=(
-        columns), outputfiled=outputfile, cls=cls, typetransfer=typetransfer)
+        columns),  cls=cls, typetransfer=typetransfer)
     return api
 
 
-def new(columns=None, cls=Row, outputfile=None,
+def new(columns=None, cls=Row,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
@@ -111,7 +111,7 @@ def new(columns=None, cls=Row, outputfile=None,
         columns = [columns]
     if columns:
         forbidden_columns(columns)
-    return MainSelection(columns=columns, outputfiled=outputfile, cls=cls)
+    return MainSelection(columns=columns, cls=cls)
 
 
 def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
