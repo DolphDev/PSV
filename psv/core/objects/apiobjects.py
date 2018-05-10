@@ -64,12 +64,7 @@ class MainSelection(Selection):
     @property
     def columns(self):
         return self.__columns__
-
-    @columns.setter
-    def columns(self, v):
-        self.__columns__ = v
-
-
+        
     def addrow(self, cls=BaseRow, **kwargs):
         r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
         self.__rows__.append(r)
@@ -100,7 +95,7 @@ class MainSelection(Selection):
         else:
             for row in self.rows:
                 row._addcolumns(columnname, columndata)
-        self.columns += (columnname,)
+        self.__columns__ += (columnname,)
         self.__columnsmap__.clear()
         self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
         return self
@@ -114,7 +109,7 @@ class MainSelection(Selection):
         for row in self.rows:
             row._delcolumns(columnname)
 
-        self.columns = tuple(
+        self.__columns__ = tuple(
             column  for column in self.columns if column != columnname)
         self.__columnsmap__.clear()
         self.__columnsmap__.update(column_crunch_repeat(self.__columns__))

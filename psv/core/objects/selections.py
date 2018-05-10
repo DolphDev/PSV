@@ -344,10 +344,6 @@ class Selection(object):
         else:
             raise ValueError(msg.badgrab)
 
-    def fast_add(self, sel):
-        """faster than __add__, but doesn't guarantee no repeats."""
-        return Selection(tuple(self.rows) + tuple(sel.rows), self.__apimother__)
-
 
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)

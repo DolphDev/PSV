@@ -358,7 +358,7 @@ class psv_selections_test(unittest.TestCase):
     def test_columns_setterworks(self):
         self.construct()
         self.csvdoc.columns
-        self.csvdoc.columns = ["Hello 5"]
+        self.csvdoc.__columns__ = ["Hello 5"]
     
     def test_addrow(self):
         self.construct()
