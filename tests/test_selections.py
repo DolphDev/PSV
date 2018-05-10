@@ -83,6 +83,7 @@ class psv_selections_test(unittest.TestCase):
     def test_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.select()
             self.csvdoc.select("name")
             self.csvdoc.select(name="Product 1")
             self.csvdoc.select("name", price=10)
@@ -97,6 +98,7 @@ class psv_selections_test(unittest.TestCase):
     def test_any_select_function_generation(self):
         self.construct()
         try:
+            self.csvdoc.any()
             self.csvdoc.any("name")
             self.csvdoc.any(name="Product 1")
             self.csvdoc.any("name", price=10)
@@ -219,7 +221,7 @@ class psv_selections_test(unittest.TestCase):
     def test_len_no_output(self):
         self.construct()
         try:
-            self.csvdoc.lenoutput()
+            self.csvdoc.len_no_output()
         except Exception as err:
             self.fail(str(err))
 
@@ -294,6 +296,16 @@ class psv_selections_test(unittest.TestCase):
             self.fail("Single Find did not raise exception for duplicates")
         except Exception:
             pass
+
+    def test_single_find_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            print(self.csvdoc.single_find(available=1))
+
+    def test_single_find_any_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.single_find_any(available=1)
 
     def test_find_any(self):
         self.construct()
@@ -463,6 +475,11 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             self.csvdoc.grab(*tuple())
 
+    def test_badgrab_valueerror_unique(self):
+        self.construct()
+        with self.assertRaises(ValueError) as cm:
+            self.csvdoc.unique(*tuple())
+
     def test_remove_duplicates(self):
         test = psv.loads(csv_repeat)
         try:
@@ -617,3 +634,35 @@ class psv_selections_test(unittest.TestCase):
         Product 6,30,1,Google
         Product 7,10,0,Yahoo
         """
+
+        psv.loads([])
+
+    def test_merge_typeerror(self):
+        self.construct()
+        self.csvdoc[0].name = set()
+        with self.assertRaises(TypeError):
+            self.csvdoc.merge(self.csvdoc)
+
+    def test_non_hash_merge_typeerror(self):
+        self.construct()
+        a = psv.new()
+        b = psv.new()
+        with self.assertRaises(ValueError):
+            a.non_hash_merge(b)
+
+
+    def test_non_hash_merge(self):
+        self.construct()
+        a = self.csvdoc[:5].no_output()
+        b = self.csvdoc[5:]
+        api = a.non_hash_merge(b)
+        for x in a:
+            assert x.outputrow == False
+
+    def test_outputtedrows(self):
+        self.construct()
+        self.csvdoc.outputtedrows
+
+    def test_non_outputted_rows(self):
+        self.construct()
+        self.csvdoc.nonoutputtedrows
