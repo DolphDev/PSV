@@ -144,10 +144,6 @@ class Selection(object):
                 -row
         return result
 
-    @columns.setter
-    def columns(self, v):
-        self.__apimother__.columns = v
-
     def _find_all(self, func):
         for x in self.rows:
             if func(x):
