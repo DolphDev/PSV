@@ -211,12 +211,8 @@ class Row(dict):
         if column in self.keys():
             return (self[column])
         elif accept_small_names:
-            s = cleanup_name(column)
-            try:
-                return getattr(self, s)
-            except AttributeError:
-                #pass to below code
-                pass 
+            if self["__psvcolumnstracker__"].get(column):
+                return getattr(self, column)
         if not accept_small_names:
             raise ValueError("'{}'".format(column))
         else:
@@ -234,13 +230,9 @@ class Row(dict):
             self[column] = value
             return
         elif accept_small_names:
-            s = cleanup_name(column)
-            try:
-                self.__setattr__(s, value)
+            if self["__psvcolumnstracker__"].get(column):
+                self.__setattr__(column, value)
                 return
-            except AttributeError:
-                #pass to below code
-                pass
         if not accept_small_names:
             raise ValueError("'{}'".format(column))
         else:
@@ -257,13 +249,9 @@ class Row(dict):
             self[column] = ""
             return
         elif accept_small_names:
-            s = cleanup_name(column)
-            try:
-                self.__delattr__(s)
+            if self["__psvcolumnstracker__"].get(column):
+                self.__delattr__(column)
                 return
-            except AttributeError:
-                #pass to below code
-                pass
         if not accept_small_names:
             raise ValueError("'{}'".format(column))
         else:
