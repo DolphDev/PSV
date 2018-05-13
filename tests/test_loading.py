@@ -263,3 +263,11 @@ class psv_load_tests(unittest.TestCase):
             with self.assertRaises(ValueError) as cm:
                 psv.load(f)
 
+    def test_loading_column_names(self):
+        self.populate_folders()
+        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+            f.write("")
+
+        assert psv.column_names("tests/dataset-only-one/emptyfile.csv") == tuple()  
+        assert psv.column_names("tests/dataset-only-one/emptyfile.csv", csv_size_max=2**24) == tuple()
+

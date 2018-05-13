@@ -22,13 +22,13 @@ class Row(dict):
 
     def __init__(self, data, columns_map, *args, **kwargs):
         # These are used to 
-        super(BaseRow, self).__setattr__("__delwhitelist__", 
+        super(Row, self).__setattr__("__delwhitelist__", 
             BaseRowDefaults.__delwhitelist__)
-        super(BaseRow, self).__setattr__("__sawhitelist__",
+        super(Row, self).__setattr__("__sawhitelist__",
             BaseRowDefaults.__sawhitelist__)
-        super(BaseRow, self).__init__(data)
+        super(Row, self).__init__(data)
         self[BaseRowDefaults.__psvcolumns__] = columns_map
-        self.__output__ = True
+        self._set_outputrow(True)
 
         self.construct(*args, **kwargs)
 
@@ -67,15 +67,15 @@ class Row(dict):
         )
 
     def __pos__(self):
-        self.outputrow = True
+        self._set_outputrow(True)
         return self
 
     def __neg__(self):
-        self.outputrow = False
+        self._set_outputrow(False)
         return self
 
     def __invert__(self):
-        self.outputrow = not (self.outputrow)
+        self._set_outputrow(not (self.outputrow))
         return self
 
     def __getattribute__(self, attr):
@@ -127,7 +127,7 @@ class Row(dict):
                 # A somewhat hacky implementation of Dict's restriction of editing it's
                 # Attributes.
                 if attr in self.__sawhitelist__:
-                    super(BaseRow, self).__setattr__(attr, v)
+                    super(Row, self).__setattr__(attr, v)
                 elif attr in dir(self):
                     raise AttributeError(
                         msg.attribute_readonly.format(classname=self.__class__, attr=attr))
@@ -155,7 +155,7 @@ class Row(dict):
                     )))
             else:
                 if attr in self.__delwhitelist__:
-                    super(BaseRow, self).__delattr__(attr)
+                    super(Row, self).__delattr__(attr)
                 elif attr in dir(self):
                     raise AttributeError(
                         msg.attribute_readonly.format(classname=self.__class__, attr=attr))
@@ -170,9 +170,9 @@ class Row(dict):
             Memory Usage may also be much higher, as the whitelists will no longer be a 
              static variable.
         """
-        if self.__class__ is BaseRow:
+        if self.__class__ is Row:
             raise TypeError(msg.inherited_rows)
-        super(BaseRow, self).__setattr__(
+        super(Row, self).__setattr__(
             "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
         if deletable:
             super(BaseRow, self).__setattr__(
@@ -196,8 +196,14 @@ class Row(dict):
     def outputrow(self, v):
         if not isinstance(v, bool):
             raise TypeError(msg.outputrowmsg.format(bool, type(v)))
-        super(BaseRow, self).__setattr__("__output__", v)
+        self.__output__ = v
 
+    def _set_outputrow(self, v):
+        """Fast Internal way to set output flags
+           Doesn't check for bad input, meant for internal use only
+           Much faster than the setter
+        """
+        super(Row, self).__setattr__("__output__", v)
 
     def getcolumn(self, column, accept_small_names=True):
         """Get a cell by the orginal column name
