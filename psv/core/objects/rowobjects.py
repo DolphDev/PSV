@@ -11,7 +11,7 @@ accepted_chars = (ascii_lowercase + "_" + digits)
 
 
 class Row(dict):
-    """This Base Class represents a row in a spreadsheet
+    """This Class represents a row in a spreadsheet
         This object is a highly specialized dict, meant to allow
         extremely quick and easy access/manipulation to row data
         at an acceptable memory cost. 
@@ -23,11 +23,11 @@ class Row(dict):
     def __init__(self, data, columns_map, *args, **kwargs):
         # These are used to 
         super(Row, self).__setattr__("__delwhitelist__", 
-            BaseRowDefaults.__delwhitelist__)
+            RowDefaults.__delwhitelist__)
         super(Row, self).__setattr__("__sawhitelist__",
-            BaseRowDefaults.__sawhitelist__)
+            RowDefaults.__sawhitelist__)
         super(Row, self).__init__(data)
-        self[BaseRowDefaults.__psvcolumns__] = columns_map
+        self[RowDefaults.__psvcolumns__] = columns_map
         self._set_outputrow(True)
 
         self.construct(*args, **kwargs)
@@ -48,7 +48,9 @@ class Row(dict):
         return False
 
     def __hashvalue__(self):
-        """raw data that can be hashed if all contents are hashable"""
+        """raw data that can be hashed if all contents are hashable
+           or can be used for comparison
+        """
         return (tuple((column, self[column])
             for column in filter(lambda x: x != "__psvcolumnstracker__", sorted(self.keys()))))
 
@@ -137,7 +139,7 @@ class Row(dict):
                         type(self), attr))
 
     def __delattr__(self, attr):
-        """Allows deletion of rows and attributes (Makes a row empty) by using
+        """Allows deletion of rows and attributes (Makes a row an empty string) by using
         del statement"""
         s = cleanup_name(attr)
         try:
@@ -168,7 +170,7 @@ class Row(dict):
 
     def add_valid_attribute(self, attr, deletable=False):
         """Used by classes that inherit to add attributes to the whitelists
-            Note: BaseRow should only be inherited if no other option is available.
+            Note: Row should only be inherited if no other option is available.
             These attributes being accessed will be notably slower due to the implementation.
             Memory Usage may also be much higher, as the whitelists will no longer be a 
              static variable.
@@ -178,13 +180,13 @@ class Row(dict):
         super(Row, self).__setattr__(
             "__sawhitelist__", set(self.__sawhitelist__ | set((attr,))))
         if deletable:
-            super(BaseRow, self).__setattr__(
+            super(Row, self).__setattr__(
                 "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
 
 
     def construct(self, *args, **kwargs):
-        """This method can be used by inherited objects of :class:`BaseRow` as if it was __init__
-           Note: BaseRow should only be inherited if no other option is available. It cause
+        """This method can be used by inherited objects of :class:`Row` as if it was __init__
+           Note: Row should only be inherited if no other option is available. It cause
             memory bloat issues and can be notably slower.
 
         """
@@ -352,8 +354,8 @@ class Row(dict):
         else:
             return result
 
-class BaseRowDefaults(object):
-    """Contains Static Variables the BaseRow uses
+class RowDefaults(object):
+    """Contains Static Variables the Row uses
         to prevent rampant memory waste.
     """
     __delwhitelist__ = set()
@@ -371,10 +373,10 @@ BaseRow = Row
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
-banned_columns = {BaseRowDefaults.__psvcolumns__,}
+banned_columns = {RowDefaults.__psvcolumns__,}
 non_accepted_key_names = set(tuple(dir(
-    BaseRow)) + ("row_obj", BaseRowDefaults.__psvcolumns__, 
-    BaseRowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
+    Row)) + ("row_obj", RowDefaults.__psvcolumns__, 
+    RowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
 
 @lru_cache(1024)

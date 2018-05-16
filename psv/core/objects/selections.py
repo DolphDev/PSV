@@ -278,7 +278,8 @@ class Selection(object):
                 lazily loading it at a later time.
                 Preventing race conditions under most uses cases.
                 if the same select is being worked on in multiple 
-                threads or other cases.
+                threads or other cases such as rows being edited
+                before the selected is processed.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -294,7 +295,8 @@ class Selection(object):
                 lazily loading it at a later time.
                 Preventing race conditions under most uses cases.
                 if the same select is being worked on in multiple 
-                threads or other cases.
+                threads or other cases such as rows being edited
+                before the selected is processed.
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -316,14 +318,16 @@ class Selection(object):
             raise ValueError(msg.badgrab)
 
     def remove_duplicates(self, soft=True):
-        """Removes duplicates.
+        """Removes duplicates rows
            if soft is true, return a selection
            else: edit this object
+
+           Note: All rows must contain hashable data
         """
         if soft:
             return self.merge(self)
         else:
-            self.__rows__ = list(self.merge(self).rows)
+            self.__rows__ = self.merge(self).rows
         
 
     def unique(self, *args):

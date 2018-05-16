@@ -480,7 +480,23 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             self.csvdoc.unique(*tuple())
 
-    def test_remove_duplicates(self):
+    def test_remove_duplicates_selection(self):
+        test = psv.loads(csv_repeat).select()
+        try:
+            test = test.remove_duplicates()
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
+
+    def test_remove_duplicates_hard_selection(self):
+        test = psv.loads(csv_repeat).select()
+        try:
+            test.remove_duplicates(soft=False)
+        except Exception as err:
+            self.fail(str(err))
+        self.assertEqual(len(test), 1)
+
+    def test_remove_duplicates_main_selection(self):
         test = psv.loads(csv_repeat)
         try:
             test = test.remove_duplicates()
@@ -488,7 +504,7 @@ class psv_selections_test(unittest.TestCase):
             self.fail(str(err))
         self.assertEqual(len(test), 1)
 
-    def test_remove_duplicates_hard(self):
+    def test_remove_duplicates_hard_main_selection(self):
         test = psv.loads(csv_repeat)
         try:
             test.remove_duplicates(soft=False)
@@ -666,3 +682,14 @@ class psv_selections_test(unittest.TestCase):
     def test_non_outputted_rows(self):
         self.construct()
         self.csvdoc.nonoutputtedrows
+
+    def test_cls_acceptance_non_class(self):
+        with self.assertRaises(ValueError):
+            api = psv.new("TEST", "TEST")
+
+
+    def test_cls_acceptance_class(self):
+        class DummyClass: pass
+        with self.assertRaises(ValueError):
+            api = psv.new("TEST", DummyClass)
+

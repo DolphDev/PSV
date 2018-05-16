@@ -31,8 +31,8 @@ class MainSelection(Selection):
             else:
                 raise TypeError
         except TypeError:
-            raise ValueError("cls argument must be {} or subclass of it. Was {}".format(Row, type(cls)))
-
+            raise ValueError(
+                msg.badcls.format(Row, cls if isinstance(cls, type) else type(cls)))
 
         
 
@@ -41,6 +41,7 @@ class MainSelection(Selection):
                 column_crunch_repeat(self.__columns__))
         else:
             rebuild_column_map = True
+
 
         if csvdict is None:
             csvdict = {}
@@ -86,7 +87,6 @@ class MainSelection(Selection):
             for k, v in kwargs.items():
                 r.setcolumn(k, v)
         return r
-
 
     def addcolumn(self, columnname, columndata="", clear=True):
         """Adds a column
