@@ -323,7 +323,7 @@ class Selection(object):
         if soft:
             return self.merge(self)
         else:
-            self.__rows__ = self.merge(self).rows
+            self.__rows__ = list(self.merge(self).rows)
         
 
     def unique(self, *args):

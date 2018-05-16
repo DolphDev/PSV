@@ -1,4 +1,4 @@
-from ..objects import BaseRow, Selection, cleanup_name
+from ..objects import Row, Selection, cleanup_name
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
 from ..utils import generate_func
@@ -12,10 +12,10 @@ class MainSelection(Selection):
 
     __slots__ = ["__canrefrencecolumn__",
                  "__columns__", "__columnsmap__",
-                 "__rows__", "__apimother__"]
+                 "__rows__", "__apimother__", "__rowcls__"]
 
     def __init__(self, csvdict=None, columns=None, 
-                 cls=BaseRow, parsing=parser,typetransfer=True, 
+                 cls=Row, parsing=parser,typetransfer=True, 
                  custom_columns=False, *args, **kwargs):
 
         # Local Flag to detirmine 
@@ -23,7 +23,19 @@ class MainSelection(Selection):
         self.__apimother__ = self
         self.__columns__ = columns
         self.__columnsmap__ = {}
+        try:
+            # TypeError may be triggered by issubclass or
+            # by else condition
+            if cls is Row or issubclass(cls, Row):
+                self.__rowcls__ = cls
+            else:
+                raise TypeError
+        except TypeError:
+            raise ValueError("cls argument must be {} or subclass of it. Was {}".format(Row, type(cls)))
+
+
         
+
         if columns:
             self.__columnsmap__.update(
                 column_crunch_repeat(self.__columns__))
@@ -65,7 +77,9 @@ class MainSelection(Selection):
     def columns(self):
         return self.__columns__
         
-    def addrow(self, cls=BaseRow, **kwargs):
+    def addrow(self, cls=None, **kwargs):
+        if cls is None:
+            cls = self.__rowcls__
         r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
         self.__rows__.append(r)
         if kwargs:
@@ -116,6 +130,16 @@ class MainSelection(Selection):
 
     def __delitem__(self, v):
         del self.__rows__[v]
+
+    def remove_duplicates(self, soft=True):
+        """Removes duplicates.
+           if soft is true, return a selection
+           else: edit this object
+        """
+        if soft:
+            return self.merge(self)
+        else:
+            self.__rows__ = list(self.merge(self).rows)
 
 def _column_repeat_dict(columns, clean_ups):
     master = {}
