@@ -158,6 +158,8 @@ class psv_load_tests(unittest.TestCase):
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), typetransfer=True)
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
             api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.load(open("tests/dataset-only-one/test.csv", "r", encoding="UTF-8"), close_file=True)
+
 
         except Exception as err:
             self.fail(str(err))
@@ -265,9 +267,24 @@ class psv_load_tests(unittest.TestCase):
 
     def test_loading_column_names(self):
         self.populate_folders()
-        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+        with open("tests/dataset-only-one/emptyfile1.csv", "w") as f:
             f.write("")
 
-        assert psv.column_names("tests/dataset-only-one/emptyfile.csv") == tuple()  
-        assert psv.column_names("tests/dataset-only-one/emptyfile.csv", csv_size_max=2**24) == tuple()
+        assert psv.column_names("tests/dataset-only-one/emptyfile1.csv") == tuple()  
+        assert psv.column_names("tests/dataset-only-one/emptyfile1.csv", csv_size_max=2**24) == tuple()
 
+    def test_loading_column_names(self):
+        self.populate_folders()
+        with open("tests/dataset-only-one/emptyfile2.csv", "w") as f:
+            f.write("")
+
+        assert psv.column_names("tests/dataset-only-one/emptyfile2.csv") == tuple()  
+        assert psv.column_names("tests/dataset-only-one/emptyfile2.csv", csv_size_max=2**24) == tuple()
+
+    def test_loading_emptyfile(self):
+        self.populate_folders()
+        with open("tests/dataset-only-one/emptyfile2.csv", "w") as f:
+            f.write("")
+
+        assert psv.load("tests/dataset-only-one/emptyfile2.csv").columns == list()  
+        assert psv.load("tests/dataset-only-one/emptyfile2.csv", csv_size_max=2**24).columns == list()

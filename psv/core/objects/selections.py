@@ -44,6 +44,17 @@ class Selection(object):
         else:
             return self.__rows__
 
+    def process(self):
+        """Processes the Selection, then returns it
+
+           Use this if chaining selections but you still need the parent
+            for later usage. Or if their are mulitple chains from the 
+            same parent selection
+
+        """
+        self.rows
+        return self
+
     @property
     def columns(self):
         return self.__apimother__.columns
