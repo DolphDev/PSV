@@ -63,7 +63,7 @@ class MainSelection(Selection):
                     # Spreadsheets that don't have a header
                     raise ValueError("Bad CSV - File contains a single column with no header")
                 except IndexError:
-                    """Empty File, No Additional work needed."""
+                    # Empty File, No Additional work needed.
                     pass
 
         else:

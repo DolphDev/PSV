@@ -93,6 +93,11 @@ class Selection(object):
     def delcolumn(self):
         return self.__apimother__.delcolumn
 
+    def transform(self, column, func):
+        for row in self.rows:
+            row.setcolumn(column, func(row.getcolumn(column)))
+        return self
+
     def _merge(self, args):
         maps = []
         for con in (self,) + args:
