@@ -1,18 +1,16 @@
 from types import FunctionType
 from string import printable
+from .objects import ROW_OBJ
+
 
 def multiple_index(row, v):
-    
     tracker = []
     for x in v:
-        if not isinstance(x, str):
-            raise TypeError("Multi-Index does not support type {}".format(type(x)))
-        if x == "ROW_OBJ":
+        if x is ROW_OBJ:
             tracker.append(row)
             continue
-        if x == "|ROW_OBJ|":
-            tracker.append(row.getcolumn("ROW_OBJ"))
-            continue
+        if not isinstance(x, str):
+            raise TypeError("Multi-Index does not support type {}".format(type(x)))
         tracker.append(row.getcolumn(x))
     return tuple(tracker)
 
@@ -30,7 +28,6 @@ def translate_type(string):
         return string
     except AttributeError:
         return string
-
 
 def generate_func(arg, kwargs):
     if isinstance(arg, FunctionType) and not kwargs:

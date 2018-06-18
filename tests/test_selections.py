@@ -260,7 +260,7 @@ class psv_selections_test(unittest.TestCase):
 
     def test_indexing(self):
         self.construct()
-        self.assertTrue(isinstance(self.csvdoc.grab("name", "ROW_OBJ")[0][1], psv.core.objects.rowobjects.BaseRow))
+        self.assertTrue(isinstance(self.csvdoc.grab("name", psv.ROW_OBJ)[0][1], psv.core.objects.rowobjects.BaseRow))
         try:
             self.csvdoc.grab("ROW_OBJ")
             self.csvdoc.fail("PSV did not catch incorrect ROW_OBJ use")
@@ -461,7 +461,7 @@ class psv_selections_test(unittest.TestCase):
 
     def test_utils_multiindex(self):
         test = psv.loads(csv_row_obj)
-        value = test.grab("|ROW_OBJ|", "ROW_OBJ")
+        value = test.grab("ROW_OBJ", psv.ROW_OBJ)
         self.assertTrue(isinstance(value[0][0], str))
         self.assertTrue(isinstance(value[0][1], psv.core.objects.rowobjects.BaseRow))
 
