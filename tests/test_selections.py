@@ -69,6 +69,17 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_transform(self):
+        self.construct()
+        self.csvdoc.transform("name", lambda x: 1)
+        for row in self.csvdoc:
+            self.assertEqual(1, row.name)
+
+    def test_process(self):
+        self.construct()
+        self.csvdoc.process()
+
+
     def test_delete_rows_deleter(self):
         self.construct()
         try:
