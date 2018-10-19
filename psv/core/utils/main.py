@@ -20,6 +20,11 @@ def _index_function_gen(api, func):
             yield x
 
 def translate_type(string):
+    """Depreciated, Now must be enabled in functions that use it
+       Too slow to be default, and conversions can lose information
+
+       Takes a string and converts it float or a int if possible
+    """
     try:
         if string.isdigit():
             return int(string)
@@ -30,6 +35,7 @@ def translate_type(string):
         return string
 
 def generate_func(arg, kwargs):
+    """Generates a function based on the arguments given"""
     if isinstance(arg, FunctionType) and not kwargs:
         return arg
     elif isinstance(arg, str) or kwargs or arg is None:
@@ -38,6 +44,9 @@ def generate_func(arg, kwargs):
                 for k,v in kwargs.items():
                     if isinstance(v, FunctionType):
                         if not v(row.getcolumn(k)):
+                            return False
+                    elif isinstance(v, bool):
+                        if not bool(row.getcolumn(k)) is v:
                             return False
                     else:
                         if not row.getcolumn(k) == v:
@@ -58,7 +67,9 @@ def generate_func(arg, kwargs):
                 type(arg)))  
 
 def generate_func_any(arg, kwargs):
-    "Note: Currently a Hack based off generate_func, rewrite necessary"
+    """
+
+    """
     if isinstance(arg, FunctionType) and not kwargs:
         return arg
     elif isinstance(arg, str) or kwargs or arg is None:
@@ -67,6 +78,9 @@ def generate_func_any(arg, kwargs):
                 for k,v in kwargs.items():
                     if isinstance(v, FunctionType):
                         if v(row.getcolumn(k)):
+                            return True
+                    elif isinstance(v, bool):
+                        if bool(row.getcolumn(k)) is v:
                             return True
                     else:
                         if row.getcolumn(k) == v:

@@ -31,6 +31,16 @@ csv_empty = """Name,Price,Available,Company
 ,,,
 """
 
+csv_test_falsey = """Name,Price,Available,Company
+Product 1,,1,Yahoo
+,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,Yahoo
+Product 1,10,1,
+Product 1,10,,Yahoo
+Product 1,10,1,Yahoo
+"""
+
 csv_matching_short = """Name,name,na-me,nAmE
 Product 1,10,1,Yahoo
 Product 1,10,1,Yahoo
@@ -86,9 +96,18 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.select()
             self.csvdoc.select("name")
             self.csvdoc.select(name="Product 1")
+            self.csvdoc.select(name=True)
+            self.csvdoc.select(name=False)
             self.csvdoc.select("name", price=10)
             self.csvdoc.select("name", price=lambda p: p > 10)
             self.csvdoc.select("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.select("name", price=10, company="Yahoo", available=True)
+            self.csvdoc.select("name", price=10, company="Yahoo", available=False)
+            self.csvdoc.select("name", price=10, company=True, available=1)
+            self.csvdoc.select("name", price=True, company=False, available=1)
+            self.csvdoc.select("name", price=False, company="Yahoo", available=1)
+
+
             self.csvdoc.select(lambda x: False, price=10)
             self.csvdoc.select(lambda x: True, price=None)
 
@@ -101,12 +120,20 @@ class psv_selections_test(unittest.TestCase):
             self.csvdoc.any()
             self.csvdoc.any("name")
             self.csvdoc.any(name="Product 1")
+            self.csvdoc.any(name=True)
+            self.csvdoc.any(name=False)
             self.csvdoc.any("name", price=10)
             self.csvdoc.any("name", price=lambda p: p > 10)
             self.csvdoc.any("name", price=10, company="Yahoo", available=1)
+            self.csvdoc.any("name", price=10, company="Yahoo", available=True)
+            self.csvdoc.any("name", price=10, company="Yahoo", available=False)
+            self.csvdoc.any("name", price=10, company=True, available=1)
+            self.csvdoc.any("name", price=True, company=False, available=1)
+            self.csvdoc.any("name", price=False, company="Yahoo", available=1)
             self.csvdoc.any(lambda x: False, price=10)
             self.csvdoc.any(lambda x: True, price=None)
-
+            self.csvdoc.any(lambda x: False, price=True)
+            self.csvdoc.any(lambda x: True, price=False)
         except Exception as err:
             self.fail(str(err))
 
@@ -115,7 +142,12 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(self.csvdoc.select("name")), 7)
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name)), 7)
         self.assertEqual(len(self.csvdoc.select(name="Product 1")), 1)
+        self.assertEqual(len(self.csvdoc.select(name=True)), 7)
+        self.assertEqual(len(self.csvdoc.select(name=False)), 0)
         self.assertEqual(len(self.csvdoc.select("name", price=10)), 2)
+        self.assertEqual(len(self.csvdoc.select("name", price=10, company=True)), 2)
+        self.assertEqual(len(self.csvdoc.select("name", price=10, company=False)), 0)
+
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name, price=10)), 2)
         self.assertEqual(len(self.csvdoc.select("name", price=lambda p: p > 10)), 4)
         self.assertEqual(len(self.csvdoc.select(lambda x: x.name, price=lambda p: p > 10)), 4)
@@ -126,7 +158,13 @@ class psv_selections_test(unittest.TestCase):
         self.assertEqual(len(self.csvdoc.any("name")), 7)
         self.assertEqual(len(self.csvdoc.any(lambda x: x.name)), 7)
         self.assertEqual(len(self.csvdoc.any(name="Product 1")), 1)
+        self.assertEqual(len(self.csvdoc.any(name=True)), 7)
+        self.assertEqual(len(self.csvdoc.any(name=False)), 0)
+
         self.assertEqual(len(self.csvdoc.any("name", price=10)), 7)
+        self.assertEqual(len(self.csvdoc.any("name", price=10, company=True)), 7)
+        self.assertEqual(len(self.csvdoc.any("name", price=10, company=False)), 7)
+
         self.assertEqual(len(self.csvdoc.any(lambda x: x.name, price=10)), 7)
         self.assertEqual(len(self.csvdoc.any("name", price=lambda p: p > 10)), 7)
         self.assertEqual(len(self.csvdoc.any(lambda x: x.name, price=lambda p: p > 10)), 7)

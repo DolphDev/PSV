@@ -29,7 +29,7 @@ class MainSelection(Selection):
             if cls is Row or issubclass(cls, Row):
                 self.__rowcls__ = cls
             else:
-                raise TypeError
+                raise TypeError("cls argument was not supplied with a valid type")
         except TypeError:
             raise ValueError(
                 msg.badcls.format(Row, cls if isinstance(cls, type) else type(cls)))
