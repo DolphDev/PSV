@@ -353,3 +353,13 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         with self.assertRaises(TypeError):
             self.csvdoc[0].outputrow = "BAD ARG"
+
+    def test_outputrow(self):
+        self.construct()
+        self.csvdoc[0].outputrow
+
+    def test_outputrow_set(self):
+        self.construct()
+        self.csvdoc[0].outputrow = True
+        self.csvdoc[0].outputrow = False
+        self.csvdoc[0].outputrow = True
