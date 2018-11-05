@@ -13,3 +13,5 @@ PSV
 PSV is a library that allows rapid script development for csv files. Assistance/Pull requests are both welcomed and encouraged.
 
 Installation: `pip install psv`
+
+This is not a data analysis library rather a data manipulation one, and it is meant to be as light as possbile. For these usecases, consider Pandas. 
