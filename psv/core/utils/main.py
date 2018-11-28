@@ -1,6 +1,9 @@
 from types import FunctionType
 from string import printable
 from .objects import ROW_OBJ
+import functools
+
+cache_type = type(functools.lru_cache(1)(lambda x: "Dummy"))
 
 
 def multiple_index(row, v):
@@ -34,32 +37,59 @@ def translate_type(string):
     except AttributeError:
         return string
 
-def generate_func(arg, kwargs):
+def generate_func(arg, kwargs, cache_function=False):
     """Generates a function based on the arguments given"""
     if isinstance(arg, FunctionType) and not kwargs:
         return arg
     elif isinstance(arg, str) or kwargs or arg is None:
-        def select_func(row):
-            if kwargs:
-                for k,v in kwargs.items():
-                    if isinstance(v, FunctionType):
-                        if not v(row.getcolumn(k)):
-                            return False
-                    elif isinstance(v, bool):
-                        if not bool(row.getcolumn(k)) is v:
+        if not cache_function:
+            def select_func(row):
+                if kwargs:
+                    for k,v in kwargs.items():
+                        if isinstance(v, FunctionType):
+                            if not v(row.getcolumn(k)):
+                                return False
+                        elif isinstance(v, bool):
+                            if not bool(row.getcolumn(k)) is v:
+                                return False
+                        else:
+                            if not row.getcolumn(k) == v:
+                                return False
+                if arg:
+                    if isinstance(arg, FunctionType):
+                        if not arg(row):
                             return False
                     else:
-                        if not row.getcolumn(k) == v:
+                        if not bool(row.getcolumn(arg)):
                             return False
-            if arg:
-                if isinstance(arg, FunctionType):
-                    if not arg(row):
-                        return False
-                else:
-                    if not bool(row.getcolumn(arg)):
-                        return False
 
-            return True
+                return True
+        else:
+            for k, v in kwargs.items():
+                if isinstance(v, FunctionType):
+                    kwargs[k] = functools.lru_cache(maxsize=8192)(v)
+            def select_func(row):
+                if kwargs:
+                    for k,v in kwargs.items():
+
+                        if isinstance(v, cache_type):
+                            if not v(row.getcolumn(k)):
+                                return False
+                        elif isinstance(v, bool):
+                            if not bool(row.getcolumn(k)) is v:
+                                return False
+                        else:
+                            if not row.getcolumn(k) == v:
+                                return False
+                if arg:
+                    if isinstance(arg, FunctionType):
+                        if not arg(row):
+                            return False
+                    else:
+                        if not bool(row.getcolumn(arg)):
+                            return False
+
+                return True            
         return select_func
     else:
         raise TypeError(

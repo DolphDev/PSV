@@ -3,9 +3,12 @@ from ..utils import multiple_index, limit_text
 from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any
 from ..exceptions.messages import ApiObjectMsg as msg
 
-from types import FunctionType
+from types import FunctionType, GeneratorType
 from tabulate import tabulate
 
+import functools
+
+cache_type = type(functools.lru_cache(1)(lambda x: "Dummy"))
 
 class Selection(object):
 
@@ -31,10 +34,13 @@ class Selection(object):
             return (x.getcolumn(v) for x in self.rows)
         elif isinstance(v, tuple):
             return (multiple_index(x, v) for x in self.rows)
-        elif isinstance(v, FunctionType):
+        elif isinstance(v, FunctionType) or isinstance(v, cache_type):
             return Selection(_index_function_gen(self, v), self.__apimother__)
         else:
             raise TypeError(msg.getitemmsg.format(type(v)))
+
+    def _is_processed(self):
+        return isinstance(self.__rows__, GeneratorType)
 
     @property
     def rows(self):
@@ -261,7 +267,7 @@ class Selection(object):
                 ~x
         return self
 
-    def select(self, selectionfirstarg_data=None, **kwargs):
+    def select(self, selectionfirstarg_data=None, _psvcached=False, **kwargs):
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
             All conditions must be true for a row to be selected
@@ -269,7 +275,7 @@ class Selection(object):
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
-        func = generate_func(selectionfirstarg_data, kwargs)
+        func = generate_func(selectionfirstarg_data, kwargs, _psvcached)
         return self[func]
 
     def any(self, selectionfirstarg_data=None, **kwargs):

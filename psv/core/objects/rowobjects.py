@@ -206,7 +206,7 @@ class Row(dict):
     def _set_outputrow(self, v):
         """Fast Internal way to set output flags
            Doesn't check for bad input, meant for internal use only
-           Much faster than the setter
+           Much faster than the setter or +/-/~
         """
         super(Row, self).__setattr__("__output__", v)
 
@@ -363,6 +363,7 @@ class RowDefaults(object):
     
     # This is inlined in most of the library due to speed constraints.
     __psvcolumns__ = '__psvcolumnstracker__'
+    __cacheargumentname__ = "_psvcached"
 
 # For backwards compability, will be removed in the future
 # Refering Row as BaseRow is considered Depreciated
@@ -373,13 +374,13 @@ BaseRow = Row
 # but it relied on a circular reference that re-imported
 # a variable everytime this core function was called.
 #While less clean, this produces a decent speedup.
-banned_columns = {RowDefaults.__psvcolumns__,}
+banned_columns = {RowDefaults.__psvcolumns__, RowDefaults.__cacheargumentname__}
 non_accepted_key_names = set(tuple(dir(
     Row)) + ("row_obj", RowDefaults.__psvcolumns__, 
     RowDefaults.__psvcolumns__) + tuple(keyword.kwlist))
 bad_first_char = set(digits)
 
-@lru_cache(1024)
+@lru_cache(2048)
 def cleanup_name(s):
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if not result:
