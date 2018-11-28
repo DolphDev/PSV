@@ -724,6 +724,8 @@ class psv_selections_test(unittest.TestCase):
         for x in a:
             assert x.outputrow == False
 
+
+
     def test_outputtedrows(self):
         self.construct()
         self.csvdoc.outputtedrows
