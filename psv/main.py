@@ -120,7 +120,7 @@ def new(columns=None, cls=Row,
         columns = [columns]
     if columns:
         forbidden_columns(columns)
-    return MainSelection(columns=columns, cls=cls)
+    return MainSelection(columns=tuple(columns), cls=cls)
 
 
 def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
