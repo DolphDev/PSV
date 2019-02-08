@@ -15,7 +15,7 @@ class ApiObjectMsg:
     outputmsg = "A ordered list of columns must be supplied to output the file"
     badgrab = "Empty Grab. Lack of arguments were supplied to grab method."
     badcls = "cls argument must be {} or subclass of it. Was {}"
-
+    badfastfind = "Multiple Keywords are not supported for fast_find()"
 
 class LoadingMsg:
 

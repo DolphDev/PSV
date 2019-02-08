@@ -1,6 +1,6 @@
 from ..output import outputfile, outputstr
 from ..utils import multiple_index, limit_text
-from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any
+from ..utils import _index_function_gen, asciireplace, generate_func, generate_func_any, ROW_OBJ
 from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
@@ -208,6 +208,15 @@ class Selection(object):
         except StopIteration:
             return None
 
+    def fast_find(self, **kwargs):
+        """Much faster find 
+            Note: All keynames must be unique to be used effectively, else latest row will be returned"""
+        if len(kwargs) != 1:
+            raise ValueError(msg.badfastfind)
+        k, v = tuple(kwargs.items())[0]
+        index_value = self.index(k)
+        return index_value.get(v)
+
     def find_all(self, selectionfirstarg_data=None, **kwargs):
         func = generate_func(selectionfirstarg_data, kwargs)
         return tuple(self._find_all(func))
@@ -363,6 +372,13 @@ class Selection(object):
 
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)
+
+    def index(self, keyname, keyvalue=None):
+        """ Indexs a Column to a dict """
+        if keyvalue is None:
+            return dict(self[keyname, ROW_OBJ])
+        else:
+            return dict(self[keyname, keyvalue])
 
     @property
     def outputtedrows(self):
