@@ -120,6 +120,10 @@ def new(columns=None, cls=Row,
         columns = [columns]
     if columns:
         forbidden_columns(columns)
+    if not columns:
+        columns = tuple()
+    if not isinstance(columns, tuple):
+        columns = tuple(columns)
     return MainSelection(columns=columns, cls=cls)
 
 

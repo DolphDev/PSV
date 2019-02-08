@@ -4,7 +4,7 @@ Copyright (c) 2016, 2017, 2018 Joshua Walters
 """
 
 
-version = '0.2.0'
+version = '0.2.1'
 
 from setuptools import setup
 setup(name='psv',
