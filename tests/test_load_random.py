@@ -169,8 +169,8 @@ class psv_load_tests_random(unittest.TestCase):
     def test_loaddir(self):
         self.populate_folders()
         try:
-            api = psv.loaddir("tests/dataset-folder/")
-            api = psv.loaddir("tests/dataset-folder/", csv_size_max=2**24 )
+            api = psv.loaddir("tests/dataset-folder-random/")
+            api = psv.loaddir("tests/dataset-folder-random/", csv_size_max=2**24 )
 
         except Exception as err:
             self.fail(str(err))
