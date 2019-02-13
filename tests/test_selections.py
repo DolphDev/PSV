@@ -596,21 +596,21 @@ class psv_selections_test(unittest.TestCase):
 
     def test_loading_valueerror_emptyfile_cleanupname(self):
         import io
-        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "w") as f:
             f.write(" \nDATA")
 
 
-        with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "r") as f:
             with self.assertRaises(ValueError) as cm:
                 psv.load(f)
 
     def test_loading_valueerror_emptyfile(self):
         import io
-        with open("tests/dataset-only-one/emptyfile.csv", "w") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "w") as f:
             f.write("\nDATA")
 
 
-        with open("tests/dataset-only-one/emptyfile.csv", "r") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "r") as f:
             with self.assertRaises(ValueError) as cm:
                 psv.load(f)
 
