@@ -4,7 +4,7 @@ from functools import lru_cache
 from tabulate import tabulate
 from string import ascii_lowercase, digits
 from types import FunctionType
-
+from typing import Any, Dict, Type, Sequence, Union
 
 import keyword
 accepted_chars = (ascii_lowercase + "_" + digits)
@@ -32,7 +32,7 @@ class Row(dict):
 
         self.construct(*args, **kwargs)
 
-    def __call__(self, column, setvalue=None, delete=False):
+    def __call__(self, column: str, setvalue: Any=None, delete: bool=False):
         """Alais for .getcolumn() family of methods"""
         if delete:
             self.delcolumn(column, False)
@@ -41,13 +41,13 @@ class Row(dict):
         else:
             self.setcolumn(column, setvalue, False)
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'Row'):
         #Returns True if content is the same as the
         if isinstance(other, self.__class__):
             return self.__hashvalue__() == other.__hashvalue__()
         return False
 
-    def __hashvalue__(self):
+    def __hashvalue__(self) -> tuple:
         """raw data that can be hashed if all contents are hashable
            or can be used for comparison
         """
@@ -68,19 +68,19 @@ class Row(dict):
             hexloc=hex(id(self)).upper().replace("X", "x")
         )
 
-    def __pos__(self):
+    def __pos__(self) -> 'Row':
         self._set_outputrow(True)
         return self
 
-    def __neg__(self):
+    def __neg__(self) -> 'Row':
         self._set_outputrow(False)
         return self
 
-    def __invert__(self):
+    def __invert__(self) -> 'Row':
         self._set_outputrow(not (self.outputrow))
         return self
 
-    def __getattribute__(self, attr):
+    def __getattribute__(self, attr) -> Any:
         if not self["__psvcolumnstracker__"].get(attr, False):
             return super(dict, self).__getattribute__(attr)
         else:
@@ -103,7 +103,7 @@ class Row(dict):
             raise AttributeError(msg.attribute_missing.format(
                 type(self), attr))
 
-    def __setattr__(self, attr, v):
+    def __setattr__(self, attr: str, v: Any):
         """Allows setting of rows and attributes by using =
             statement
 
@@ -138,7 +138,7 @@ class Row(dict):
                         raise AttributeError(msg.attribute_missing.format(
                         type(self), attr))
 
-    def __delattr__(self, attr):
+    def __delattr__(self, attr: str):
         """Allows deletion of rows and attributes (Makes a row an empty string) by using
         del statement"""
         s = cleanup_name(attr)
@@ -168,7 +168,7 @@ class Row(dict):
                         raise AttributeError(msg.attribute_missing.format(
                         type(self), attr))
 
-    def add_valid_attribute(self, attr, deletable=False):
+    def add_valid_attribute(self, attr: str, deletable=False) -> None:
         """Used by classes that inherit to add attributes to the whitelists
             Note: Row should only be inherited if no other option is available.
             These attributes being accessed will be notably slower due to the implementation.
@@ -184,7 +184,7 @@ class Row(dict):
                 "__delwhitelist__", set(self.__delwhitelist__ | set((attr,))))
 
 
-    def construct(self, *args, **kwargs):
+    def construct(self, *args, **kwargs) -> None:
         """This method can be used by inherited objects of :class:`Row` as if it was __init__
            Note: Row should only be inherited if no other option is available. It cause
             memory bloat issues and can be notably slower.
@@ -193,7 +193,7 @@ class Row(dict):
         pass
 
     @property
-    def outputrow(self):
+    def outputrow(self) -> bool:
         """Returns a boolean of the current output flag for this row"""
         return self.__output__
 
@@ -210,7 +210,7 @@ class Row(dict):
         """
         super(Row, self).__setattr__("__output__", v)
 
-    def getcolumn(self, column, accept_small_names=True):
+    def getcolumn(self, column, accept_small_names=True) -> Any:
         """Get a cell by the orginal column name
 
         :param column: The column name. Can only be long form if accept_small_names == False
@@ -229,7 +229,7 @@ class Row(dict):
         else:
             raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
-    def setcolumn(self, column, value, accept_small_names=True):
+    def setcolumn(self, column, value, accept_small_names=True) -> None:
         """Set a cell by the orginal column name
 
             :param column: The column name. Can be both long and short form.
@@ -249,7 +249,7 @@ class Row(dict):
         else:
             raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
-    def delcolumn(self, column, accept_small_names=True):
+    def delcolumn(self, column, accept_small_names=True) -> None:
         """Delete a cell by the orginal column name
 
         :param column: The column name. Can be both long and short form.
@@ -268,17 +268,17 @@ class Row(dict):
         else:
             raise ValueError("'{}'. Make sure the shorterned columns name have no collisions".format(column))
 
-    def _addcolumns(self, columnname, columndata=""):
+    def _addcolumns(self, columnname, columndata="") -> None:
         """Adds a column for this row only doesn't add to column tracker
 
         Warning: Internal Method, API/Behavior may change without notice"""
         self[columnname] = columndata
 
-    def _addcolumns_func(self, columnname, columnfunc):
+    def _addcolumns_func(self, columnname, columnfunc) -> None:
         self[columnname] = columnfunc(self)
 
 
-    def _delcolumns(self, columnname, columndata=""):
+    def _delcolumns(self, columnname, columndata="") -> None:
         """Adds a column for this row only
             doesn't add to column tracker
 
@@ -286,7 +286,7 @@ class Row(dict):
 
         del self[columnname]
 
-    def longcolumn(self, columns=None):
+    def longcolumn(self, columns=None) -> Dict[str, str]:
         """
             :params columns: A collection of columns, if supplied the method 
                 will return only the specified columns.
@@ -330,7 +330,10 @@ class Row(dict):
                     )
 
 
-    def tabulate(self, format="grid", only_ascii=True, columns=None, text_limit=None):
+    def tabulate(self, format: str="grid", 
+            only_ascii: bool=True, 
+            columns:Sequence[str]=None, 
+            text_limit: bool=None):
         """Integrates tabulate library with psv
 
             :param format: A valid format for :class:`tabulate` library.
@@ -380,7 +383,7 @@ non_accepted_key_names = set(tuple(dir(
 bad_first_char = set(digits)
 
 @lru_cache(1024)
-def cleanup_name(s):
+def cleanup_name(s: str):
     result = "".join(filter(lambda x: x in accepted_chars, s.lower()))
     if not result:
         raise ValueError(msg.non_valid.format(s))

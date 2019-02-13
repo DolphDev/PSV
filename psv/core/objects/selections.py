@@ -5,7 +5,7 @@ from ..exceptions.messages import ApiObjectMsg as msg
 
 from types import FunctionType
 from tabulate import tabulate
-
+from typing import Any, Tuple, Sequence, Dict, List, Union
 
 class Selection(object):
 
@@ -15,14 +15,14 @@ class Selection(object):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
 
-    def __add__(self, sel):
+    def __add__(self, sel: 'Selection') -> 'Selection':
         return Selection((
             tuple(self.rows) + tuple(sel.rows)), self.__apimother__)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.rows)
 
-    def __getitem__(self, v):
+    def __getitem__(self, v) -> Any:
         if isinstance(v, slice):
             return Selection(self.rows[v], self.__apimother__)
         if isinstance(v, int):
@@ -37,14 +37,14 @@ class Selection(object):
             raise TypeError(msg.getitemmsg.format(type(v)))
 
     @property
-    def rows(self):
+    def rows(self) -> Tuple["Row"]:
         if not isinstance(self.__rows__, tuple):
             self.__rows__ = tuple(self.__rows__)
             return self.__rows__
         else:
             return self.__rows__
 
-    def process(self):
+    def process(self) -> 'Selection':
         """Processes the Selection, then returns it
 
            Use this if chaining selections but you still need the parent
@@ -56,23 +56,23 @@ class Selection(object):
         return self
 
     @property
-    def columns(self):
+    def columns(self) -> Sequence[str]:
         return self.__apimother__.columns
 
     @property
-    def __columnsmap__(self):
+    def __columnsmap__(self) -> Dict[str, str]:
         return self.__apimother__.__columnsmap__
 
     @property
-    def columns_mapping(self):
+    def columns_mapping(self) -> Dict[str, str]:
         return {v:k for k,v in self.__columnsmap__.items()}
 
     @property
-    def columns_attributes(self):
+    def columns_attributes(self) -> List[str]:
         return list(self.__columnsmap__.keys())
 
     @property
-    def addcolumn(self):
+    def addcolumn(self) -> None:
         """Adds a column
         :param columnname: Name of the column to add.
         :param columndata: The default value of the new column.
@@ -90,10 +90,10 @@ class Selection(object):
         return self.__apimother__.addcolumn
 
     @property
-    def delcolumn(self):
+    def delcolumn(self) -> None:
         return self.__apimother__.delcolumn
 
-    def transform(self, column, func):
+    def transform(self, column, func) -> "Selection":
         for row in self.rows:
             row.setcolumn(column, func(row.getcolumn(column)))
         return self
@@ -109,7 +109,7 @@ class Selection(object):
         for key in keys:
             yield master[key]
 
-    def merge(self, *args, force_safety=True):
+    def merge(self, *args, force_safety=True) -> "Selection":
         """Merges selections
            
            Note: This merge's algorithm relies on the uniqueness of the rows.
@@ -128,14 +128,14 @@ class Selection(object):
             raise TypeError(
                 "{} - Use the non_hash_merge to merge rows with non-hashable datatypes.".format(exc))
 
-    def safe_merge(self, *args):
+    def safe_merge(self, *args) -> 'Selection':
         """This is much slower but is hashes rows as processed instead of preprocessing them"""
         out = self
         for x in args:
             out = out + x
         return out
 
-    def non_hash_merge(self, *args):
+    def non_hash_merge(self, *args) -> 'Selection':
         """This merge uses the exploits the __output__ flag of a row instead of it's hashed contents
            This allows merging of of rows that contain unhashable mutable data such as sets or dict.
            This doesn't remove duplicate rows but is slightly faster and can handle all datatyps.
@@ -243,34 +243,34 @@ class Selection(object):
             +x
         return self
 
-    def lenoutput(self):
+    def lenoutput(self) -> int:
         return len(tuple(filter(lambda x: x.outputrow, self.rows)))
 
-    def len_no_output(self):
+    def len_no_output(self) -> int:
         return len(tuple(filter(lambda x: not x.outputrow, self.rows)))
 
-    def enable(self, selectionfirstarg_data=None, **kwargs):
+    def enable(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         v = generate_func(selectionfirstarg_data, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 +x
         return self
 
-    def disable(self, selectionfirstarg_data=None, **kwargs):
+    def disable(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         v = generate_func(selectionfirstarg_data, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 -x
         return self
 
-    def flip(self, selectionfirstarg_data=None, **kwargs):
+    def flip(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         v = generate_func(selectionfirstarg_data, kwargs)
         for x in self.rows:
             if bool(v(x)):
                 ~x
         return self
 
-    def select(self, selectionfirstarg_data=None, **kwargs):
+    def select(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
             All conditions must be true for a row to be selected
@@ -281,7 +281,7 @@ class Selection(object):
         func = generate_func(selectionfirstarg_data, kwargs)
         return self[func]
 
-    def any(self, selectionfirstarg_data=None, **kwargs):
+    def any(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         """Method for selecting part of the csv document.
             generates a function based of the parameters given.
             only one condition must be True for the row to be
@@ -295,7 +295,7 @@ class Selection(object):
         func = generate_func_any(selectionfirstarg_data, kwargs)
         return self[func]
 
-    def safe_select(self, selectionfirstarg_data=None, **kwargs):
+    def safe_select(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         """Method for selecting part of the csv document.
             generates a function based off the parameters given.
 
@@ -311,7 +311,7 @@ class Selection(object):
         func = generate_func(selectionfirstarg_data, kwargs)
         return self._safe_select(func)
 
-    def safe_any(self, selectionfirstarg_data=None, **kwargs):
+    def safe_any(self, selectionfirstarg_data=None, **kwargs) -> 'Selection':
         """Method for selecting part of the csv document.
             generates a function based off the parameters given.
             only one condition must be True for the row to be selected.
@@ -328,7 +328,7 @@ class Selection(object):
         func = generate_func_any(selectionfirstarg_data, kwargs)
         return self._safe_select(func)
 
-    def grab(self, *args):
+    def grab(self, *args)  -> tuple:
         """Grabs specified columns from every row
 
         :returns: :class:`tuple` of the result.
@@ -342,7 +342,7 @@ class Selection(object):
         else:
             raise ValueError(msg.badgrab)
 
-    def remove_duplicates(self, soft=True):
+    def remove_duplicates(self, soft=True) -> 'Selection':
         """Removes duplicates rows
            if soft is true, return a selection
            else: edit this object
@@ -353,9 +353,10 @@ class Selection(object):
             return self.merge(self)
         else:
             self.__rows__ = self.merge(self).rows
+            return self
         
 
-    def unique(self, *args):
+    def unique(self, *args) -> set:
         """Grabs specified columns from every row
 
         :returns: :class:`set` of the result.
@@ -373,7 +374,7 @@ class Selection(object):
     def _safe_select(self, func):
         return Selection(tuple(_index_function_gen(self, func)), self.__apimother__)
 
-    def index(self, keyname, keyvalue=None):
+    def index(self, keyname: str, keyvalue:Union["ROW_OBJ", str, None]=None):
         """ Indexs a Column to a dict """
         if keyvalue is None:
             return dict(self[keyname, ROW_OBJ])
@@ -381,17 +382,17 @@ class Selection(object):
             return dict(self[keyname, keyvalue])
 
     @property
-    def outputtedrows(self):
+    def outputtedrows(self) -> 'Selection':
         return self.safe_select(lambda x: x.outputrow)
 
 
     @property
-    def nonoutputtedrows(self):
+    def nonoutputtedrows(self) -> 'Selection':
         return self.safe_select(lambda x: not x.outputrow)
 
 
     def tabulate(self, limit=100, format="grid", only_ascii=True,
-                 columns=None, text_limit=None, remove_newline=True):
+                 columns=None, text_limit=None, remove_newline=True) -> str:
 
         data = [x.longcolumn() for x in self.rows[:limit]]
         sortedcolumns = self.columns if not columns else columns
@@ -409,13 +410,13 @@ class Selection(object):
             return asciireplace(result)
         return result
 
-    def output(self, f=None, columns=None, quote_all=None, encoding="utf-8"):
+    def output(self, f=None, columns=None, quote_all=None, encoding="utf-8") -> None:
         if not columns:
             columns = self.columns
         outputfile(f, self.rows, columns,
                    quote_all=quote_all, encoding=encoding)
 
-    def outputs(self, columns=None, quote_all=None, encoding="utf-8"):
+    def outputs(self, columns=None, quote_all=None, encoding="utf-8") -> None:
         """Outputs to str"""
         if not columns:
             columns = self.columns

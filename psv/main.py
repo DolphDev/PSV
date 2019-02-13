@@ -8,8 +8,10 @@ import io
 import glob
 import itertools
 
+from typing import Any, Dict, Type, Sequence, Union, io, List
 
-def csv_size_limit(size):
+
+def csv_size_limit(size: int) -> None:
     """Changes the csv field size limit.
         :param size: The size limit of the csv data. 
         :type size: :class:`type`
@@ -17,8 +19,8 @@ def csv_size_limit(size):
     csv.field_size_limit(size)
 
 
-def load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
-         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
+def load(f: Union[str, io], cls:'Row'=Row, delimiter: str=",", quotechar: str='"', mode: str='r', buffering: int=-1,
+         encoding: str="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
          csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False):
     """Loads a file into psv
 
@@ -60,7 +62,7 @@ def load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
     return result
 
 
-def loaddir(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
+def loaddir(f: str, cls:'Row'=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
             encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
             csv_size_max=None, filetype="*.csv"):
     """Loads a directory of .csv files
@@ -85,8 +87,8 @@ def loaddir(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
     return MainSelection(data, columns=columns,  cls=cls, typetransfer=typetransfer)
 
 
-def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
-          typetransfer=False, csv_size_max=None, newline="\n"):
+def loads(csvdoc: str, columns: Union[None, List[str]]=None, cls: 'Row'=Row, delimiter: str=",", quotechar: str='"',
+          typetransfer: bool=False, csv_size_max: int=None, newline: str="\n"):
     """Loads csv, but as a python string
 
         Note: Due to way python's internal csv library works, identical headers will overwrite each other.
@@ -112,8 +114,8 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
     return api
 
 
-def new(columns=None, cls=Row,
-        csv_size_max=None):
+def new(columns: Union[None, List[str]]=None, cls: 'Row'=Row,
+        csv_size_max: Union[int, None]=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
     if isinstance(columns, str):
@@ -127,7 +129,7 @@ def new(columns=None, cls=Row,
     return MainSelection(columns=columns, cls=cls)
 
 
-def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
+def column_names(f: str, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                  errors=None, newline=None, closefd=True, opener=None,
                  csv_size_max=None, check_columns=True, custom_columns=None):
     if custom_columns:
@@ -146,7 +148,7 @@ def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-
         forbidden_columns(columns)
     return tuple(columns)
 
-def forbidden_columns(columns):
+def forbidden_columns(columns: List[str]):
     for x in columns:
         if x in banned_columns:
             raise ValueError(

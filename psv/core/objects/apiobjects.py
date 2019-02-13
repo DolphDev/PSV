@@ -4,6 +4,7 @@ from ..utils import multiple_index, _index_function_gen
 from ..utils import generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
+from typing import Any, Tuple, Sequence, Dict, List, Union
 
 
 class MainSelection(Selection):
@@ -74,14 +75,14 @@ class MainSelection(Selection):
             self.__columns__ = list(self.__columns__) 
 
     @property
-    def rows(self):
+    def rows(self) -> Tuple["Row"]:
         return self.__rows__
 
     @property
-    def columns(self):
+    def columns(self) -> Sequence[str]:
         return self.__columns__
         
-    def addrow(self, cls=None, **kwargs):
+    def addrow(self, cls: Any=None, **kwargs):
         if cls is None:
             cls = self.__rowcls__
         r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
@@ -91,7 +92,7 @@ class MainSelection(Selection):
                 r.setcolumn(k, v)
         return r
 
-    def addcolumn(self, columnname, columndata="", clear=True):
+    def addcolumn(self, columnname: str, columndata: Any="", clear=True):
         """Adds a column
         :param columnname: Name of the column to add.
         :param columndata: The default value of the new column.
@@ -117,7 +118,7 @@ class MainSelection(Selection):
         self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
         return self
 
-    def delcolumn(self, columnname):
+    def delcolumn(self, columnname: str):
         if not (columnname in self.columns):
             raise ValueError(
                 "'{}' column doesn't exist"
@@ -131,10 +132,10 @@ class MainSelection(Selection):
         self.__columnsmap__.clear()
         self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 
-    def __delitem__(self, v):
+    def __delitem__(self, v: int):
         del self.__rows__[v]
 
-    def remove_duplicates(self, soft=True):
+    def remove_duplicates(self, soft: bool=True):
         """Removes duplicates.
            if soft is true, return a selection
            else: edit this object
@@ -143,6 +144,7 @@ class MainSelection(Selection):
             return self.merge(self)
         else:
             self.__rows__ = list(self.merge(self).rows)
+            return self
 
 def _column_repeat_dict(columns, clean_ups):
     master = {}
