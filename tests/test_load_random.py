@@ -1,8 +1,7 @@
 import psv
 import unittest
 
-from hypothesis.strategies import text, integers, lists, floats
-from hypothesis import given, settings
+
 import string
 from random import randint, uniform
 
