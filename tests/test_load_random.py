@@ -6,7 +6,7 @@ import string
 from random import randint, uniform
 
 import os
-filenames = ["tests/dataset-folder-random/", "tests/dataset-only-one-random/"]
+filenames = ["tests/dataset-folder-random/", "tests/dataset-only-one-random/", "tests/dataset-only-one-empty/"]
 for filename in filenames:
     if not os.path.exists(os.path.dirname(filename)):
         try:
@@ -131,7 +131,7 @@ class psv_load_tests_random(unittest.TestCase):
         columns = generate_random_column_range(randint(5, 20), alphabet) #lists(text(min_size=5, max_size=20, alphabet=string.ascii_letters), max_size=20, min_size=2).example()
         for x in range(1,6):
             self.generate_data_str_nonrandom(columns, randint(1,50))
-            with open("tests/dataset-folder/psv-tests-"+str(x)+".csv", 'w+', encoding="UTF-8", newline='') as csvfile:
+            with open("tests/dataset-folder-random/psv-tests-"+str(x)+".csv", 'w+', encoding="UTF-8", newline='') as csvfile:
                 fieldnames = columns
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
                 writer.writeheader()
@@ -295,33 +295,33 @@ class psv_load_tests_random(unittest.TestCase):
 
     def test_loading_valueerror_emptyfile(self):
         self.populate_folders()
-        with open("tests/dataset-only-one-random/emptyfile.csv", "w") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "w") as f:
             f.write(" \nDATA")
 
-        with open("tests/dataset-only-one-random/emptyfile.csv", "r") as f:
+        with open("tests/dataset-only-one-empty/emptyfile.csv", "r") as f:
             with self.assertRaises(ValueError) as cm:
                 psv.load(f)
 
     def test_loading_column_names(self):
         self.populate_folders()
-        with open("tests/dataset-only-one-random/emptyfile1.csv", "w") as f:
+        with open("tests/dataset-only-one-empty//emptyfile1.csv", "w") as f:
             f.write("")
 
-        assert psv.column_names("tests/dataset-only-one-random/emptyfile1.csv") == tuple()  
-        assert psv.column_names("tests/dataset-only-one-random/emptyfile1.csv", csv_size_max=2**24) == tuple()
+        assert psv.column_names("tests/dataset-only-one-empty/emptyfile1.csv") == tuple()  
+        assert psv.column_names("tests/dataset-only-one-empty/emptyfile1.csv", csv_size_max=2**24) == tuple()
 
     def test_loading_column_names(self):
         self.populate_folders()
-        with open("tests/dataset-only-one-random/emptyfile2.csv", "w") as f:
+        with open("tests/dataset-only-one-empty//emptyfile2.csv", "w") as f:
             f.write("")
 
-        assert psv.column_names("tests/dataset-only-one-random/emptyfile2.csv") == tuple()  
-        assert psv.column_names("tests/dataset-only-one-random/emptyfile2.csv", csv_size_max=2**24) == tuple()
+        assert psv.column_names("tests/dataset-only-one-empty/emptyfile2.csv") == tuple()  
+        assert psv.column_names("tests/dataset-only-one-empty/emptyfile2.csv", csv_size_max=2**24) == tuple()
 
     def test_loading_emptyfile(self):
         self.populate_folders()
-        with open("tests/dataset-only-one-random/emptyfile2.csv", "w") as f:
+        with open("tests/dataset-only-one-empty/emptyfile2.csv", "w") as f:
             f.write("")
 
-        assert psv.load("tests/dataset-only-one-random/emptyfile2.csv").columns == list()  
-        assert psv.load("tests/dataset-only-one-random/emptyfile2.csv", csv_size_max=2**24).columns == list()
+        assert psv.load("tests/dataset-only-one-empty/emptyfile2.csv").columns == list()  
+        assert psv.load("tests/dataset-only-one-empty/emptyfile2.csv", csv_size_max=2**24).columns == list()
