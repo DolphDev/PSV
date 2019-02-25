@@ -111,20 +111,46 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
         columns),  cls=cls, typetransfer=typetransfer)
     return api
 
+def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
+         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
+         csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False)
+
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+
+    if isinstance(f, io._io._IOBase) and not close_file:
+        csvfile = f
+        if csv_max_row:
+            data = itertools.islice(csv.DictReader(
+                csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
+        else:
+            data = csv.DictReader(
+                csvfile, delimiter=delimiter, quotechar=quotechar)
+        result = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+                                                       mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
+                             cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))      
+    else:                            
+        with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
+                                                          encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
+            if csv_max_row:
+                data = itertools.islice(csv.DictReader(
+                    csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
+            else:
+                data = csv.DictReader(
+                    csvfile, delimiter=delimiter, quotechar=quotechar)
+            result = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
+                                                           mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
+                                 cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
+
+    return result
+
+# This doesn't support 
 
 def new(columns=None, cls=Row,
         csv_size_max=None):
     if csv_size_max:
         csv_size_limit(csv_size_max)
-    if isinstance(columns, str):
-        columns = [columns]
-    if columns:
-        forbidden_columns(columns)
-    if not columns:
-        columns = tuple()
-    if not isinstance(columns, tuple):
-        columns = tuple(columns)
-    return MainSelection(columns=columns, cls=cls)
+    return _new(columns=columns, cls=cls)
 
 
 def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
