@@ -1,7 +1,7 @@
 from .core.objects.apiobjects import MainSelection
 from .core.objects import Row, banned_columns
 from .core.exceptions.messages import LoadingMsg as msg
-
+from .load_utils import _new, _safe_load, forbidden_columns
 
 import csv
 import io
@@ -113,34 +113,35 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
 
 def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
-         csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False)
+         csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False):
 
     if csv_size_max:
         csv_size_limit(csv_size_max)
 
     if isinstance(f, io._io._IOBase) and not close_file:
-        csvfile = f
+        csvfile = csv.reader(f, delimiter=',', quotechar='|')
+        columns = column_names(csvfile.name, cls, quotechar, delimiter,
+            mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
         if csv_max_row:
-            data = itertools.islice(csv.DictReader(
-                csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
+            # +1 to keep identical behavior as .load()
+            data = _safe_load(itertools.islice(csvfile, csv_max_row+1), columns, cls, custom_columns)
         else:
-            data = csv.DictReader(
-                csvfile, delimiter=delimiter, quotechar=quotechar)
-        result = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
-                                                       mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
-                             cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))      
+            data = _safe_load(csvfile, columns, cls, custom_columns)
+        result = data  
     else:                            
         with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
-                                                          encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
+                                                          encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as raw_csvfile:
+            columns = column_names(raw_csvfile.name, cls, quotechar, delimiter,
+                mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
+            csvfile = csv.reader(raw_csvfile, delimiter=',', quotechar='|')
+
             if csv_max_row:
-                data = itertools.islice(csv.DictReader(
-                    csvfile, delimiter=delimiter, quotechar=quotechar), csv_max_row)
+                data = _safe_load(itertools.islice(csvfile, csv_max_row+1), columns, cls, custom_columns)
+
             else:
-                data = csv.DictReader(
-                    csvfile, delimiter=delimiter, quotechar=quotechar)
-            result = MainSelection(data, columns=column_names(csvfile.name, cls, quotechar, delimiter,
-                                                           mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns),
-                                 cls=cls, typetransfer=typetransfer, custom_columns=bool(custom_columns))
+                data = _safe_load(csvfile, columns, cls, custom_columns)
+
+            result = data
 
     return result
 
@@ -172,8 +173,3 @@ def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-
         forbidden_columns(columns)
     return tuple(columns)
 
-def forbidden_columns(columns):
-    for x in columns:
-        if x in banned_columns:
-            raise ValueError(
-                msg.forbidden_column.format(x))
