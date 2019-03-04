@@ -82,14 +82,30 @@ class MainSelection(Selection):
         return self.__columns__
         
     def addrow(self, cls=None, **kwargs):
-        if cls is None:
-            cls = self.__rowcls__
-        r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
-        self.__rows__.append(r)
-        if kwargs:
-            for k, v in kwargs.items():
-                r.setcolumn(k, v)
-        return r
+        try:
+            if cls is None:
+                cls = self.__rowcls__
+            r = parser_addrow(self.__columns__, cls, self.__columnsmap__)
+            self.__rows__.append(r)
+            if kwargs:
+                for k, v in kwargs.items():
+                    r.setcolumn(k, v)
+            return r
+        except TypeError as exc:
+            from inspect import isclass
+            # Generate Error Message
+            if isinstance(cls, str):
+                raise ValueError("'{}' is not a class and was not a subclass of {}. You may have meant to use {}.addcolumn()".format(
+                    cls,
+                    Row.__name__
+                    self.__class__.__name__))
+            if isclass(cls):
+                if not issubclass(cls, Row):
+                    raise TypeError("{} was not a subclass of {}".format(cls.__name__, Row.__name__))
+            else:
+                raise ValueError("{} is not a class and was not a subclass of {}".format(cls.__name__, Row.__name__))
+
+            raise exc
 
     def addcolumn(self, columnname, columndata="", clear=True):
         """Adds a column
