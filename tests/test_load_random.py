@@ -196,6 +196,29 @@ class psv_load_tests_random(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+
+    def test_safe_load(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv")
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv", custom_columns=api.columns[:2])
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv", typetransfer=True)
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv", csv_size_max=2**24)
+
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"))
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), close_file=True)
+
+
+        except Exception as err:
+            self.fail(str(err))
+
+
     def test_load_maxrow(self):
         self.populate_folders()
         try:

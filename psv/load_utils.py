@@ -1,10 +1,51 @@
 from .core.objects import Row, banned_columns
 from .core.objects.apiobjects import MainSelection
+from .core.exceptions.messages import LoadingMsg as msg
+
+import io
+import csv
+
+def csv_size_limit(size):
+    """Changes the csv field size limit.
+        :param size: The size limit of the csv data. 
+        :type size: :class:`type`
+    """
+    csv.field_size_limit(size)
+
 def forbidden_columns(columns):
     for x in columns:
         if x in banned_columns:
             raise ValueError(
                 msg.forbidden_column.format(x))
+
+
+
+def _loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
+          typetransfer=False, csv_size_max=None, newline="\n"):
+    """Loads csv, but as a python string
+
+        Note: Due to way python's internal csv library works, identical headers will overwrite each other.
+    """
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+    if isinstance(csvdoc, str):
+        csvfile = io.StringIO()
+        csvfile.write(csvdoc)
+        data = csv.DictReader(csvdoc.split(newline),
+                              delimiter=delimiter, quotechar=quotechar)
+        if not columns:
+            columns = tuple(next(csv.reader(csvdoc.split(
+                newline), delimiter=delimiter, quotechar=quotechar)))
+    else:
+        data = csvdoc
+    if columns:
+        forbidden_columns(columns)
+    elif (not columns) and isinstance(csvdoc, tuple):
+        forbidden_columns(csvdoc[0].keys())
+    api = MainSelection(data, columns=(
+        columns),  cls=cls, typetransfer=typetransfer)
+    return api
+
 
 
 def _new(columns=None, cls=Row, custom_columns=False):
@@ -18,6 +59,15 @@ def _new(columns=None, cls=Row, custom_columns=False):
     if not isinstance(columns, tuple):
         columns = tuple(columns)
     return MainSelection(columns=columns, cls=cls, custom_columns=custom_columns)
+
+def _add_row(finalcolumns, row):
+    # Attempt to force the gc
+    result.addrow(**dict(zip(finalcolumns, row)))
+
+def convert_to_psv(finalcolumns, csvfile):
+    for row in csvfile:
+        yield dict(zip(finalcolumns, row))
+
 
 def _safe_load(csvfile, columns, cls, custom_columns):
     # Implements a much slower DictWriter
@@ -50,22 +100,5 @@ def _safe_load(csvfile, columns, cls, custom_columns):
         finalcolumns.append(result)
 
 
-
-    # We are eating our own dog food with this implementation
-    # Uses PSV to build out the result
-    # This is much slower and should only be used for dirty datasets
-
-    result = _new(columns=finalcolumns, custom_columns=custom_columns)
-
-    x = 0
-    for row in csvfile:
-        result.addrow(**dict(zip(finalcolumns, row)))
-        if x == 50:
-            # Does Python not fire gc in loops?
-            # TODO: See if there is a more pratical way
-            # Prevent memory bloat
-            gc.collect()
-            x = 0
-        else: x += 1
-
-    return result
+    dataset = tuple(convert_to_psv(finalcolumns, csvfile))
+    return _loads(dataset, finalcolumns)

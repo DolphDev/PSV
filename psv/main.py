@@ -1,20 +1,15 @@
 from .core.objects.apiobjects import MainSelection
 from .core.objects import Row, banned_columns
 from .core.exceptions.messages import LoadingMsg as msg
-from .load_utils import _new, _safe_load, forbidden_columns
+from .load_utils import _new, _loads, _safe_load, forbidden_columns, csv, csv_size_limit
 
-import csv
+#import csv
 import io
 import glob
 import itertools
 
 
-def csv_size_limit(size):
-    """Changes the csv field size limit.
-        :param size: The size limit of the csv data. 
-        :type size: :class:`type`
-    """
-    csv.field_size_limit(size)
+
 
 
 def load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
@@ -91,25 +86,8 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
 
         Note: Due to way python's internal csv library works, identical headers will overwrite each other.
     """
-    if csv_size_max:
-        csv_size_limit(csv_size_max)
-    if isinstance(csvdoc, str):
-        csvfile = io.StringIO()
-        csvfile.write(csvdoc)
-        data = csv.DictReader(csvdoc.split(newline),
-                              delimiter=delimiter, quotechar=quotechar)
-        if not columns:
-            columns = tuple(next(csv.reader(csvdoc.split(
-                newline), delimiter=delimiter, quotechar=quotechar)))
-    else:
-        data = csvdoc
-    if columns:
-        forbidden_columns(columns)
-    elif (not columns) and isinstance(csvdoc, tuple):
-        forbidden_columns(csvdoc[0].keys())
-    api = MainSelection(data, columns=(
-        columns),  cls=cls, typetransfer=typetransfer)
-    return api
+    return _loads(csvdoc, columns=None, cls=cls, delimiter=delimiter, quotechar=quotechar,
+          typetransfer=typetransfer, csv_size_max=csv_size_max, newline=newline)
 
 def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
@@ -120,7 +98,7 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
 
     if isinstance(f, io._io._IOBase) and not close_file:
         csvfile = csv.reader(f, delimiter=',', quotechar='|')
-        columns = column_names(csvfile.name, cls, quotechar, delimiter,
+        columns = column_names(f.name, cls, quotechar, delimiter,
             mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
         if csv_max_row:
             # +1 to keep identical behavior as .load()
