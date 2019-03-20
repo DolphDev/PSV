@@ -12,6 +12,7 @@ import itertools
 
 
 
+
 def load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
          csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False):
@@ -97,7 +98,7 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
         csv_size_limit(csv_size_max)
 
     if isinstance(f, io._io._IOBase) and not close_file:
-        csvfile = csv.reader(f, delimiter=',', quotechar='|')
+        csvfile = csv.reader(f, delimiter=',', quotechar=quotechar)
         columns = column_names(f.name, cls, quotechar, delimiter,
             mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
         if csv_max_row:
@@ -111,7 +112,7 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
                                                           encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as raw_csvfile:
             columns = column_names(raw_csvfile.name, cls, quotechar, delimiter,
                 mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
-            csvfile = csv.reader(raw_csvfile, delimiter=',', quotechar='|')
+            csvfile = csv.reader(raw_csvfile, delimiter=',', quotechar=quotechar)
 
             if csv_max_row:
                 data = _safe_load(itertools.islice(csvfile, csv_max_row+1), columns, cls, custom_columns)

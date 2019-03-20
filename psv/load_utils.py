@@ -5,6 +5,12 @@ from .core.exceptions.messages import LoadingMsg as msg
 import io
 import csv
 
+def fill_empty(n, lst):
+    x = len(lst)
+    for _ in lst:
+        yield _
+    yield from ("" for b in (n - x))
+
 def csv_size_limit(size):
     """Changes the csv field size limit.
         :param size: The size limit of the csv data. 
@@ -46,7 +52,6 @@ def _loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
     return api
 
 
-
 def _new(columns=None, cls=Row, custom_columns=False):
     # Empty Main Selection
     if isinstance(columns, str):
@@ -59,14 +64,10 @@ def _new(columns=None, cls=Row, custom_columns=False):
         columns = tuple(columns)
     return MainSelection(columns=columns, cls=cls, custom_columns=custom_columns)
 
-def _add_row(finalcolumns, row):
-    # Attempt to force the gc
-    result.addrow(**dict(zip(finalcolumns, row)))
-
 def convert_to_psv(finalcolumns, csvfile):
+    lenfinal_column = len(finalcolumns)
     for row in csvfile:
-        yield dict(zip(finalcolumns, row))
-
+        yield dict(zip(finalcolumns, fill_empty(lenfinal_column, row)))
 
 def _safe_load(csvfile, columns, cls, custom_columns):
     # Implements a much slower DictWriter
