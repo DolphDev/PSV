@@ -1,7 +1,7 @@
 from .core.objects.apiobjects import MainSelection
 from .core.objects import Row, banned_columns
 from .core.exceptions.messages import LoadingMsg as msg
-from .load_utils import _new, _loads, _safe_load, forbidden_columns, csv, csv_size_limit
+from .load_utils import _new, _loads, _safe_load, forbidden_columns, csv, csv_size_limit, figure_out_columns
 
 #import csv
 import io
@@ -119,6 +119,48 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
 
             else:
                 data = _safe_load(csvfile, columns, cls, custom_columns)
+
+            result = data
+
+    return result
+
+def opencsv(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
+         encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
+         csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False):
+
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+
+    if isinstance(f, io._io._IOBase) and not close_file:
+        #csvfile = csv.reader(f, delimiter=',', quotechar=quotechar)
+        columns = column_names(f.name, cls, quotechar, delimiter,
+            mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
+        if columns == figure_out_columns(columns):
+            return load(f, cls=cls, delimiter=delimiter, quotechar=quotechar, mode=mode, buffering=buffering, encoding=encoding,
+                errors=errors, newline=newline, closefd=closefd, opener=opener, typetransfer=typetransfer, csv_size_max=csv_size_max,
+                csv_max_row=csv_max_row, custom_columns=custom_columns, close_file=close_file)
+
+        else:
+            return safe_load(f, cls=cls, delimiter=delimiter, quotechar=quotechar, mode=mode, buffering=buffering, encoding=encoding,
+                errors=errors, newline=newline, closefd=closefd, opener=opener, typetransfer=typetransfer, csv_size_max=csv_size_max,
+                csv_max_row=csv_max_row, custom_columns=custom_columns, close_file=close_file)
+        
+    else:                            
+        with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
+                                                          encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as raw_csvfile:
+            columns = column_names(raw_csvfile.name, cls, quotechar, delimiter,
+                mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
+
+            if columns == figure_out_columns(columns):
+                return load(f, cls=cls, delimiter=delimiter, quotechar=quotechar, mode=mode, buffering=buffering, encoding=encoding,
+                    errors=errors, newline=newline, closefd=closefd, opener=opener, typetransfer=typetransfer, csv_size_max=csv_size_max,
+                    csv_max_row=csv_max_row, custom_columns=custom_columns, close_file=False)
+
+            else:
+                return safe_load(f, cls=cls, delimiter=delimiter, quotechar=quotechar, mode=mode, buffering=buffering, encoding=encoding,
+                    errors=errors, newline=newline, closefd=closefd, opener=opener, typetransfer=typetransfer, csv_size_max=csv_size_max,
+                    csv_max_row=csv_max_row, custom_columns=custom_columns, close_file=False)
+            
 
             result = data
 

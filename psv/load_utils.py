@@ -69,19 +69,7 @@ def convert_to_psv(finalcolumns, csvfile):
     for row in csvfile:
         yield dict(zip(finalcolumns, fill_empty(lenfinal_column, row)))
 
-def _safe_load(csvfile, columns, cls, custom_columns):
-    # Implements a much slower DictWriter
-    # This function kills the gc, have to do it pretty
-    # much manually due to the gc not firing
-
-    try:
-        raw_columns = next(csvfile)
-    except StopIteration:
-        # This is an Empty File, just use _new
-        # pass in columns in case of columns being provided
-        return _new(columns=columns)
-
-    # This must be the same len as raw_columns
+def figure_out_columns(columns):
     finalcolumns = []
 
     # We don't need to completely clean this up, just prevent unusable columns.
@@ -97,7 +85,21 @@ def _safe_load(csvfile, columns, cls, custom_columns):
             result = "psv_empty_column_{}".format(empty_counter)
             empty_counter += 1
         finalcolumns.append(result)
+    return finalcolumns
+
+def _safe_load(csvfile, columns, cls, custom_columns):
+    # Implements a much slower DictWriter
+    # This function kills the gc, have to do it pretty
+    # much manually due to the gc not firing
+
+    try:
+        raw_columns = next(csvfile)
+    except StopIteration:
+        # This is an Empty File, just use _new
+        # pass in columns in case of columns being provided
+        return _new(columns=columns)
 
 
+    finalcolumns = figure_out_columns(columns)
     dataset = tuple(convert_to_psv(finalcolumns, csvfile))
     return _loads(dataset, finalcolumns)
