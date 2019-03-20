@@ -97,7 +97,7 @@ class MainSelection(Selection):
             if isinstance(cls, str):
                 raise ValueError("'{}' is not a class and was not a subclass of {}. You may have meant to use {}.addcolumn()".format(
                     cls,
-                    Row.__name__
+                    Row.__name__,
                     self.__class__.__name__))
             if isclass(cls):
                 if not issubclass(cls, Row):
