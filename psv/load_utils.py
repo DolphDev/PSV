@@ -12,12 +12,11 @@ def csv_size_limit(size):
     """
     csv.field_size_limit(size)
 
-def forbidden_columns(columns):
+def forbidden_columns(columns, msg=msg):
     for x in columns:
         if x in banned_columns:
             raise ValueError(
                 msg.forbidden_column.format(x))
-
 
 
 def _loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
@@ -71,7 +70,6 @@ def convert_to_psv(finalcolumns, csvfile):
 
 def _safe_load(csvfile, columns, cls, custom_columns):
     # Implements a much slower DictWriter
-    import gc
     # This function kills the gc, have to do it pretty
     # much manually due to the gc not firing
 
