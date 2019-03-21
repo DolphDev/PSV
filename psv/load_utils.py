@@ -9,7 +9,7 @@ def fill_empty(n, lst):
     x = len(lst)
     for _ in lst:
         yield _
-    yield from ("" for b in (n - x))
+    yield from ("" for b in range(n - x))
 
 def csv_size_limit(size):
     """Changes the csv field size limit.
