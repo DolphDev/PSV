@@ -6,6 +6,9 @@ from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 from tabulate import tabulate
 
+from threading import RLock
+
+SelectionLock = RLock()
 
 class Selection(object):
 
@@ -39,7 +42,8 @@ class Selection(object):
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):
-            self.__rows__ = tuple(self.__rows__)
+            with SelectionLock:
+                self.__rows__ = tuple(self.__rows__)
             return self.__rows__
         else:
             return self.__rows__

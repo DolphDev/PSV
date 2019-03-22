@@ -7,7 +7,7 @@ from types import FunctionType
 import threading
 
 # We have to manually lock threads for addcolumn
-column_manipulation_lock = threading.Lock()
+column_manipulation_lock = threading.RLock()
 
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
@@ -102,8 +102,7 @@ class MainSelection(Selection):
             be added to the internal tracker.
         :type columnname: :class:`str`
         :type add_to_columns: :class:`bool`
-        Note: Not Thread Safe - Rows that are being accessed by another thread will error out
-            if accessed during the brief time addcolumn is updating.
+        Note: While Thread Safe, this method will have degraded performance if done within threads.
         """
         with column_manipulation_lock:
 
@@ -123,18 +122,20 @@ class MainSelection(Selection):
         return self
 
     def delcolumn(self, columnname):
-        if not (columnname in self.columns):
-            raise ValueError(
-                "'{}' column doesn't exist"
-                .format(columnname))
+        with column_manipulation_lock:
 
-        for row in self.rows:
-            row._delcolumns(columnname)
+            if not (columnname in self.columns):
+                raise ValueError(
+                    "'{}' column doesn't exist"
+                    .format(columnname))
 
-        self.__columns__ = tuple(
-            column  for column in self.columns if column != columnname)
-        self.__columnsmap__.clear()
-        self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+            for row in self.rows:
+                row._delcolumns(columnname)
+
+            self.__columns__ = tuple(
+                column  for column in self.columns if column != columnname)
+            self.__columnsmap__.clear()
+            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 
     def __delitem__(self, v):
         del self.__rows__[v]
