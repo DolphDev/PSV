@@ -4,7 +4,10 @@ from ..utils import multiple_index, _index_function_gen
 from ..utils import generate_func
 from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
+import threading
 
+# We have to manually lock threads for addcolumn
+column_manipulation_lock = threading.Lock()
 
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
@@ -99,22 +102,24 @@ class MainSelection(Selection):
             be added to the internal tracker.
         :type columnname: :class:`str`
         :type add_to_columns: :class:`bool`
-        Note: Rows that are being accessed by another thread will error out
+        Note: Not Thread Safe - Rows that are being accessed by another thread will error out
             if accessed during the brief time addcolumn is updating.
         """
-        if columnname in self.columns:
-            raise ValueError(
-                "'{}' column already exists"
-                .format(columnname))
-        if isinstance(columndata, FunctionType):
-            for row in self.rows:
-                row._addcolumns_func(columnname, columndata)
-        else:
-            for row in self.rows:
-                row._addcolumns(columnname, columndata)
-        self.__columns__ += (columnname,)
-        self.__columnsmap__.clear()
-        self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+        with column_manipulation_lock:
+
+            if columnname in self.columns:
+                raise ValueError(
+                    "'{}' column already exists"
+                    .format(columnname))
+            if isinstance(columndata, FunctionType):
+                for row in self.rows:
+                    row._addcolumns_func(columnname, columndata)
+            else:
+                for row in self.rows:
+                    row._addcolumns(columnname, columndata)
+            self.__columns__ += (columnname,)
+            self.__columnsmap__.clear()
+            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
         return self
 
     def delcolumn(self, columnname):
@@ -161,6 +166,7 @@ def column_crunch_repeat(columns):
        Returns a dictionary of any corrections needed
        Ment for internal use by the library
        """
+
     rv = {}
     clean_ups = set(cleanup_name(x) for x in columns)
     ref = _column_repeat_dict(columns, clean_ups)
