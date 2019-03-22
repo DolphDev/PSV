@@ -69,6 +69,11 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_index(self):
+        self.construct()
+        self.csvdoc.index("Name")
+        self.csvdoc.index("Name", "Price")
+
     def test_transform(self):
         self.construct()
         self.csvdoc.transform("name", lambda x: 1)

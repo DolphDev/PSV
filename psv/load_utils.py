@@ -34,8 +34,9 @@ def _loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
     if csv_size_max:
         csv_size_limit(csv_size_max)
     if isinstance(csvdoc, str):
-        csvfile = io.StringIO()
-        csvfile.write(csvdoc)
+        # TODO: Properly Implement StringIO
+        # csvfile = io.StringIO()
+         #csvfile.write(csvdoc)
         data = csv.DictReader(csvdoc.split(newline),
                               delimiter=delimiter, quotechar=quotechar)
         if not columns:
@@ -75,7 +76,6 @@ def figure_out_columns(columns):
     # We don't need to completely clean this up, just prevent unusable columns.
     # PSV will automatically handle collisions
     # We need to keep these as close as possible to the original
-    # For custom_columns
     empty_counter = 0
     for x in (x.strip() for x in columns):
         result = x

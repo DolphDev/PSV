@@ -162,12 +162,6 @@ def opencsv(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
                     csv_max_row=csv_max_row, custom_columns=custom_columns, close_file=False)
             
 
-            result = data
-
-    return result
-
-# This doesn't support 
-
 def new(columns=None, cls=Row,
         csv_size_max=None):
     if csv_size_max:
