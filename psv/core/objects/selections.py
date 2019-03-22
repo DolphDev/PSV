@@ -171,7 +171,7 @@ class Selection(object):
 
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
-            will raise error if returns more than one result"""
+            will raise error if returns more than one result'"""
         try:
             result = None
             func = generate_func(selectionfirstarg_data, kwargs)
@@ -279,6 +279,7 @@ class Selection(object):
             generates a function based of the parameters given.
             All conditions must be true for a row to be selected
             Uses Lazy Loading, doesn't process till needed.
+
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -309,6 +310,7 @@ class Selection(object):
                 if the same select is being worked on in multiple 
                 threads or other cases such as rows being edited
                 before the selected is processed.
+
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
