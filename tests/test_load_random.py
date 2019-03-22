@@ -219,6 +219,29 @@ class psv_load_tests_random(unittest.TestCase):
             self.fail(str(err))
 
 
+    def test_open_csv(self):
+        self.populate_folders()
+        try:
+            api = psv.opencsv("tests/dataset-only-one-random/test.csv")
+            api = psv.opencsv("tests/dataset-only-one-random/test.csv", custom_columns=api.columns[:2])
+            api = psv.opencsv("tests/dataset-only-one-random/test.csv", typetransfer=True)
+            api = psv.opencsv("tests/dataset-only-one-random/test.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            api = psv.opencsv("tests/dataset-only-one-random/test.csv", csv_size_max=2**24)
+
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"))
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), typetransfer=True)
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.opencsv(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), close_file=True)
+
+
+        except Exception as err:
+            self.fail(str(err))
+
+
+
     def test_load_maxrow(self):
         self.populate_folders()
         try:
