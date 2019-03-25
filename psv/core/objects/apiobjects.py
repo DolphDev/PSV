@@ -105,9 +105,6 @@ class MainSelection(Selection):
             if isclass(cls):
                 if not issubclass(cls, Row):
                     raise TypeError("{} was not a subclass of {}".format(cls.__name__, Row.__name__))
-            else:
-                raise ValueError("{} is not a class and was not a subclass of {}".format(cls.__name__, Row.__name__))
-
             raise exc
 
     def addcolumn(self, columnname, columndata="", clear=True):

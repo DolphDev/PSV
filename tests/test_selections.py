@@ -758,3 +758,33 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(ValueError):
             api = psv.new("TEST", DummyClass)
 
+    def test_addrow_class(self):
+        class DummyClass: pass
+        api = psv.new("TEST")
+        with self.assertRaises(TypeError):
+            rrow = api.addrow(cls=DummyClass)
+
+    def test_addrow_string(self):
+        api = psv.new("TEST")
+        with self.assertRaises(ValueError):
+            rrow = api.addrow(cls="TEST")
+
+    # def test_addrow_other(self):
+    #     from collections import namedtuple
+    #     api = psv.new("TEST")
+    #     with self.assertRaises(ValueError):
+    #         rrow = api.addrow(cls=)
+
+    # def test_addrow_CLSROW(self):
+    #     api = psv.new("TEST")
+    #     with self.assertRaises(TypeError):
+    #         rrow = api.addrow(cls=None)
+
+    def test_addrow_OTHERTYPEROW(self):
+        from psv.core.objects import Row
+        class BadRow(Row):
+            def __init__(self, *args, **kwargs):
+                raise TypeError
+        api = psv.new("TEST")
+        with self.assertRaises(TypeError):
+            rrow = api.addrow(cls=BadRow)
