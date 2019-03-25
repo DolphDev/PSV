@@ -44,6 +44,16 @@ Product 5,25,1,Yahoo
 Product 6,30,1,Google
 Product 7,10,0,Yahoo"""
 
+
+safe_load_empty_top = """,Price,,Company
+Product 1,10,1,Yahoo
+Product 2,15,0,Microsoft
+Product 3,1,1,Google
+Product 4,20,0,Yahoo
+Product 5,25,1,Yahoo
+Product 6,30,1,Google
+Product 7,10,0,Yahoo"""
+
 opencsv_always_bad = safe_load_banned
 
 # We need to test these as files
@@ -56,6 +66,9 @@ with open("tests/dataset-bad/safe_load_banned.csv", "w") as f:
 
 with open("tests/dataset-bad/openpsv_banned.csv", "w") as f:
     f.write(opencsv_always_bad)
+
+with open("tests/dataset-bad/safe_load_empty_top.csv", "w") as f:
+    f.write(safe_load_empty_top)
 
 with open("tests/dataset-bad/safe_load_empty.csv", "w") as f:
     f.write("") # Empty File
@@ -277,6 +290,70 @@ class psv_load_tests_random(unittest.TestCase):
             api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
             api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
             api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), close_file=True)
+
+
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_safe_load_fill_empty(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-bad/fill_empty.csv")
+            api = psv.safe_load("tests/dataset-bad/fill_empty.csv", custom_columns=api.columns[:2])
+            api = psv.safe_load("tests/dataset-bad/fill_empty.csv", typetransfer=True)
+            api = psv.safe_load("tests/dataset-bad/fill_empty.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            api = psv.safe_load("tests/dataset-bad/fill_empty.csv", csv_size_max=2**24)
+
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"))
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"), typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.safe_load(open("tests/dataset-bad/fill_empty.csv", "r", encoding="UTF-8"), close_file=True)
+
+
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_safe_load_fill_empty_top(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-bad/safe_load_empty_top.csv")
+            api = psv.safe_load("tests/dataset-bad/safe_load_empty_top.csv", custom_columns=api.columns[:2])
+            api = psv.safe_load("tests/dataset-bad/safe_load_empty_top.csv", typetransfer=True)
+            api = psv.safe_load("tests/dataset-bad/safe_load_empty_top.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            api = psv.safe_load("tests/dataset-bad/safe_load_empty_top.csv", csv_size_max=2**24)
+
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"))
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"), typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty_top.csv", "r", encoding="UTF-8"), close_file=True)
+
+        except Exception as err:
+            self.fail(str(err))
+
+
+
+    def test_safe_load_empty(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv")
+            # api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", custom_columns=api.columns[:2])
+            # api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", typetransfer=True)
+            # api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            # api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", csv_size_max=2**24)
+
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_empty.csv", "r", encoding="UTF-8"))
+            # api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            # api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), typetransfer=True)
+            # api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            # api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            # api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), close_file=True)
 
 
         except Exception as err:
