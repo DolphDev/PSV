@@ -44,15 +44,20 @@ Product 5,25,1,Yahoo
 Product 6,30,1,Google
 Product 7,10,0,Yahoo"""
 
+opencsv_always_bad = safe_load_banned
+
 # We need to test these as files
 
-with open("tests/dataset-bad/fill_empty.csv") as f:
+with open("tests/dataset-bad/fill_empty.csv", "w") as f:
     f.write(fill_empty)
 
-with open("tests/dataset-bad/safe_load_banned.csv") as f:
+with open("tests/dataset-bad/safe_load_banned.csv", "w") as f:
     f.write(safe_load_banned)
 
-with open("tests/dataset-bad/safe_load_empty.csv") as f:
+with open("tests/dataset-bad/openpsv_banned.csv", "w") as f:
+    f.write(opencsv_always_bad)
+
+with open("tests/dataset-bad/safe_load_empty.csv", "w") as f:
     f.write("") # Empty File
 
 def generate_random_string(alphabet, length):
@@ -76,8 +81,8 @@ class psv_load_direct_func_test(unittest.TestCase):
 
     def test_column_names_strings(self):
         try:
-            psv.column_names_strings("", custom_columns=["TEST"])
-            psv.column_names_strings("", custom_columns=["TEST"], csv_size_max=2**24)
+            psv.column_names_str("", custom_columns=["TEST"])
+            psv.column_names_str("", custom_columns=["TEST"], csv_size_max=2**24)
 
         except Exception as err:
             self.fail(err)
@@ -256,6 +261,28 @@ class psv_load_tests_random(unittest.TestCase):
         except Exception as err:
             self.fail(str(err))
 
+    def test_safe_load_bad(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv")
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", custom_columns=api.columns[:2])
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", typetransfer=True)
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", custom_columns=api.columns[:2], typetransfer=True)
+
+            api = psv.safe_load("tests/dataset-bad/safe_load_banned.csv", csv_size_max=2**24)
+
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"))
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2])
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), custom_columns=api.columns[:2], typetransfer=True)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), csv_size_max=2**24)
+            api2 = psv.safe_load(open("tests/dataset-bad/safe_load_banned.csv", "r", encoding="UTF-8"), close_file=True)
+
+
+        except Exception as err:
+            self.fail(str(err))
+
+
 
     def test_open_csv(self):
         self.populate_folders()
@@ -285,6 +312,14 @@ class psv_load_tests_random(unittest.TestCase):
         try:
             api = psv.load("tests/dataset-only-one-random/test.csv", csv_max_row=100)
             api2 = psv.load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), csv_max_row=100)
+        except Exception as err:
+            self.fail(str(err))
+
+    def test_safe_load_maxrow(self):
+        self.populate_folders()
+        try:
+            api = psv.safe_load("tests/dataset-only-one-random/test.csv", csv_max_row=100)
+            api2 = psv.safe_load(open("tests/dataset-only-one-random/test.csv", "r", encoding="UTF-8"), csv_max_row=100)
         except Exception as err:
             self.fail(str(err))
 

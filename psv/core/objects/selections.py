@@ -9,6 +9,7 @@ from tabulate import tabulate
 from threading import RLock
 
 SelectionLock = RLock()
+NonHashMergeLock = RLock()
 
 class Selection(object):
 
@@ -148,20 +149,21 @@ class Selection(object):
             running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
-        if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise ValueError("non_hash_merge only accepts rows from same origin")
-        outputstore = tuple(x.__output__ for x in self.__apimother__)
-        self.__apimother__.no_output() 
-        for x in ((self,) + args):
-            for row in x:
-                +row
-        result = self.__apimother__.outputtedrows
+        with NonHashMergeLock:
+            if not all(self.__apimother__ is x.__apimother__ for x in args):
+                raise ValueError("non_hash_merge only accepts rows from same origin")
+            outputstore = tuple(x.__output__ for x in self.__apimother__)
+            self.__apimother__.no_output() 
+            for x in ((self,) + args):
+                for row in x:
+                    +row
+            result = self.__apimother__.outputtedrows
 
-        for x, row in zip(outputstore, self.__apimother__.rows):
-            if x:
-                +row
-            else:
-                -row
+            for x, row in zip(outputstore, self.__apimother__.rows):
+                if x:
+                    +row
+                else:
+                    -row
         return result
 
     def _find_all(self, func):

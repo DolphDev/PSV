@@ -101,7 +101,7 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
     if isinstance(f, io._io._IOBase) and not close_file:
         csvfile = csv.reader(f, delimiter=',', quotechar=quotechar)
         columns = column_names(f.name, cls, quotechar, delimiter,
-            mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
+            mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns, check_columns=False)
         if csv_max_row:
             # +1 to keep identical behavior as .load()
             data = _safe_load(itertools.islice(csvfile, csv_max_row+1), columns, cls, custom_columns)
@@ -112,8 +112,8 @@ def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
         with f if isinstance(f, io._io._IOBase) else open(f, mode=mode, buffering=buffering,
                                                           encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as raw_csvfile:
             columns = column_names(raw_csvfile.name, cls, quotechar, delimiter,
-                mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns)
-            csvfile = csv.reader(raw_csvfile, delimiter=',', quotechar=quotechar)
+                mode, buffering, encoding, errors, newline, closefd, opener, custom_columns=custom_columns, check_columns=False)
+            csvfile = csv.reader(raw_csvfile, delimiter=delimiter, quotechar=quotechar)
 
             if csv_max_row:
                 data = _safe_load(itertools.islice(csvfile, csv_max_row+1), columns, cls, custom_columns)
