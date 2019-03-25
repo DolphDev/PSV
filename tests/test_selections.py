@@ -69,6 +69,11 @@ class psv_selections_test(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
+    def test_index(self):
+        self.construct()
+        self.csvdoc.index("Name")
+        self.csvdoc.index("Name", "Price")
+
     def test_transform(self):
         self.construct()
         self.csvdoc.transform("name", lambda x: 1)
@@ -707,6 +712,15 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc[0].name = set()
         with self.assertRaises(TypeError):
             self.csvdoc.merge(self.csvdoc)
+
+    def test_fast_find_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError):
+            self.csvdoc.fast_find(name=None, product=None)
+
+    def test_fast_find(self):
+        self.construct()
+        assert self.csvdoc.fast_find(name="Product 1")
 
     def test_non_hash_merge_typeerror(self):
         self.construct()

@@ -6,6 +6,10 @@ from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 from tabulate import tabulate
 
+from threading import RLock
+
+SelectionLock = RLock()
+NonHashMergeLock = RLock()
 
 class Selection(object):
 
@@ -39,7 +43,8 @@ class Selection(object):
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):
-            self.__rows__ = tuple(self.__rows__)
+            with SelectionLock:
+                self.__rows__ = tuple(self.__rows__)
             return self.__rows__
         else:
             return self.__rows__
@@ -144,20 +149,21 @@ class Selection(object):
             running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
-        if not all(self.__apimother__ is x.__apimother__ for x in args):
-            raise ValueError("non_hash_merge only accepts rows from same origin")
-        outputstore = tuple(x.__output__ for x in self.__apimother__)
-        self.__apimother__.no_output() 
-        for x in ((self,) + args):
-            for row in x:
-                +row
-        result = self.__apimother__.outputtedrows
+        with NonHashMergeLock:
+            if not all(self.__apimother__ is x.__apimother__ for x in args):
+                raise ValueError("non_hash_merge only accepts rows from same origin")
+            outputstore = tuple(x.__output__ for x in self.__apimother__)
+            self.__apimother__.no_output() 
+            for x in ((self,) + args):
+                for row in x:
+                    +row
+            result = self.__apimother__.outputtedrows
 
-        for x, row in zip(outputstore, self.__apimother__.rows):
-            if x:
-                +row
-            else:
-                -row
+            for x, row in zip(outputstore, self.__apimother__.rows):
+                if x:
+                    +row
+                else:
+                    -row
         return result
 
     def _find_all(self, func):
@@ -167,7 +173,7 @@ class Selection(object):
 
     def single_find(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
-            will raise error if returns more than one result"""
+            will raise error if returns more than one result'"""
         try:
             result = None
             func = generate_func(selectionfirstarg_data, kwargs)
@@ -275,6 +281,7 @@ class Selection(object):
             generates a function based of the parameters given.
             All conditions must be true for a row to be selected
             Uses Lazy Loading, doesn't process till needed.
+
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
@@ -305,6 +312,7 @@ class Selection(object):
                 if the same select is being worked on in multiple 
                 threads or other cases such as rows being edited
                 before the selected is processed.
+
         """
         if not selectionfirstarg_data and not kwargs:
             return Selection(self.__rows__, self.__apimother__)
