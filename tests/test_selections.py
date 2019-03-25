@@ -713,6 +713,15 @@ class psv_selections_test(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.csvdoc.merge(self.csvdoc)
 
+    def test_fast_find_valueerror(self):
+        self.construct()
+        with self.assertRaises(ValueError):
+            self.csvdoc.fast_find(name=None, product=None)
+
+    def test_fast_find(self):
+        self.construct()
+        assert self.csvdoc.fast_find(name="Product 1")
+
     def test_non_hash_merge_typeerror(self):
         self.construct()
         a = psv.new()

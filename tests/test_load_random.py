@@ -6,7 +6,7 @@ import string
 from random import randint, uniform
 
 import os
-filenames = ["tests/dataset-folder-random/", "tests/dataset-only-one-random/", "tests/dataset-only-one-empty/"]
+filenames = ["tests/dataset-folder-random/", "tests/dataset-only-one-random/", "tests/dataset-only-one-empty/", "tests/dataset-bad/"]
 for filename in filenames:
     if not os.path.exists(os.path.dirname(filename)):
         try:
@@ -26,8 +26,34 @@ Product 6,30,1,Google
 Product 7,10,0,Yahoo
 """
 
+fill_empty = """Name,Price,Available,Company
+Product 1
+Product 2,15
+Product 3,1,1,Google
+Product 4
+Product 5,25,1,Yahoo
+Product 6,30,1,Google
+Product 7,10,0,Yahoo"""
 
+safe_load_banned = """__psvcolumnstracker__,Price,Available,Company
+Product 1,10,1,Yahoo
+Product 2,15,0,Microsoft
+Product 3,1,1,Google
+Product 4,20,0,Yahoo
+Product 5,25,1,Yahoo
+Product 6,30,1,Google
+Product 7,10,0,Yahoo"""
 
+# We need to test these as files
+
+with open("tests/dataset-bad/fill_empty.csv") as f:
+    f.write(fill_empty)
+
+with open("tests/dataset-bad/safe_load_banned.csv") as f:
+    f.write(safe_load_banned)
+
+with open("tests/dataset-bad/safe_load_empty.csv") as f:
+    f.write("") # Empty File
 
 def generate_random_string(alphabet, length):
     import random
@@ -44,6 +70,18 @@ def generate_random_column_range(length, alphabet, column_length=None ,use_rando
         if use_random_column:
             result.append(generate_random_string(alphabet, randint(1, 1000)))
     return result
+
+
+class psv_load_direct_func_test(unittest.TestCase):
+
+    def test_column_names_strings(self):
+        try:
+            psv.column_names_strings("", custom_columns=["TEST"])
+            psv.column_names_strings("", custom_columns=["TEST"], csv_size_max=2**24)
+
+        except Exception as err:
+            self.fail(err)
+
 
 
 class psv_load_tests_random(unittest.TestCase):

@@ -5,7 +5,6 @@ from .load_utils import _new, _loads, _safe_load, csv
 from .load_utils import (csv_size_limit, column_names, column_names_str,
                         figure_out_columns, forbidden_columns)
 
-#import csv
 import io
 import glob
 import itertools
