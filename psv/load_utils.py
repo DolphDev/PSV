@@ -35,13 +35,12 @@ def _loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
         csv_size_limit(csv_size_max)
     if isinstance(csvdoc, str):
         # TODO: Properly Implement StringIO
-        # csvfile = io.StringIO()
-         #csvfile.write(csvdoc)
-        data = csv.DictReader(csvdoc.split(newline),
+        csvfile = io.StringIO(csvdoc)
+        data = csv.DictReader(csvfile,
                               delimiter=delimiter, quotechar=quotechar)
         if not columns:
-            columns = tuple(next(csv.reader(csvdoc.split(
-                newline), delimiter=delimiter, quotechar=quotechar)))
+            columns = column_names_str(csvdoc, delimiter=delimiter, quotechar=quotechar)
+
     else:
         data = csvdoc
     if columns:
@@ -103,3 +102,41 @@ def _safe_load(csvfile, columns, cls, custom_columns):
     finalcolumns = figure_out_columns(columns)
     dataset = tuple(convert_to_psv(finalcolumns, csvfile))
     return _loads(dataset, finalcolumns)
+
+def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
+                 errors=None, newline=None, closefd=True, opener=None,
+                 csv_size_max=None, check_columns=True, custom_columns=None):
+    if custom_columns:
+        if check_columns:
+            forbidden_columns(custom_columns)
+        return custom_columns
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+    with open(f, mode=mode, buffering=buffering,
+              encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
+        try:
+            columns = next(csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar))
+        except StopIteration:
+            columns = []
+    if check_columns:
+        forbidden_columns(columns)
+    return tuple(columns)
+
+def column_names_str(csvdoc, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
+                 errors=None, newline=None, closefd=True, opener=None,
+                 csv_size_max=None, check_columns=True, custom_columns=None):
+    if custom_columns:
+        if check_columns:
+            forbidden_columns(custom_columns)
+        return custom_columns
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+    csvfile = io.StringIO(csvdoc)
+
+    try:
+        columns = next(csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar))
+    except StopIteration:
+        columns = []
+    if check_columns:
+        forbidden_columns(columns)
+    return tuple(columns)

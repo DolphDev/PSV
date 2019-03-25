@@ -1,7 +1,9 @@
 from .core.objects.apiobjects import MainSelection
 from .core.objects import Row, banned_columns
 from .core.exceptions.messages import LoadingMsg as msg
-from .load_utils import _new, _loads, _safe_load, forbidden_columns, csv, csv_size_limit, figure_out_columns
+from .load_utils import _new, _loads, _safe_load, csv
+from .load_utils import (csv_size_limit, column_names, column_names_str,
+                        figure_out_columns, forbidden_columns)
 
 #import csv
 import io
@@ -87,7 +89,7 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
 
         Note: Due to way python's internal csv library works, identical headers will overwrite each other.
     """
-    return _loads(csvdoc, columns=None, cls=cls, delimiter=delimiter, quotechar=quotechar,
+    return _loads(csvdoc, columns=columns, cls=cls, delimiter=delimiter, quotechar=quotechar,
           typetransfer=typetransfer, csv_size_max=csv_size_max, newline=newline)
 
 def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
@@ -169,22 +171,5 @@ def new(columns=None, cls=Row,
     return _new(columns=columns, cls=cls)
 
 
-def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
-                 errors=None, newline=None, closefd=True, opener=None,
-                 csv_size_max=None, check_columns=True, custom_columns=None):
-    if custom_columns:
-        if check_columns:
-            forbidden_columns(custom_columns)
-        return custom_columns
-    if csv_size_max:
-        csv_size_limit(csv_size_max)
-    with open(f, mode=mode, buffering=buffering,
-              encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener) as csvfile:
-        try:
-            columns = next(csv.reader(csvfile, delimiter=',', quotechar=quotechar))
-        except StopIteration:
-            columns = []
-    if check_columns:
-        forbidden_columns(columns)
-    return tuple(columns)
+
 
