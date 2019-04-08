@@ -94,6 +94,9 @@ def loads(csvdoc, columns=None, cls=Row, delimiter=",", quotechar='"',
 def safe_load(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
          encoding="utf-8", errors=None, newline=None, closefd=True, opener=None, typetransfer=False,
          csv_size_max=None, csv_max_row=None, custom_columns=None, close_file=False):
+    
+    """This safetly reads more dirty datasets. It can handle: Duplicate, missing, and unsupported headers.
+    """
 
     if csv_size_max:
         csv_size_limit(csv_size_max)
