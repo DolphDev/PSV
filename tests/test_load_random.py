@@ -73,6 +73,13 @@ with open("tests/dataset-bad/safe_load_empty_top.csv", "w") as f:
 with open("tests/dataset-bad/safe_load_empty.csv", "w") as f:
     f.write("") # Empty File
 
+def String_IO():
+    from io import StringIO
+    f = StringIO()
+    f.write(small_static_csv)
+    f.seek(0)
+    return f
+
 def generate_random_string(alphabet, length):
     import random
     from string import ascii_letters
@@ -521,3 +528,9 @@ class psv_load_tests_random(unittest.TestCase):
 
         assert psv.load("tests/dataset-only-one-empty/emptyfile2.csv").columns == list()  
         assert psv.load("tests/dataset-only-one-empty/emptyfile2.csv", csv_size_max=2**24).columns == list()
+
+    def test_load_String_IO(self):
+        a = String_IO()
+        psv.load(a)
+        psv.safe_load(a)
+        psv.opencsv(a)

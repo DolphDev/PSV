@@ -104,6 +104,7 @@ def _safe_load(csvfile, columns, cls, custom_columns):
 def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
                  errors=None, newline=None, closefd=True, opener=None,
                  csv_size_max=None, check_columns=True, custom_columns=None):
+    """loads file"""
     if custom_columns:
         if check_columns:
             forbidden_columns(custom_columns)
@@ -118,6 +119,30 @@ def column_names(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-
             columns = []
     if check_columns:
         forbidden_columns(columns)
+    return tuple(columns)
+
+
+def _column_names_io(f, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",
+                 errors=None, newline=None, closefd=True, opener=None,
+                 csv_size_max=None, check_columns=True, custom_columns=None):
+    # INTERAL ONLY
+    if custom_columns:
+        if check_columns:
+            forbidden_columns(custom_columns)
+        return custom_columns
+    if csv_size_max:
+        csv_size_limit(csv_size_max)
+
+    # IO Varient, Internal use
+    csvfile = f
+    csvfile.seek(0)
+    try:
+        columns = next(csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar))
+    except StopIteration:
+        columns = []
+    if check_columns:
+        forbidden_columns(columns)
+    csvfile.seek(0)
     return tuple(columns)
 
 def column_names_str(csvdoc, cls=Row, quotechar='"', delimiter=",", mode='r', buffering=-1, encoding="utf-8",

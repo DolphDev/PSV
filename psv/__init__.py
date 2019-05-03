@@ -3,4 +3,4 @@ from .main import (load, loads, loaddir, new, safe_load, opencsv,
 from .core.objects import banned_columns
 from .core.utils.objects import ROW_OBJ
 
-version = "0.3.0"
+version = "0.3.1"
