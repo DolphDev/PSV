@@ -37,14 +37,11 @@ class MainSelection(Selection):
             raise ValueError(
                 msg.badcls.format(Row, cls if isinstance(cls, type) else type(cls)))
 
-        
-
         if columns:
             self.__columnsmap__.update(
                 column_crunch_repeat(self.__columns__))
         else:
             rebuild_column_map = True
-
 
         if csvdict is None:
             csvdict = {}
@@ -56,11 +53,10 @@ class MainSelection(Selection):
                 self.__rows__ = list(
                     parser(csvdict, cls, self.__columnsmap__, typetransfer, None, *args, **kwargs))
             if rebuild_column_map:
-                # This is a temporary fix, waiting on the implemention of safe_load() and opencsv()
+                # This catches mistakes if .load() is used instead of safe_load() / opencsv()
                 try:
                     self.__columnsmap__.update(
                         column_crunch_repeat(self.__rows__[0].keys()))
-
                 except AttributeError:
                     # Errornous Headers - Usually caused by single column
                     # Spreadsheets that don't have a header

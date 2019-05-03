@@ -186,7 +186,7 @@ class Selection(object):
     
     def single_find_any(self, selectionfirstarg_data=None, **kwargs):
         """Find a single row based off search criteria given.
-            Only condition needs to be Trues.
+            Only one condition needs to be Trues.
             will raise error if returns more than one result"""
         try:
             result = None
@@ -215,7 +215,7 @@ class Selection(object):
             return None
 
     def fast_find(self, **kwargs):
-        """Much faster find 
+        """Much faster find. Returns the last row the fulfilled any kwargs. Only accept one kwargs.
             Note: All keynames must be unique to be used effectively, else latest row will be returned"""
         if len(kwargs) != 1:
             raise ValueError(msg.badfastfind)
