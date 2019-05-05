@@ -39,7 +39,7 @@ def generate_func(arg, kwargs):
     if isinstance(arg, FunctionType) and not kwargs:
         return arg
     elif isinstance(arg, str) or kwargs or arg is None:
-        def select_func(row):
+        def select_func(row, arg=arg, kwargs=kwargs):
             if kwargs:
                 for k,v in kwargs.items():
                     if isinstance(v, FunctionType):
@@ -73,7 +73,7 @@ def generate_func_any(arg, kwargs):
     if isinstance(arg, FunctionType) and not kwargs:
         return arg
     elif isinstance(arg, str) or kwargs or arg is None:
-        def select_func(row):
+        def select_func(row, arg=arg, kwargs=kwargs):
             if kwargs:
                 for k,v in kwargs.items():
                     if isinstance(v, FunctionType):

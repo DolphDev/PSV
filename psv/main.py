@@ -64,8 +64,8 @@ def loaddir(f, cls=Row, delimiter=",", quotechar='"', mode='r', buffering=-1,
 
         Note: Due to way python's internal csv library works,
             identical headers will overwrite and only the last header will available.
-
     """
+    # TODO: Modernize this function
     if csv_size_max:
         csv_size_limit(csv_size_max)
     data = []
