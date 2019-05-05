@@ -25,6 +25,7 @@ def translate_type(string):
 
        Takes a string and converts it float or a int if possible
     """
+    # This is way too greedy
     try:
         if string.isdigit():
             return int(string)

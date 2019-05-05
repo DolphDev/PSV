@@ -21,8 +21,10 @@ class MainSelection(Selection):
                  cls=Row, parsing=parser,typetransfer=True, 
                  custom_columns=False, *args, **kwargs):
 
-        # Local Flag to detirmine 
+        # Local Flag to detirmine state of column mapping
         rebuild_column_map = False
+        # This is used to be consistent with child selections 
+        # and methods
         self.__apimother__ = self
         self.__columns__ = columns
         self.__columnsmap__ = {}

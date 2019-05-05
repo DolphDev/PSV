@@ -43,8 +43,7 @@ class Selection(object):
     @property
     def rows(self):
         if not isinstance(self.__rows__, tuple):
-            with SelectionLock:
-                self.__rows__ = tuple(self.__rows__)
+            self.process()
             return self.__rows__
         else:
             return self.__rows__
@@ -57,7 +56,9 @@ class Selection(object):
             same parent selection
 
         """
-        self.rows
+        if not isinstance(self.__rows__, tuple):
+            with SelectionLock:
+                self.__rows__ = tuple(self.__rows__)
         return self
 
     @property
