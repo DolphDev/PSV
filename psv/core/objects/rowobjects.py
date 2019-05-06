@@ -286,6 +286,11 @@ class Row(dict):
 
         del self[columnname]
 
+    def _rename_columns(self, old_columnname, new_columnname):
+
+        self[new_columnname] = self[old_columnname]
+        super(Row, self).__delitem__(new_columnname)
+
     def longcolumn(self, columns=None):
         """
             :params columns: A collection of columns, if supplied the method 

@@ -6,7 +6,7 @@ from ..exceptions.messages import ApiObjectMsg as msg
 from types import FunctionType
 import threading
 
-# We have to manually lock threads for addcolumn
+# We have to manually lock threads for editing columns to prevent corruption
 column_manipulation_lock = threading.RLock()
 
 class MainSelection(Selection):
@@ -145,6 +145,28 @@ class MainSelection(Selection):
 
             self.__columns__ = tuple(
                 column  for column in self.columns if column != columnname)
+            self.__columnsmap__.clear()
+            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+
+    def rename_column(self, old_column, new_column):
+        with column_manipulation_lock:
+            if old_column == new_column:
+                raise ValueError("Rename is identical to original")
+            if not (old_column in self.columns):
+                raise ValueError(
+                    "'{}' column doesn't exist"
+                    .format(old_column))
+            if new_column in self.columns:
+                raise ValueError(
+                    "'{}' already exists, name will cause collision"
+                    .format(new_column))
+
+
+            for row in self.rows:
+                row._rename_columns(old_column, new_column)
+            _transfer_ = {c: new_column if c == old_column else c for c in self.__columns__}
+            self.__columns__ = tuple(
+                _transfer_.get(column) for column in self.columns)
             self.__columnsmap__.clear()
             self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 

@@ -788,3 +788,53 @@ class psv_selections_test(unittest.TestCase):
         api = psv.new("TEST")
         with self.assertRaises(TypeError):
             rrow = api.addrow(cls=BadRow)
+
+    def test_renamecolumn_sel(self):
+        from random import choice
+        self.construct()
+        sel = self.csvdoc.select()
+        sel.rename_column(choice(sel.columns), "Test-Row-1")
+        self.assertTrue("Test-Row-1" in sel.columns)
+        self.assertTrue("testrow1" in sel.__columnsmap__.keys())
+
+    def test_renamecolumn_main(self):
+        from random import choice
+        self.construct()
+        sel = self.csvdoc#.select()
+        sel.rename_column(choice(sel.columns), "Test-Row-1")
+        self.assertTrue("Test-Row-1" in sel.columns)
+        self.assertTrue("testrow1" in sel.__columnsmap__.keys())
+
+    def test_renamecolumn_data(self):
+        from random import choice
+        self.construct()
+        sel = self.csvdoc#.select()
+        sel.rename_column(choice(sel.columns), "Test-Row-1")
+        self.assertTrue("Test-Row-1" in sel.columns)
+        self.assertTrue("testrow1" in sel.__columnsmap__.keys())
+
+
+    def test_renamecolumnerrors_same(self):
+        self.construct()
+        sel = self.csvdoc#.select()
+        with self.assertRaises(ValueError):
+            sel.rename_column("TEST", "TEST")
+
+    def test_renamecolumnerrors_old_doesnt_exist(self):
+        from random import choice
+
+        self.construct()
+        sel = self.csvdoc#.select()
+        with self.assertRaises(ValueError):
+            sel.rename_column("TEST", "TEST1")
+
+    def test_renamecolumnerrors_already_exists(self):
+        from random import choice
+        self.construct()
+        sel = self.csvdoc#.select()
+        with self.assertRaises(ValueError):
+            choice1 = choice(sel.columns)
+            choice2 = choice(sel.columns)
+            while choice2 == choice1:
+                choice2 = choice(sel.columns)
+            sel.rename_column(choice1, choice2)

@@ -99,6 +99,11 @@ class Selection(object):
     def delcolumn(self):
         return self.__apimother__.delcolumn
 
+    @property
+    def rename_column(self):
+        return self.__apimother__.rename_column
+    
+
     def transform(self, column, func):
         for row in self.rows:
             row.setcolumn(column, func(row.getcolumn(column)))
