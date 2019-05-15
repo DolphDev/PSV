@@ -289,7 +289,7 @@ class Row(dict):
     def _rename_columns(self, old_columnname, new_columnname):
 
         self[new_columnname] = self[old_columnname]
-        super(Row, self).__delitem__(new_columnname)
+        del self[old_columnname]
 
     def longcolumn(self, columns=None):
         """
