@@ -15,7 +15,7 @@ class MainSelection(Selection):
 
     __slots__ = ["__canrefrencecolumn__",
                  "__columns__", "__columnsmap__",
-                 "__rows__", "__apimother__", "__rowcls__"]
+                 "__rows__", "__rowcls__"]
 
     def __init__(self, csvdict=None, columns=None, 
                  cls=Row, parsing=parser,typetransfer=True, 
@@ -25,7 +25,6 @@ class MainSelection(Selection):
         rebuild_column_map = False
         # This is used to be consistent with child selections 
         # and methods
-        self.__apimother__ = self
         self.__columns__ = columns
         self.__columnsmap__ = {}
         try:
@@ -73,6 +72,11 @@ class MainSelection(Selection):
             self.__columns__ = list()
         elif not isinstance(self.columns, list):
             self.__columns__ = list(self.__columns__) 
+
+    @property
+    def __apimother__(self):
+        return self
+    
 
     @property
     def rows(self):
