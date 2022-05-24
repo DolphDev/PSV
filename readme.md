@@ -1,3 +1,5 @@
+This is now longer supported due to an 3.10 python change - Moving to read only now.
+
 PSV
 ----
 
