@@ -13,7 +13,7 @@ version = '0.4.0'
 
 from setuptools import setup
 setup(name='psv',
-      install_requires=["tabulate==0.8.3"],
+      install_requires=["tabulate==0.8.10"],
       version=version,
       description='CSV Parser',
       long_description=long_description,

@@ -1,4 +1,6 @@
-This is now longer supported due to an 3.10 python change - Moving to read only now.
+This is no longer maintained or supported, however I may upgrade to clean up some cobwebs occasionally should I need to use it again.
+
+Travis Builds will no longer work. 
 
 PSV
 ----
