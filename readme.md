@@ -1,4 +1,4 @@
-This is no longer maintained or supported, however I may upgrade to clean up some cobwebs occasionally should I need to use it again.
+This currently only maintained - and not actively improved on anymore.
 
 Travis Builds will no longer work. 
 
