@@ -18,7 +18,6 @@ class Selection(object):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
         self.SelectionLock = RLock()
-        self.NonHashMergeLock = RLock()
 
     def __add__(self, sel):
         return Selection((
@@ -156,7 +155,7 @@ class Selection(object):
             running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
-        with self.NonHashMergeLock:
+        with self.__apimother__.NonHashMergeLock:
             if not all(self.__apimother__ is x.__apimother__ for x in args):
                 raise ValueError("non_hash_merge only accepts rows from same origin")
             outputstore = tuple(x.__output__ for x in self.__apimother__)
