@@ -8,16 +8,17 @@ from tabulate import tabulate
 
 from threading import RLock
 
-SelectionLock = RLock()
-NonHashMergeLock = RLock()
+
 
 class Selection(object):
 
-    __slots__ = ["__rows__", "__apimother__"]
+    __slots__ = ["__rows__", "__apimother__", 'SelectionLock', 'NonHashMergeLock']
 
     def __init__(self, selection, api_mother):
         self.__rows__ = (selection)
         self.__apimother__ = api_mother
+        self.SelectionLock = RLock()
+        self.NonHashMergeLock = RLock()
 
     def __add__(self, sel):
         return Selection((
@@ -57,7 +58,7 @@ class Selection(object):
 
         """
         if not isinstance(self.__rows__, tuple):
-            with SelectionLock:
+            with self.SelectionLock:
                 self.__rows__ = tuple(self.__rows__)
         return self
 
@@ -155,7 +156,7 @@ class Selection(object):
             running will effect results of the merge and may have unattended conquences on the
             state of this selection.
         """
-        with NonHashMergeLock:
+        with self.NonHashMergeLock:
             if not all(self.__apimother__ is x.__apimother__ for x in args):
                 raise ValueError("non_hash_merge only accepts rows from same origin")
             outputstore = tuple(x.__output__ for x in self.__apimother__)

@@ -7,7 +7,6 @@ from types import FunctionType
 import threading
 
 # We have to manually lock threads for editing columns to prevent corruption
-column_manipulation_lock = threading.RLock()
 
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
@@ -15,7 +14,7 @@ class MainSelection(Selection):
 
     __slots__ = ["__canrefrencecolumn__",
                  "__columns__", "__columnsmap__",
-                 "__rows__", "__rowcls__"]
+                 "__rows__", "__rowcls__", 'column_manipulation_lock', 'SelectionLock', 'NonHashMergeLock']
 
     def __init__(self, csvdict=None, columns=None, 
                  cls=Row, parsing=parser,typetransfer=True, 
@@ -27,6 +26,10 @@ class MainSelection(Selection):
         # and methods
         self.__columns__ = columns
         self.__columnsmap__ = {}
+        self.column_manipulation_lock = threading.RLock()
+        self.SelectionLock = threading.RLock()
+        self.NonHashMergeLock = threading.RLock()
+
         try:
             # TypeError may be triggered by issubclass or
             # by else condition
@@ -119,7 +122,7 @@ class MainSelection(Selection):
         :type add_to_columns: :class:`bool`
         Note: While Thread Safe, this method will have degraded performance if done within threads.
         """
-        with column_manipulation_lock:
+        with self.column_manipulation_lock:
 
             if columnname in self.columns:
                 raise ValueError(
@@ -137,7 +140,7 @@ class MainSelection(Selection):
         return self
 
     def delcolumn(self, columnname):
-        with column_manipulation_lock:
+        with self.column_manipulation_lock:
 
             if not (columnname in self.columns):
                 raise ValueError(
@@ -153,7 +156,7 @@ class MainSelection(Selection):
             self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 
     def rename_column(self, old_column, new_column):
-        with column_manipulation_lock:
+        with self.column_manipulation_lock:
             if old_column == new_column:
                 raise ValueError("Rename is identical to original")
             if not (old_column in self.columns):
