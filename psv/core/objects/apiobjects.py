@@ -1,4 +1,4 @@
-from ..objects import Row, Selection, cleanup_name
+from ..objects import Row, Selection, cleanup_name, banned_columns
 from ..parsing import parser, parser_addrow
 from ..utils import multiple_index, _index_function_gen
 from ..utils import generate_func
@@ -7,6 +7,11 @@ from types import FunctionType
 import threading
 
 # We have to manually lock threads for editing columns to prevent corruption
+def forbidden_columns_check(*columns, msg=msg):
+    for x in columns:
+        if x in banned_columns:
+            raise ValueError(
+                msg.forbidden_column.format(x))
 
 class MainSelection(Selection):
     """This extended selection allows the acceptance of the parsing data and the ability
@@ -122,8 +127,8 @@ class MainSelection(Selection):
         :type add_to_columns: :class:`bool`
         Note: While Thread Safe, this method will have degraded performance if done within threads.
         """
+        forbidden_columns_check(columnname)
         with self.column_manipulation_lock:
-
             if columnname in self.columns:
                 raise ValueError(
                     "'{}' column already exists"
@@ -156,6 +161,7 @@ class MainSelection(Selection):
             self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
 
     def rename_column(self, old_column, new_column):
+        forbidden_columns_check(new_column)
         with self.column_manipulation_lock:
             if old_column == new_column:
                 raise ValueError("Rename is identical to original")

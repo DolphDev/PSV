@@ -16,7 +16,7 @@ class ApiObjectMsg:
     badgrab = "Empty Grab. Lack of arguments were supplied to grab method."
     badcls = "cls argument must be {} or subclass of it. Was {}"
     badfastfind = "Multiple Keywords are not supported for fast_find()"
+    forbidden_column = "'{}' is a forbidden column name, due to it being reserved by psv internally"
 
 class LoadingMsg:
-
-    forbidden_column = "'{}' is a forbidden column name, due to it being reserved by psv internally"
+    forbidden_column = ApiObjectMsg.forbidden_column
