@@ -593,6 +593,30 @@ class psv_selections_test(unittest.TestCase):
         self.construct()
         self.csvdoc.columns
     
+    def test_columns_bans_add(self):
+        self.construct()
+        self.csvdoc
+
+        try:
+            self.csvdoc.addcolumn('__psvcolumnstracker__')
+        except ValueError:
+            return None
+
+        self.fail('__psvcolumnstracker__ was allowed in')
+
+    def test_columns_bans_rename(self):
+        self.construct()
+        self.csvdoc
+
+        try:
+            self.csvdoc.addcolumn('test_rename')
+            self.csvdoc.rename_column('test_rename', '__psvcolumnstracker__')
+        except ValueError as err:
+            return None
+
+        self.fail('__psvcolumnstracker__ was allowed in')
+
+
     # def test_select_typeerror(self):
     #     self.construct()
     #     with self.assertRaises(TypeError) as cm:
