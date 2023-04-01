@@ -125,7 +125,7 @@ class MainSelection(Selection):
             be added to the internal tracker.
         :type columnname: :class:`str`
         :type add_to_columns: :class:`bool`
-        Note: While Thread Safe, this method will have degraded performance if done within threads.
+        Note: Threadsafe as long as you are not using the the column added here obviously
         """
         forbidden_columns_check(columnname)
         with self.column_manipulation_lock:
@@ -140,11 +140,15 @@ class MainSelection(Selection):
                 for row in self.rows:
                     row._addcolumns(columnname, columndata)
             self.__columns__ += (columnname,)
-            self.__columnsmap__.clear()
-            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+            new_map = column_crunch_repeat(self.__columns__)
+            current_keys = set(self.__columnsmap__.keys())
+            new_keys = set(new_map.keys())
+            added = new_keys - current_keys
+            self.__columnsmap__.update({k:v for k,v in new_map.items() if k in added})
         return self
 
     def delcolumn(self, columnname):
+        """ Not really threadsafe - Use before or after row operaitons are done. Tries to safetly do it, but use at your own risk"""
         with self.column_manipulation_lock:
 
             if not (columnname in self.columns):
@@ -157,10 +161,15 @@ class MainSelection(Selection):
 
             self.__columns__ = tuple(
                 column  for column in self.columns if column != columnname)
-            self.__columnsmap__.clear()
-            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+            current_keys = set(self.__columnsmap__.keys())
+            new_keys = set(column_crunch_repeat(self.__columns__).keys())
+            deleted = current_keys - new_keys
+            for k in deleted:
+                del self.__columnsmap__[k]
 
     def rename_column(self, old_column, new_column):
+        """ Not fully threadsafe - Will rename the column before it is processed in the map for effected columns
+         """
         forbidden_columns_check(new_column)
         with self.column_manipulation_lock:
             if old_column == new_column:
@@ -180,8 +189,15 @@ class MainSelection(Selection):
             _transfer_ = {c: new_column if c == old_column else c for c in self.__columns__}
             self.__columns__ = tuple(
                 _transfer_.get(column) for column in self.columns)
-            self.__columnsmap__.clear()
-            self.__columnsmap__.update(column_crunch_repeat(self.__columns__))
+
+            current_keys = set(self.__columnsmap__.keys())
+            new_map = column_crunch_repeat(self.__columns__)
+            new_keys = set(new_map.keys())
+            added = new_keys - current_keys
+            deleted = current_keys - new_keys
+            self.__columnsmap__.update({k:v for k,v in new_map.items() if k in added})
+            for k in deleted:
+                del self.__columnsmap__[k]
 
     def __delitem__(self, v):
         del self.__rows__[v]

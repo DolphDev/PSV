@@ -363,3 +363,8 @@ class psv_selections_test(unittest.TestCase):
         self.csvdoc[0].outputrow = True
         self.csvdoc[0].outputrow = False
         self.csvdoc[0].outputrow = True
+
+
+    def test_clear_column_cache(self):
+        self.construct()
+        psv.clear_column_cache()

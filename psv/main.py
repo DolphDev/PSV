@@ -1,5 +1,5 @@
 from .core.objects.apiobjects import MainSelection
-from .core.objects import Row, banned_columns
+from .core.objects import Row, banned_columns, cleanup_name
 from .core.exceptions.messages import LoadingMsg as msg
 from .load_utils import _new, _loads, _safe_load, csv
 from .load_utils import (csv_size_limit, column_names, column_names_str,
@@ -9,8 +9,7 @@ import io
 import glob
 import itertools
 
-
-
+from threading import RLock
 
 
 
@@ -173,5 +172,13 @@ def new(columns=None, cls=Row,
     return _new(columns=columns, cls=cls)
 
 
+def clear_column_cache():
+    """
+        lru_cache can stick around since it's shared module wide, and python won't dereference it
+        If you want to manually clear it to free usually around 50-80mb worse case of ram
+        call this.
 
+        Note: Only use this if you really want that memory back, if there is any ongoing operations you *may* see issues.
 
+    """
+    cleanup_name.cache_clear()
